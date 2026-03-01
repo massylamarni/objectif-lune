@@ -13,7 +13,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include "../customPreset.h"
+#include "customPreset.h"
 
  /* Variables globales                           */ 
 
@@ -32,15 +32,27 @@ float white[] =     { 1.0F, 1.0F, 1.0F, 1.0F };
  /* la vie du programme                          */ 
 
 void material_gold () {
-  //printf ("Material RED\n");
+  //printf ("Material GOLD\n");
   
   glMaterialfv (GL_FRONT_AND_BACK, GL_DIFFUSE,  gold);
   glMaterialfv (GL_FRONT_AND_BACK, GL_SPECULAR, grey);
   glMaterialfv (GL_FRONT_AND_BACK, GL_AMBIENT,  black);
   glMaterialfv (GL_FRONT_AND_BACK, GL_EMISSION, black);
-  glMaterialf  (GL_FRONT_AND_BACK, GL_SHININESS, 80.0F);
+  glMaterialf  (GL_FRONT_AND_BACK, GL_SHININESS, 120.0F);
   
-  glColor3f (1.0F, 0.0F, 0.0F);  
+  glColor4fv (gold);  
+}
+
+void material_grey () {
+  //printf ("Material GOLD\n");
+  
+  glMaterialfv (GL_FRONT_AND_BACK, GL_DIFFUSE,  grey);
+  glMaterialfv (GL_FRONT_AND_BACK, GL_SPECULAR, dark_grey);
+  glMaterialfv (GL_FRONT_AND_BACK, GL_AMBIENT,  black);
+  glMaterialfv (GL_FRONT_AND_BACK, GL_EMISSION, black);
+  glMaterialf  (GL_FRONT_AND_BACK, GL_SHININESS, 100.0F);
+  
+  glColor4fv (gold);  
 }
 
 void material_red () {
@@ -97,16 +109,37 @@ void init (void) {
 }
 
 float textureRandom () {
-  return (((float) rand ()) / RAND_MAX) * 0.1F;
+  return (((float) rand ()) / RAND_MAX - 0.5F) * 0.3F;
 }
 
  /* Dessin de la Scène                           */
+void PolyFaceCylindre (float hauteur, float rayon, int ns) {
+  glPushMatrix ();
+  
+  float x_v, y_v, hauteur_step;
+  
+  for (int i = 0 ; i < ns ; i++) {
+    glBegin (GL_QUAD_STRIP);
+    hauteur_step = i * hauteur / ns;
+    for (int j = 0 ; j <= ns ; j++) {
+      x_v = rayon * sin (j * 2 * M_PI / ns);
+      y_v = rayon * cos (j * 2 * M_PI / ns);
+      glNormal3d (x_v + textureRandom () * 0.1, textureRandom () * 0.2, y_v + textureRandom () * 0.1);
+      glVertex3d (x_v, hauteur_step + hauteur / ns, y_v);
+      glVertex3d (x_v, hauteur_step, y_v);
+    }
+    glEnd ();
+  }
+  
+  glPopMatrix ();
+}
+
 void OctoPrism (float height, float length, int nbPolygon) {
   glPushMatrix ();
   
   float cos_A, sin_A, cos_B, sin_B;
   
-  length = length / 2.0F;
+  //length = length / 2.0F;
   
   glBegin (GL_QUADS);
   
@@ -120,7 +153,7 @@ void OctoPrism (float height, float length, int nbPolygon) {
     srand (i * 123456);
     for (int c = 0 ; c < nbPolygon ; c++) {
       for (int d = 0 ; d < nbPolygon ; d++) {
-        glNormal3f (cos ((i + 0.5F) * M_PI / 4) + textureRandom (), textureRandom (), sin ((i + 0.5F) * M_PI / 4) + textureRandom ());
+        glNormal3f (cos ((i + 0.5F) * M_PI / 4) + textureRandom () * 4, textureRandom (), sin ((i + 0.5F) * M_PI / 4) + textureRandom () * 4);
         glVertex3f ( cos_A + c * cos_B, d * height / nbPolygon, sin_A + c * sin_B);
         glVertex3f ( cos_A + c * cos_B, (d + 1) * height / nbPolygon, sin_A + c * sin_B);
         glVertex3f ( cos_A + (c + 1) * cos_B, (d + 1) * height / nbPolygon, sin_A + (c + 1) * sin_B);
@@ -131,8 +164,72 @@ void OctoPrism (float height, float length, int nbPolygon) {
   
   glEnd ();
   
+  glBegin (GL_TRIANGLE_FAN);
+  glNormal3f (textureRandom () * 2, 1.0F + textureRandom () / 2, textureRandom () * 2);
+  glVertex3f (0.0F, height, 0.0F);
+  for (int i = 0 ; i <= 8 ; i++) {
+    cos_A = cos (i * M_PI / 4) * length / nbPolygon;
+    sin_A = -sin (i * M_PI / 4) * length / nbPolygon;
+    
+    glNormal3f (textureRandom () * 2, 1.0F + textureRandom () / 2, textureRandom () * 2);
+    glVertex3f (cos_A, height, sin_A);
+  }
+  glEnd ();
+  
+  for (int e = 1 ; e < nbPolygon ; e++) {
+    glBegin (GL_QUAD_STRIP);
+    for (int i = 0 ; i <= 8 ; i++) {
+      cos_A = cos (i * M_PI / 4) * length * (e + 1) / nbPolygon;
+      sin_A = sin (i * M_PI / 4) * length * (e + 1) / nbPolygon;
+      
+      glNormal3f (textureRandom () * 2, 1.0F + textureRandom () / 2, textureRandom () * 2);
+      glVertex3f (cos_A, height, sin_A);
+
+      cos_A = cos (i * M_PI / 4) * length * e / nbPolygon;
+      sin_A = sin (i * M_PI / 4) * length * e / nbPolygon;
+      
+      glNormal3f (textureRandom () * 2, 1.0F + textureRandom () / 2, textureRandom () * 2);
+      glVertex3f (cos_A, height, sin_A);
+
+    }
+    glEnd ();
+  }
+  
+  glBegin (GL_TRIANGLE_FAN);
+  glNormal3f (textureRandom () * 2, -1.0F - textureRandom () / 2, textureRandom () * 2);
+  glVertex3f (0.0F, 0.0F, 0.0F);
+  for (int i = 0 ; i <= 8 ; i++) {
+    cos_A = cos (i * M_PI / 4) * length / nbPolygon;
+    sin_A = sin (i * M_PI / 4) * length / nbPolygon;
+    
+    glNormal3f (textureRandom () * 2, -1.0F - textureRandom () / 2, textureRandom () * 2);
+    glVertex3f (cos_A, 0.0F, sin_A);
+  }
+  glEnd ();
+  
+  for (int e = 1 ; e < nbPolygon ; e++) {
+    glBegin (GL_QUAD_STRIP);
+    for (int i = 0 ; i <= 8 ; i++) {
+      cos_A = cos (i * M_PI / 4) * length * (e + 1) / nbPolygon;
+      sin_A = -sin (i * M_PI / 4) * length * (e + 1) / nbPolygon;
+      
+      glNormal3f (textureRandom () * 2, -1.0F - textureRandom () / 2, textureRandom () * 2);
+      glVertex3f (cos_A, 0.0F, sin_A);
+
+      cos_A = cos (i * M_PI / 4) * length * e / nbPolygon;
+      sin_A = -sin (i * M_PI / 4) * length * e / nbPolygon;
+      
+      glNormal3f (textureRandom () * 2, -1.0F - textureRandom () / 2, textureRandom () * 2);
+      glVertex3f (cos_A, 0.0F, sin_A);
+
+    }
+    glEnd ();
+  }
+  
   glPopMatrix ();
 }
+
+
 
 /* MÉMO
   for (int i = 0 ; i < XXX ; i++) {}
@@ -151,11 +248,64 @@ void OctoPrism (float height, float length, int nbPolygon) {
   glutSolidSphere (0.5, 16, 16);
 */
 
-void scene (void) {
+void LEM (void) {
   glPushMatrix ();
   
   material_gold ();
-  OctoPrism (0.4, prst_size, prst_nbPolygon);
+  OctoPrism (1.0F, 0.5F * (1 + sqrt (2)), prst_nbPolygon); // Corps
+  
+  for (int i = 0 ; i < 4 ; i++) { // Pieds
+    glPushMatrix ();
+    glRotatef (i * 90.0F, 0.0F, 1.0F, 0.0F);
+    glTranslatef (1.5F, 0.15F, 0.0F);
+    PolyFaceCylindre (0.5F, 0.05F, prst_nbPolygon);
+    
+    glPushMatrix ();
+    glRotatef (105.0F, 0.0F, 0.0F, 1.0F);
+    PolyFaceCylindre (0.35F, 0.05F, prst_nbPolygon);
+    glPopMatrix ();
+    
+    {
+      glPushMatrix ();
+      glTranslatef (0.0F, 0.5F, 0.0F);
+      
+      glPushMatrix ();
+      glRotatef (50.0F, 0.0F, 0.0F, 1.0F);
+      PolyFaceCylindre (0.45F, 0.05F, prst_nbPolygon);
+      glPopMatrix ();
+      
+      glRotatef (-150.0F, 0.0F, 0.0F, 1.0F);
+      PolyFaceCylindre (1.0F, 0.05F, prst_nbPolygon);
+      
+      glPopMatrix ();
+    }
+    
+    glRotatef (-125.0F, 0.0F, 0.0F, 1.0F);
+    PolyFaceCylindre (0.6F, 0.05F, prst_nbPolygon);
+    
+    glTranslatef (0.0F, 0.6F, 0.0F);
+    glRotatef (-35.0F, 0.0F, 0.0F, 1.0F);
+    PolyFaceCylindre (0.2F, 0.05F, prst_nbPolygon);
+    
+    glTranslatef (0.0F, 0.175F, 0.0F);
+    glRotatef (-20.0F, 0.0F, 0.0F, 1.0F);
+    OctoPrism (0.05F, 0.2F, prst_nbPolygon / 2);
+    
+    glPopMatrix ();
+  }
+  
+  glTranslatef (0.0F, 1.0F, 0.0F);
+  material_grey ();
+  glutSolidSphere (1.0F, 16, 8);
+  
+  glPopMatrix ();
+}
+
+void scene (void) {
+  glPushMatrix ();
+  
+  glTranslatef (0.0F,-1.0F, 0.0F);
+  LEM ();
   
   glPopMatrix ();
 }
