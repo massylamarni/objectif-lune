@@ -1,3 +1,7 @@
+ /* Configuration par défault de variable OpenGL */ 
+ /*                                              */ 
+ /* Projet Objectif Lune                         */ 
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>

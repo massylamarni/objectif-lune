@@ -1,8 +1,6 @@
- /* Modélisation de la famille de Magneti        */ 
+ /* Modélisation d'un atterisseur spatial        */ 
  /*                                              */ 
- /* Auteur: Théobald RIOS QUESADA                */ 
- /* theobald.rios@orange.fr                      */ 
- /* Janvier 2026                                 */ 
+ /* Projet Objectif Lune                         */ 
 
 #include <stdlib.h>
 #include <stdio.h>
