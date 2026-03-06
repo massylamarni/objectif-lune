@@ -50,7 +50,7 @@ void material_grey () {
   glMaterialfv (GL_FRONT_AND_BACK, GL_EMISSION, black);
   glMaterialf  (GL_FRONT_AND_BACK, GL_SHININESS, 100.0F);
   
-  glColor4fv (gold);  
+  glColor4fv (grey);  
 }
 
 void material_red () {
@@ -86,7 +86,29 @@ void material_black () {
   glMaterialfv (GL_FRONT_AND_BACK, GL_EMISSION, black);
   glMaterialf  (GL_FRONT_AND_BACK, GL_SHININESS, 100.0F);
   
-  glColor3f (1.0F, 1.0F, 1.0F);
+  glColor3f (0.0F, 0.0F, 0.0F);
+}
+
+void test_light () {
+  glPushMatrix ();
+  
+  float pos[] = {(0.001F * (prst_xMouse - prst_wTx / 2)), 0.2F, (0.001F * (prst_yMouse - prst_wTy / 4)), 1.0F};
+  glEnable (GL_LIGHT1);
+  glDisable (GL_LIGHT0);
+  glLightfv (GL_LIGHT1, GL_DIFFUSE, white);
+  glLightfv (GL_LIGHT1, GL_SPECULAR, white);
+  glLightfv (GL_LIGHT1, GL_POSITION, pos);
+  
+  material_white ();
+  glBegin(GL_LINES);
+  glVertex3f ((0.001F * (prst_xMouse - prst_wTx / 2)), 0.2F, (0.001F * (prst_yMouse - prst_wTy / 4)));
+  glVertex3f (0.0F, 0.0F, 0.0F);
+  glEnd();
+  
+  glTranslatef ((0.001F * (prst_xMouse - prst_wTx / 2)), 0.2F, (0.001F * (prst_yMouse - prst_wTy / 4)));
+  glutSolidSphere (0.05, 16, 16);
+  
+  glPopMatrix ();
 }
 
 void init (void) {
@@ -107,7 +129,7 @@ void init (void) {
 }
 
 float textureRandom () {
-  return (((float) rand ()) / RAND_MAX - 0.5F) * 0.3F;
+  return (((float) rand ()) / RAND_MAX - 0.5F) * 0.05F;
 }
 
  /* Dessin de la Scène                           */
@@ -276,6 +298,9 @@ void LEM (void) {
       glTranslatef (0.0F, 0.5F, 0.0F);
       
       glPushMatrix ();
+      
+      glutSolidSphere (0.05, prst_nbPolygon / 2, prst_nbPolygon / 2);
+      
       glRotatef (50.0F, 0.0F, 0.0F, 1.0F);
       PolyFaceCylindre (0.45F, 0.05F, prst_nbPolygon);
       glPopMatrix ();
@@ -300,12 +325,13 @@ void LEM (void) {
     glPopMatrix ();
   }
   
+  material_grey ();
+  
+  glPushMatrix (); // Tête
+  
   glRotatef (22.5F, 0.0F, 1.0F, 0.0F);
   glTranslatef (0.0F, 1.0F, 1.0F);
   
-  material_grey ();
-  
-  glPushMatrix ();
   //glutSolidSphere (1.0F, 16, 8);
   glRotatef (-90.0F, 1.0F, 0.0F, 0.0F);
   PolyFacePrism (8, 16, 0.5F, 0.2F, 0.6F, prst_nbPolygon / 2, true, false);
@@ -350,6 +376,7 @@ void display (void) {
   glPushMatrix ();
   
   glTranslatef(0.0F, 0.0F, -5.0F);
+  test_light ();
   glRotatef (prst_alpha, 1.0F, 0.0F, 0.0F);
   glRotatef (prst_beta, 0.0F, 1.0F, 0.0F);
   glScalef (prst_size, prst_size, prst_size);
@@ -502,8 +529,8 @@ void mouse (int button, int state, int x, int y) {
 
 void mouseMotion (int x, int y) {
   printf ("MM %4d %4d\n", x, y);
-  prst_beta += x - prst_xMouse;
-  prst_alpha += y - prst_yMouse;
+  //prst_beta += x - prst_xMouse;
+  //prst_alpha += y - prst_yMouse;
   prst_xMouse = x;
   prst_yMouse = y;
   glutPostRedisplay ();
