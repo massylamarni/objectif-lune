@@ -18,6 +18,8 @@ float orange[] = { 1.0F, 0.33F, 0.0F, 1.0F };
 float white[] = { 1.0F, 1.0F, 1.0F, 1.0F };
 int n_lat=80;
 int n_long=8;
+float explosion_size=0.0F;
+float saturation=0.0F;
 
 
 /* Fonction d'initialisation des parametres     */
@@ -44,19 +46,26 @@ void init (void) {
 static void Explosion(void) {
   glPushMatrix();
   glPushMatrix();
-  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, red);
-  glutSolidSphere(1.5F*prst_animation, n_lat, n_long);
+  float col_explosion[] = { 1.0F-(saturation*0.5F), 0.0F+(saturation*0.5F), 0.0F+(saturation*0.5F), 1.0F };
+  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col_explosion);
+  glutSolidSphere(1.5F*explosion_size, n_lat, n_long);
   glPopMatrix();
   glDisable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
-  glPushMatrix();
-  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, orange);
-  glutSolidSphere(0.75F*prst_animation, n_lat, n_long);
-  glPopMatrix();
-  glPushMatrix();
-  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, white);
-  glutSolidSphere(0.1F*prst_animation, n_lat, n_long);
-  glPopMatrix();
+  for(int i=0;i<10;i++){
+    glPushMatrix();
+    float col2_explosion[] = { 1.0F-(saturation*0.5F), 0.1F*i+(saturation*(0.5F-i/10.0F)), 0.0F+(saturation*0.5F), 1.0F };
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col2_explosion);
+    glutSolidSphere((1.4F-0.075F*i)*explosion_size, n_lat, n_long);
+    glPopMatrix();
+  }
+  for(int i=0;i<11;i++){
+    glPushMatrix();
+    float col3_explosion[] = { 1.0F-(saturation*0.5F), 1.0F-(saturation*0.5F), 0.1F*i+(saturation*(0.5F-i/10.0F)), 1.0F };
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col3_explosion);
+    glutSolidSphere((0.6F-0.05F*i)*explosion_size, n_lat, n_long);
+    glPopMatrix();
+  }
   glEnable(GL_DEPTH_TEST);
   glDisable(GL_CULL_FACE);
   glPopMatrix();
@@ -128,16 +137,33 @@ void reshape (int wx, int wy) {
  /* Fonction exécutée lorsqu'aucun évènement     */ 
  /* n'est en file d'attente                      */ 
 
-void idle (void) {
+void idle2 (void) {
   printf ("I\n");
-  prst_animation += (float) prst_animationSpeed / 60.0F;
+  prst_animation += (float) prst_animationSpeed / 120.0F;
+  saturation=prst_animation;
   if (prst_animation>1.0F){
+    saturation=1.0F;
     glutIdleFunc (NULL);
   }
   glMaterialfv (GL_FRONT, GL_DIFFUSE,  red);
   glMaterialfv (GL_BACK, GL_DIFFUSE,  red);
   glutPostRedisplay ();
 }
+
+void idle (void) {
+  printf ("I\n");
+  prst_animation += (float) prst_animationSpeed / 30.0F;
+  explosion_size=prst_animation;
+  if (prst_animation>1.0F){
+    prst_animation=0.0F;
+    glutIdleFunc (idle2);
+  }
+  glMaterialfv (GL_FRONT, GL_DIFFUSE,  red);
+  glMaterialfv (GL_BACK, GL_DIFFUSE,  red);
+  glutPostRedisplay ();
+}
+
+
 
  /* Fonction exécutée lors de l'appui            */ 
  /* d'une touche alphanumérique du clavier       */ 
