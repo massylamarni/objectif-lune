@@ -132,98 +132,106 @@ void PolyFaceCylindre (float hauteur, float rayon, int ns) {
   glPopMatrix ();
 }
 
-void OctoPrism (float height, float length, int nbPolygon) {
+void PolyFacePrism (int face, int total_face, float height, float length_A, float length_B, int nbPolygon, bool closed, bool randomTexture) {
   glPushMatrix ();
   
   float cos_A, sin_A, cos_B, sin_B;
   
-  //length = length / 2.0F;
-  
+  /* Tube */
+  float length_C = (length_A - length_B) / nbPolygon;
   glBegin (GL_QUADS);
   
-  for (int i = 0 ; i < 8 ; i++) {
-    cos_A = cos (i * M_PI / 4) * length;
-    sin_A = sin (i * M_PI / 4) * length;
-    cos_B = (cos ((i + 1) * M_PI / 4) * length - cos_A) / nbPolygon;
-    sin_B = (sin ((i + 1) * M_PI / 4) * length - sin_A) / nbPolygon;
+  for (int i = 0 ; i < face ; i++) {
+    cos_A = cos (i * M_PI * 2 / total_face); // Base de face
+    sin_A = sin (i * M_PI * 2 / total_face);
+    cos_B = (cos ((i + 1) * M_PI * 2 / total_face) - cos_A) / nbPolygon; // Décalage latéral
+    sin_B = (sin ((i + 1) * M_PI * 2 / total_face) - sin_A) / nbPolygon;
     
     
     srand (i * 123456);
     for (int c = 0 ; c < nbPolygon ; c++) {
       for (int d = 0 ; d < nbPolygon ; d++) {
-        glNormal3f (cos ((i + 0.5F) * M_PI / 4) + textureRandom () * 4, textureRandom (), sin ((i + 0.5F) * M_PI / 4) + textureRandom () * 4);
-        glVertex3f ( cos_A + c * cos_B, d * height / nbPolygon, sin_A + c * sin_B);
-        glVertex3f ( cos_A + c * cos_B, (d + 1) * height / nbPolygon, sin_A + c * sin_B);
-        glVertex3f ( cos_A + (c + 1) * cos_B, (d + 1) * height / nbPolygon, sin_A + (c + 1) * sin_B);
-        glVertex3f ( cos_A + (c + 1) * cos_B, d * height / nbPolygon, sin_A + (c + 1) * sin_B);
+        if (randomTexture) {
+          glNormal3f (cos ((i + 0.5F) * M_PI * 2 / total_face) + textureRandom () * 4, textureRandom (), sin ((i + 0.5F) * M_PI * 2 / total_face) + textureRandom () * 4);
+        }
+        else {
+          glNormal3f (cos ((i + 0.5F) * M_PI * 2 / total_face), (length_A - length_B) / height, sin ((i + 0.5F) * M_PI * 2 / total_face));
+        }
+        glVertex3f ((cos_A + c * cos_B) * (length_A - length_C * d),             d * height / nbPolygon, (sin_A + c * sin_B) * (length_A - length_C * d));
+        glVertex3f ((cos_A + c * cos_B) * (length_A - length_C * (d + 1)),       (d + 1) * height / nbPolygon, (sin_A + c * sin_B) * (length_A - length_C * (d + 1)));
+        glVertex3f ((cos_A + (c + 1) * cos_B) * (length_A - length_C * (d + 1)), (d + 1) * height / nbPolygon, (sin_A + (c + 1) * sin_B) * (length_A - length_C * (d + 1)));
+        glVertex3f ((cos_A + (c + 1) * cos_B) * (length_A - length_C * d),       d * height / nbPolygon, (sin_A + (c + 1) * sin_B) * (length_A - length_C * d));
       }
     }
   }
   
   glEnd ();
   
-  glBegin (GL_TRIANGLE_FAN);
-  glNormal3f (textureRandom () * 2, 1.0F + textureRandom () / 2, textureRandom () * 2);
-  glVertex3f (0.0F, height, 0.0F);
-  for (int i = 0 ; i <= 8 ; i++) {
-    cos_A = cos (i * M_PI / 4) * length / nbPolygon;
-    sin_A = -sin (i * M_PI / 4) * length / nbPolygon;
-    
-    glNormal3f (textureRandom () * 2, 1.0F + textureRandom () / 2, textureRandom () * 2);
-    glVertex3f (cos_A, height, sin_A);
-  }
-  glEnd ();
-  
-  for (int e = 1 ; e < nbPolygon ; e++) {
-    glBegin (GL_QUAD_STRIP);
-    for (int i = 0 ; i <= 8 ; i++) {
-      cos_A = cos (i * M_PI / 4) * length * (e + 1) / nbPolygon;
-      sin_A = sin (i * M_PI / 4) * length * (e + 1) / nbPolygon;
-      
-      glNormal3f (textureRandom () * 2, 1.0F + textureRandom () / 2, textureRandom () * 2);
-      glVertex3f (cos_A, height, sin_A);
-
-      cos_A = cos (i * M_PI / 4) * length * e / nbPolygon;
-      sin_A = sin (i * M_PI / 4) * length * e / nbPolygon;
-      
-      glNormal3f (textureRandom () * 2, 1.0F + textureRandom () / 2, textureRandom () * 2);
-      glVertex3f (cos_A, height, sin_A);
-
-    }
-    glEnd ();
-  }
-  
-  glBegin (GL_TRIANGLE_FAN);
-  glNormal3f (textureRandom () * 2, -1.0F - textureRandom () / 2, textureRandom () * 2);
-  glVertex3f (0.0F, 0.0F, 0.0F);
-  for (int i = 0 ; i <= 8 ; i++) {
-    cos_A = cos (i * M_PI / 4) * length / nbPolygon;
-    sin_A = sin (i * M_PI / 4) * length / nbPolygon;
-    
+  if (closed) { 
+    /* Face A */
+    glBegin (GL_TRIANGLE_FAN);
     glNormal3f (textureRandom () * 2, -1.0F - textureRandom () / 2, textureRandom () * 2);
-    glVertex3f (cos_A, 0.0F, sin_A);
-  }
-  glEnd ();
-  
-  for (int e = 1 ; e < nbPolygon ; e++) {
-    glBegin (GL_QUAD_STRIP);
-    for (int i = 0 ; i <= 8 ; i++) {
-      cos_A = cos (i * M_PI / 4) * length * (e + 1) / nbPolygon;
-      sin_A = -sin (i * M_PI / 4) * length * (e + 1) / nbPolygon;
+    glVertex3f (0.0F, 0.0F, 0.0F);
+    for (int i = 0 ; i <= face ; i++) {
+      cos_A = cos (i * M_PI * 2 / total_face) * length_A / nbPolygon;
+      sin_A = sin (i * M_PI * 2 / total_face) * length_A / nbPolygon;
       
       glNormal3f (textureRandom () * 2, -1.0F - textureRandom () / 2, textureRandom () * 2);
       glVertex3f (cos_A, 0.0F, sin_A);
-
-      cos_A = cos (i * M_PI / 4) * length * e / nbPolygon;
-      sin_A = -sin (i * M_PI / 4) * length * e / nbPolygon;
-      
-      glNormal3f (textureRandom () * 2, -1.0F - textureRandom () / 2, textureRandom () * 2);
-      glVertex3f (cos_A, 0.0F, sin_A);
-
     }
     glEnd ();
+    
+    for (int e = 1 ; e < nbPolygon ; e++) {
+      glBegin (GL_QUAD_STRIP);
+      for (int i = 0 ; i <= face ; i++) {
+        cos_A = -cos (i * M_PI * 2 / total_face) * length_A * (e + 1) / nbPolygon;
+        sin_A = sin (i * M_PI * 2 / total_face) * length_A * (e + 1) / nbPolygon;
+        
+        glNormal3f (textureRandom () * 2, -1.0F - textureRandom () / 2, textureRandom () * 2);
+        glVertex3f (cos_A, 0.0F, sin_A);
+
+        cos_A = -cos (i * M_PI * 2 / total_face) * length_A * e / nbPolygon;
+        sin_A = sin (i * M_PI * 2 / total_face) * length_A * e / nbPolygon;
+        
+        glNormal3f (textureRandom () * 2, -1.0F - textureRandom () / 2, textureRandom () * 2);
+        glVertex3f (cos_A, 0.0F, sin_A);
+
+      }
+      glEnd ();
+    }
+    
+    /* Face B */
+    glBegin (GL_TRIANGLE_FAN);
+    glNormal3f (textureRandom () * 2, 1.0F + textureRandom () / 2, textureRandom () * 2);
+    glVertex3f (0.0F, height, 0.0F);
+    for (int i = 0 ; i <= face ; i++) {
+      cos_A = -cos (i * M_PI * 2 / total_face) * length_B / nbPolygon;
+      sin_A = sin (i * M_PI * 2 / total_face) * length_B / nbPolygon;
+      
+      glNormal3f (textureRandom () * 2, 1.0F + textureRandom () / 2, textureRandom () * 2);
+      glVertex3f (cos_A, height, sin_A);
+    }
+    glEnd ();
+    
+    for (int e = 1 ; e < nbPolygon ; e++) {
+      glBegin (GL_QUAD_STRIP);
+      for (int i = 0 ; i <= face ; i++) {
+        cos_A = cos (i * M_PI * 2 / total_face) * length_B * (e + 1) / nbPolygon;
+        sin_A = sin (i * M_PI * 2 / total_face) * length_B * (e + 1) / nbPolygon;
+        
+        glNormal3f (textureRandom () * 2, 1.0F + textureRandom () / 2, textureRandom () * 2);
+        glVertex3f (cos_A, height, sin_A);
+
+        cos_A = cos (i * M_PI * 2 / total_face) * length_B * e / nbPolygon;
+        sin_A = sin (i * M_PI * 2 / total_face) * length_B * e / nbPolygon;
+        
+        glNormal3f (textureRandom () * 2, 1.0F + textureRandom () / 2, textureRandom () * 2);
+        glVertex3f (cos_A, height, sin_A);
+
+      }
+      glEnd ();
+    }
   }
-  
   glPopMatrix ();
 }
 
@@ -250,7 +258,7 @@ void LEM (void) {
   glPushMatrix ();
   
   material_gold ();
-  OctoPrism (1.0F, 0.5F * (1 + sqrt (2)), prst_nbPolygon); // Corps
+  PolyFacePrism (8, 8, 1.0F, 0.5F * (1 + sqrt (2)), 0.5F * (1 + sqrt (2)), prst_nbPolygon, true, true); // Corps
   
   for (int i = 0 ; i < 4 ; i++) { // Pieds
     glPushMatrix ();
@@ -287,14 +295,27 @@ void LEM (void) {
     
     glTranslatef (0.0F, 0.175F, 0.0F);
     glRotatef (-20.0F, 0.0F, 0.0F, 1.0F);
-    OctoPrism (0.05F, 0.2F, prst_nbPolygon / 2);
+    PolyFacePrism (8, 8, 0.05F, 0.2F, 0.17F, prst_nbPolygon / 2, true, true);
     
     glPopMatrix ();
   }
   
-  glTranslatef (0.0F, 1.0F, 0.0F);
+  glRotatef (22.5F, 0.0F, 1.0F, 0.0F);
+  glTranslatef (0.0F, 1.0F, 1.0F);
+  
   material_grey ();
-  glutSolidSphere (1.0F, 16, 8);
+  
+  glPushMatrix ();
+  //glutSolidSphere (1.0F, 16, 8);
+  glRotatef (-90.0F, 1.0F, 0.0F, 0.0F);
+  PolyFacePrism (8, 16, 0.5F, 0.2F, 0.6F, prst_nbPolygon / 2, true, false);
+  glTranslatef (0.0F, 0.5F, 0.0F);
+  PolyFacePrism (8, 16, 0.25F, 0.6F, 1.0F, prst_nbPolygon / 2, false, false);
+  glTranslatef (0.0F, 0.25F, 0.0F);
+  PolyFacePrism (8, 16, 0.5F, 1.0F, 1.0F, prst_nbPolygon / 2, false, false);
+  glTranslatef (0.0F, 0.5F, 0.0F);
+  PolyFacePrism (8, 16, 0.25F, 1.0F, 0.6F, prst_nbPolygon / 2, true, false);
+  glPopMatrix ();
   
   glPopMatrix ();
 }
@@ -357,9 +378,8 @@ void reshape (int wx, int wy) {
   glViewport (0, 0, wx, wy); 
   glMatrixMode (GL_PROJECTION);
   glLoadIdentity ();
-  //glOrtho (-5.0, 5.0, -5.0, 5.0, -5.0, 5.0);
-  //glFrustum (-wy, wy, -wx, wx, -prst_fov, prst_fov);
-  glFrustum (-0.5, 0.5, -0.5, 0.5, prst_fov , 20.0 + prst_fov);
+  //glOrtho (-4.0, 4.0, -4.0, 4.0, -10.0, 10.0);
+  glFrustum (-1.0, 1.0, -1.0 * wy / wx, 1.0 * wy / wx, prst_fov , 20.0 + prst_fov);
   glMatrixMode (GL_MODELVIEW);
   glLoadIdentity ();
 }
