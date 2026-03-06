@@ -45,17 +45,17 @@ static void Explosion(void) {
   glPushMatrix();
   glPushMatrix();
   glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, red);
-  glutSolidSphere(1.5F, n_lat, n_long);
+  glutSolidSphere(1.5F*prst_animation, n_lat, n_long);
   glPopMatrix();
   glDisable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
   glPushMatrix();
   glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, orange);
-  glutSolidSphere(0.9F, n_lat, n_long);
+  glutSolidSphere(0.75F*prst_animation, n_lat, n_long);
   glPopMatrix();
   glPushMatrix();
   glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, white);
-  glutSolidSphere(0.45F, n_lat, n_long);
+  glutSolidSphere(0.1F*prst_animation, n_lat, n_long);
   glPopMatrix();
   glEnable(GL_DEPTH_TEST);
   glDisable(GL_CULL_FACE);
@@ -130,14 +130,13 @@ void reshape (int wx, int wy) {
 
 void idle (void) {
   printf ("I\n");
-  prst_animation += (float) prst_animationSpeed / 5;
-  if (prst_rotation && prst_rotationSpeed != 0) {
-    prst_beta += (float) prst_rotationSpeed / 10;
-    //sleep (1); // Anti-Lag
-    glutPostRedisplay ();
+  prst_animation += (float) prst_animationSpeed / 60.0F;
+  if (prst_animation>1.0F){
+    glutIdleFunc (NULL);
   }
   glMaterialfv (GL_FRONT, GL_DIFFUSE,  red);
   glMaterialfv (GL_BACK, GL_DIFFUSE,  red);
+  glutPostRedisplay ();
 }
 
  /* Fonction exécutée lors de l'appui            */ 
@@ -161,6 +160,7 @@ void keyboard (unsigned char key, int x, int y) {
       glutIdleFunc (NULL);
     }
     else {
+      prst_animationSpeed=1;
       glutIdleFunc (idle);
     }
   }
