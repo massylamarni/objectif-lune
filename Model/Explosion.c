@@ -16,8 +16,8 @@
 float red[] = { 1.0F, 0.0F, 0.0F, 1.0F };
 float orange[] = { 1.0F, 0.33F, 0.0F, 1.0F };
 float white[] = { 1.0F, 1.0F, 1.0F, 1.0F };
-int n_lat=80;
-int n_long=8;
+int n_lat=40;
+int n_long=20;
 float explosion_size=0.0F;
 float saturation=0.0F;
 
@@ -63,7 +63,7 @@ static void Explosion(void) {
     glPushMatrix();
     float col3_explosion[] = { 1.0F-(saturation*0.5F), 1.0F-(saturation*0.5F), 0.1F*i+(saturation*(0.5F-i/10.0F)), 1.0F };
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col3_explosion);
-    glutSolidSphere((0.6F-0.05F*i)*explosion_size, n_lat, n_long);
+    glutSolidSphere((0.65F-0.055F*i)*explosion_size, n_lat, n_long);
     glPopMatrix();
   }
   glEnable(GL_DEPTH_TEST);
@@ -139,8 +139,8 @@ void reshape (int wx, int wy) {
 
 void idle2 (void) {
   printf ("I\n");
-  prst_animation += (float) prst_animationSpeed / 120.0F;
-  saturation=prst_animation;
+  prst_animation += (float) prst_animationSpeed / 300.0F;
+  saturation=prst_animation*prst_animation;
   if (prst_animation>1.0F){
     saturation=1.0F;
     glutIdleFunc (NULL);
