@@ -25,6 +25,9 @@ float blue[] =      { 0.0F, 0.0F, 1.0F, 1.0F };
 float rose[] =      { 1.0F, 0.9F, 0.9F, 1.0F };
 float white[] =     { 1.0F, 1.0F, 1.0F, 1.0F };
 
+float anim_LEM_offset = 0.0F;
+bool win_value = false;
+
  /* Fonction d'initialisation des paramètres     */ 
  /* OpenGL ne changeant pas ou peu au cours de   */ 
  /* la vie du programme                          */ 
@@ -354,6 +357,18 @@ void PolyFaceSurface (float size_x, float size_y, int nbPolygon_x, int nbPolygon
   glutSolidSphere (0.5, 16, 16);
 */
 
+float LEM_anim () {
+  if (win_value) {
+    if (prst_animation - anim_LEM_offset > 100) {
+      return -60.0F;
+    }
+    return (prst_animation - anim_LEM_offset) * -1.8F + 120.0F;
+  }
+  else {
+    return 120.0F;
+  }
+}
+
 void LEM (void) {
   glPushMatrix ();
   
@@ -480,31 +495,46 @@ void LEM (void) {
   
   glPushMatrix ();
   material_dark_grey (); // Tuyère
-  PolyFaceConeCut (-0.3F, 0.3F, 0.4F, prst_nbPolygon);
-  glRotatef (180.0F, 0.0F, 1.0F, 0.0F);
-  PolyFaceConeCut (-0.1F, -0.0F, -0.2F, prst_nbPolygon);
+  glRotatef (180.0F, 1.0F, 0.0F, 0.0F);
+  PolyFaceConeCut (0.3F, 0.3F, 0.4F, prst_nbPolygon);
+  glRotatef (180.0F, 1.0F, 0.0F, 0.0F);
+  PolyFaceConeCut (-0.1F, 0.0F, -0.2F, prst_nbPolygon);
   glTranslatef (0.0F, -0.1F, 0.0F);
   PolyFaceConeCut (-0.2F, -0.2F, -0.4F, prst_nbPolygon);
   glPopMatrix ();
 
   glPushMatrix ();
   material_grey (); // Échelle
-  glRotatef (-90.0F, 0.0F, 1.0F, 0.0F);
+  glRotatef (90.0F, 0.0F, 1.0F, 0.0F);
   glTranslatef (1.3F, 0.8F, -0.1F);
-  glRotatef (-60.0F, 0.0F, 0.0F, 1.0F);
   
   glPushMatrix ();
-  glRotatef (-90.0F, 0.0F, 0.0F, 1.0F);
-  PolyFaceCylindre (1.2F, 0.015F, prst_nbPolygon, false);
+  glRotatef (90.0F, 0.0F, 0.0F, 1.0F);
+  PolyFaceCylindre (0.3F, 0.015F, 4, false);
   glTranslatef (0.0F, 0.0F, 0.2F);
-  PolyFaceCylindre (1.2F, 0.015F, prst_nbPolygon, false);
+  PolyFaceCylindre (0.3F, 0.015F, 6, false);
   glPopMatrix ();
+  
+  glRotatef (LEM_anim (), 0.0F, 0.0F, 1.0F);
+  glPushMatrix ();
+  glRotatef (-90.0F, 0.0F, 0.0F, 1.0F);
+  PolyFaceCylindre (1.2F, 0.015F, 4, false);
+  glTranslatef (0.0F, 0.0F, 0.2F);
+  PolyFaceCylindre (1.2F, 0.015F, 6, false);
+  glPopMatrix ();
+  
+  for (int i = 0 ; i < 4 ; i++) {
+    glPushMatrix ();
+    glTranslatef (1.2F * (i / 2), 0.0F, 0.2F * (i % 2));
+    glutSolidCube (0.05);
+    glPopMatrix ();
+  }
   
   glRotatef (90.0F, 1.0F, 0.0F, 0.0F);
   for (int i = 0 ; i <= 8 ; i++) {
     glPushMatrix ();
     glTranslatef (0.15F * i, 0.0F, 0.0F);
-    PolyFaceCylindre (0.2F, 0.01F, prst_nbPolygon, false);
+    PolyFaceCylindre (0.2F, 0.01F, 4, false);
     glPopMatrix ();
   }
   glPopMatrix ();
@@ -583,14 +613,12 @@ void reshape (int wx, int wy) {
 
 void idle (void) {
   printf ("I\n");
-  prst_animation += (float) prst_animationSpeed / 5;
+  prst_animation += ((float) prst_animationSpeed) / 5.0F;
   if (prst_rotation && prst_rotationSpeed != 0) {
     prst_beta += (float) prst_rotationSpeed / 10;
     //sleep (1); // Anti-Lag
     glutPostRedisplay ();
   }
-  glMaterialfv (GL_FRONT, GL_DIFFUSE,  red);
-  glMaterialfv (GL_BACK, GL_DIFFUSE,  red);
 }
 
  /* Fonction exécutée lors de l'appui            */ 
@@ -605,10 +633,14 @@ void keyboard (unsigned char key, int x, int y) {
   
   keyboardAssistIntLoop (&prst_sceneId, key, 'M', 'm', 0, 3);
   
-  printf("Bool %d\n",
-  keyboardAssistFloatProportional (&prst_rotationSpeed, key, (char) GLUT_KEY_INSERT, 0x7f, -3600.0F, 3600.0F, 0.05F, 0.05F)
-  );
-  if (keyboardAssistBool (&prst_animated, key, 0X0D)) { // Entrée - Pause Animation
+  printf("Bool %d\n", keyboardAssistFloatProportional (&prst_rotationSpeed, key, (char) GLUT_KEY_INSERT, 0x7f, -3600.0F, 3600.0F, 0.05F, 0.05F));
+  if (key == 'w') { // Active Win condition
+    win_value = !win_value;
+    if (win_value) {
+      anim_LEM_offset = prst_animation;
+    }
+  }
+  else if (keyboardAssistBool (&prst_animated, key, 0X0D)) { // Entrée - Pause Animation
     printf ("Animation\n");    
     if (prst_animated) {
       glutIdleFunc (NULL);
@@ -741,7 +773,7 @@ int main (int argc, char **argv) {
   //glutPassiveMotionFunc (passiveMouseMotion);
   glutReshapeFunc (reshape);
   glutIdleFunc (idle);
-  glutIdleFunc (NULL);
+  //glutIdleFunc (NULL);
   glutDisplayFunc (display);
   glutMainLoop ();
   return (0); // Won't be reach cause the normal way to stop is exit the MainLoop
