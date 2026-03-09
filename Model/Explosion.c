@@ -20,6 +20,7 @@ int n_lat=40;
 int n_long=20;
 float explosion_size=0.0F;
 float saturation=0.0F;
+float anim_saturation=0.0F;
 
 
 /* Fonction d'initialisation des parametres     */
@@ -43,33 +44,6 @@ void init (void) {
   glClearColor (0.1F, 0.3F, 0.2F, 1.0F);
 }
 
-void mySolidCylindre(double hauteur,double rayon,int ns,int nl) {
-  GLboolean nm = glIsEnabled(GL_NORMALIZE);
-  if ( !nm )
-    glEnable(GL_NORMALIZE);
-  float normale[4];
-  glGetFloatv(GL_CURRENT_NORMAL,normale);
-  glPushMatrix();
-  for ( int j = 0 ; j < nl ; j++ ) {
-    float hi =(float) (hauteur/2-j*hauteur/nl);
-    float hf =(float) (hi-hauteur/nl);
-    glBegin(GL_QUAD_STRIP);
-    for( int i = 0 ; i <= ns ; i++ ) {
-      float a =(float) ((2*M_PI*i)/ns);
-      float cs =(float) cos(a);
-      float sn =(float) -sin(a);
-      glNormal3f(cs,0.0F,sn);
-      float x =(float) (rayon*cs);
-      float z =(float) (rayon*sn);
-      glVertex3f(x,hi,z);
-      glVertex3f(x,hf,z); }
-    glEnd(); }
-  glPopMatrix();
-  glNormal3f(normale[0],normale[1],normale[2]);
-  if ( !nm )
-    glDisable(GL_NORMALIZE);
-}
-
 static void ExplosionLayer(float size){
   glPushMatrix();
   glutSolidSphere(size, n_lat, n_long);
@@ -91,10 +65,6 @@ static void ExplosionLayer(float size){
     glPopMatrix();
   }
   glPopMatrix();
-  glPushMatrix();
-  glTranslatef(0.0F,size+1.0F*size,0.0F);
-  mySolidCylindre(2.0F*size,size*0.25,n_long,n_lat);
-  glPopMatrix();
   glPopMatrix();
 }
 
@@ -106,24 +76,26 @@ static void Explosion(void) {
   glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, col_explosion);
   ExplosionLayer(1.0F*explosion_size);
   glPopMatrix();
-  /*glDisable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
-  for(int i=0;i<10;i++){
-    glPushMatrix();
-    float col2_explosion[] = { 1.0F-(saturation*0.5F), 0.1F*i+(saturation*(0.5F-i/10.0F)), 0.0F+(saturation*0.5F), 1.0F };
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col2_explosion);
-    ExplosionLayer((1.4F-0.075F*i)*explosion_size);
-    glPopMatrix();
+  if (anim_saturation<1.0F){
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    for(int i=0;i<10;i++){
+      glPushMatrix();
+      float col2_explosion[] = { 1.0F-(saturation*0.5F), 0.1F*i+(saturation*(0.5F-i/10.0F)), 0.0F+(saturation*0.5F), 1.0F };
+      glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col2_explosion);
+      glutSolidSphere((0.9F-0.05F*i)*explosion_size,n_lat,n_long);
+      glPopMatrix();
+    }
+    for(int i=0;i<11;i++){
+      glPushMatrix();
+      float col3_explosion[] = { 1.0F-(saturation*0.5F), 1.0F-(saturation*0.5F), 0.1F*i+(saturation*(0.5F-i/10.0F)), 1.0F };
+      glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col3_explosion);
+      glutSolidSphere((0.4F-0.05F*i)*explosion_size,n_lat,n_long);
+      glPopMatrix();
+    }
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
   }
-  for(int i=0;i<11;i++){
-    glPushMatrix();
-    float col3_explosion[] = { 1.0F-(saturation*0.5F), 1.0F-(saturation*0.5F), 0.1F*i+(saturation*(0.5F-i/10.0F)), 1.0F };
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col3_explosion);
-    ExplosionLayer((0.65F-0.055F*i)*explosion_size);
-    glPopMatrix();
-  }
-  glEnable(GL_DEPTH_TEST);
-  glDisable(GL_CULL_FACE);*/
   glPopMatrix();
 }
 
@@ -195,9 +167,9 @@ void reshape (int wx, int wy) {
 
 void idle2 (void) {
   printf ("I\n");
-  prst_animation += (float) prst_animationSpeed / 120.0F;
-  saturation=sqrt(prst_animation);
-  if (prst_animation>1.0F){
+  anim_saturation += (float) prst_animationSpeed / 120.0F;
+  saturation=sqrt(anim_saturation);
+  if (anim_saturation>1.0F){
     saturation=1.0F;
     glutIdleFunc (NULL);
   }
@@ -208,10 +180,8 @@ void idle2 (void) {
 
 void idle (void) {
   printf ("I\n");
-  prst_animation += (float) prst_animationSpeed / 30.0F;
-  explosion_size=prst_animation;
-  if (prst_animation>1.0F){
-    prst_animation=0.0F;
+  explosion_size += (float) prst_animationSpeed / 30.0F;
+  if (explosion_size>1.0F){
     glutIdleFunc (idle2);
   }
   glMaterialfv (GL_FRONT, GL_DIFFUSE,  red);
