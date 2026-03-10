@@ -1,5 +1,5 @@
 #include "models.h"
-#include <GL/freeglut_std.h>
+#include "../../assets/models/custom_preset.h"
 
 namespace render {
 void draw_planet(const world::Planet &planet) {

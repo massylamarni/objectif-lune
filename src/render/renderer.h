@@ -29,7 +29,6 @@ static void mouse(int button, int state, int x, int y);
 static void mouseMotion(int x, int y);
 static void passiveMouseMotion(int x, int y);
 static void clean(void);
-void draw_text(const char *text, int x, int y);
 } // namespace render
 
 #endif

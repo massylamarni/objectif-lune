@@ -8,7 +8,7 @@
 #include <GL/glu.h>
 #include <math.h>
 
-#include "customPreset.h"
+#include "custom_preset.h"
 
 
 /* Variables globales                           */
@@ -20,6 +20,7 @@ int n_lat=40;
 int n_long=20;
 float explosion_size=0.0F;
 float saturation=0.0F;
+float anim_saturation=0.0F;
 
 
 /* Fonction d'initialisation des parametres     */
@@ -43,31 +44,58 @@ void init (void) {
   glClearColor (0.1F, 0.3F, 0.2F, 1.0F);
 }
 
+static void ExplosionLayer(float size){
+  glPushMatrix();
+  glutSolidSphere(size, n_lat, n_long);
+  glPushMatrix();
+  float alpha=0.0F;
+  float beta=0.0F;
+  float gamma=0.0F;
+  for(int i=0;i<20;i++){
+    glRotatef(alpha,1.0F,0.0F,0.0F);
+    glRotatef(beta,0.0F,1.0F,0.0F);
+    glRotatef(gamma,0.0F,0.0F,1.0F);
+    alpha+=81.3F-i*8.0F;
+    beta+=26.2F+i*6.0F;
+    gamma+=9.3F+i;
+    glPushMatrix();
+    glTranslatef(size*0.88F,0.0F,0.0F);
+    glScalef(1.25F,1.75F,1.8F);
+    glutSolidSphere(size*0.2F, n_lat, n_long);
+    glPopMatrix();
+  }
+  glPopMatrix();
+  glPopMatrix();
+}
+
 static void Explosion(void) {
   glPushMatrix();
   glPushMatrix();
   float col_explosion[] = { 1.0F-(saturation*0.5F), 0.0F+(saturation*0.5F), 0.0F+(saturation*0.5F), 1.0F };
   glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col_explosion);
-  glutSolidSphere(1.5F*explosion_size, n_lat, n_long);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, col_explosion);
+  ExplosionLayer(1.0F*explosion_size);
   glPopMatrix();
-  glDisable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
-  for(int i=0;i<10;i++){
-    glPushMatrix();
-    float col2_explosion[] = { 1.0F-(saturation*0.5F), 0.1F*i+(saturation*(0.5F-i/10.0F)), 0.0F+(saturation*0.5F), 1.0F };
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col2_explosion);
-    glutSolidSphere((1.4F-0.075F*i)*explosion_size, n_lat, n_long);
-    glPopMatrix();
+  if (anim_saturation<1.0F){
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    for(int i=0;i<10;i++){
+      glPushMatrix();
+      float col2_explosion[] = { 1.0F-(saturation*0.5F), 0.1F*i+(saturation*(0.5F-i/10.0F)), 0.0F+(saturation*0.5F), 1.0F };
+      glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col2_explosion);
+      glutSolidSphere((0.9F-0.05F*i)*explosion_size,n_lat,n_long);
+      glPopMatrix();
+    }
+    for(int i=0;i<11;i++){
+      glPushMatrix();
+      float col3_explosion[] = { 1.0F-(saturation*0.5F), 1.0F-(saturation*0.5F), 0.1F*i+(saturation*(0.5F-i/10.0F)), 1.0F };
+      glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col3_explosion);
+      glutSolidSphere((0.4F-0.05F*i)*explosion_size,n_lat,n_long);
+      glPopMatrix();
+    }
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
   }
-  for(int i=0;i<11;i++){
-    glPushMatrix();
-    float col3_explosion[] = { 1.0F-(saturation*0.5F), 1.0F-(saturation*0.5F), 0.1F*i+(saturation*(0.5F-i/10.0F)), 1.0F };
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col3_explosion);
-    glutSolidSphere((0.65F-0.055F*i)*explosion_size, n_lat, n_long);
-    glPopMatrix();
-  }
-  glEnable(GL_DEPTH_TEST);
-  glDisable(GL_CULL_FACE);
   glPopMatrix();
 }
 
@@ -139,9 +167,9 @@ void reshape (int wx, int wy) {
 
 void idle2 (void) {
   printf ("I\n");
-  prst_animation += (float) prst_animationSpeed / 300.0F;
-  saturation=prst_animation*prst_animation;
-  if (prst_animation>1.0F){
+  anim_saturation += (float) prst_animationSpeed / 120.0F;
+  saturation=sqrt(anim_saturation);
+  if (anim_saturation>1.0F){
     saturation=1.0F;
     glutIdleFunc (NULL);
   }
@@ -152,10 +180,8 @@ void idle2 (void) {
 
 void idle (void) {
   printf ("I\n");
-  prst_animation += (float) prst_animationSpeed / 30.0F;
-  explosion_size=prst_animation;
-  if (prst_animation>1.0F){
-    prst_animation=0.0F;
+  explosion_size += (float) prst_animationSpeed / 30.0F;
+  if (explosion_size>1.0F){
     glutIdleFunc (idle2);
   }
   glMaterialfv (GL_FRONT, GL_DIFFUSE,  red);

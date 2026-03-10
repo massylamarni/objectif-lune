@@ -11,12 +11,12 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include "customPreset.h"
+#include "custom_preset.h"
 
  /* Variables globales                           */ 
 
 float black[] =     { 0.0F, 0.0F, 0.0F, 1.0F };
-float dark_grey[] = { 0.1F, 0.1F, 0.1F, 1.0F };
+float dark_grey[] = { 0.2F, 0.2F, 0.2F, 1.0F };
 float grey[] =      { 0.5F, 0.5F, 0.5F, 1.0F };
 float gold[] =      { 0.9F, 0.6F, 0.1F, 1.0F };
 float red[] =       { 1.0F, 0.0F, 0.0F, 1.0F };
@@ -24,6 +24,9 @@ float green[] =     { 0.0F, 1.0F, 0.0F, 1.0F };
 float blue[] =      { 0.0F, 0.0F, 1.0F, 1.0F };
 float rose[] =      { 1.0F, 0.9F, 0.9F, 1.0F };
 float white[] =     { 1.0F, 1.0F, 1.0F, 1.0F };
+
+float anim_LEM_offset = 0.0F;
+bool win_value = false;
 
  /* Fonction d'initialisation des paramètres     */ 
  /* OpenGL ne changeant pas ou peu au cours de   */ 
@@ -38,11 +41,11 @@ void material_gold () {
   glMaterialfv (GL_FRONT_AND_BACK, GL_EMISSION, black);
   glMaterialf  (GL_FRONT_AND_BACK, GL_SHININESS, 120.0F);
   
-  glColor4fv (gold);  
+  glColor4fv (gold);
 }
 
 void material_grey () {
-  //printf ("Material GOLD\n");
+  //printf ("Material GREY\n");
   
   glMaterialfv (GL_FRONT_AND_BACK, GL_DIFFUSE,  grey);
   glMaterialfv (GL_FRONT_AND_BACK, GL_SPECULAR, dark_grey);
@@ -50,7 +53,19 @@ void material_grey () {
   glMaterialfv (GL_FRONT_AND_BACK, GL_EMISSION, black);
   glMaterialf  (GL_FRONT_AND_BACK, GL_SHININESS, 100.0F);
   
-  glColor4fv (grey);  
+  glColor4fv (grey);
+}
+
+void material_dark_grey () {
+  //printf ("Material DARK GREY\n");
+  
+  glMaterialfv (GL_FRONT_AND_BACK, GL_DIFFUSE,  dark_grey);
+  glMaterialfv (GL_FRONT_AND_BACK, GL_SPECULAR, grey);
+  glMaterialfv (GL_FRONT_AND_BACK, GL_AMBIENT,  black);
+  glMaterialfv (GL_FRONT_AND_BACK, GL_EMISSION, black);
+  glMaterialf  (GL_FRONT_AND_BACK, GL_SHININESS, 70.0F);
+  
+  glColor4fv (dark_grey);
 }
 
 void material_red () {
@@ -62,7 +77,7 @@ void material_red () {
   glMaterialfv (GL_FRONT_AND_BACK, GL_EMISSION, black);
   glMaterialf  (GL_FRONT_AND_BACK, GL_SHININESS, 100.0F);
   
-  glColor3f (1.0F, 0.0F, 0.0F);  
+  glColor4fv (red);
 }
 
 void material_white () {
@@ -74,7 +89,7 @@ void material_white () {
   glMaterialfv (GL_FRONT_AND_BACK, GL_EMISSION, black);
   glMaterialf  (GL_FRONT_AND_BACK, GL_SHININESS, 50.0F);
   
-  glColor3f (1.0F, 1.0F, 1.0F);
+  glColor4fv (white);
 }
 
 void material_black () {
@@ -86,7 +101,7 @@ void material_black () {
   glMaterialfv (GL_FRONT_AND_BACK, GL_EMISSION, black);
   glMaterialf  (GL_FRONT_AND_BACK, GL_SHININESS, 100.0F);
   
-  glColor3f (0.0F, 0.0F, 0.0F);
+  glColor4fv (black);
 }
 
 void test_light () {
@@ -133,7 +148,7 @@ float textureRandom () {
 }
 
  /* Dessin de la Scène                           */
-void PolyFaceCylindre (float hauteur, float rayon, int ns) {
+void PolyFaceCylindre (float hauteur, float rayon, int ns, float randomTexture) {
   glPushMatrix ();
   
   float x_v, y_v, hauteur_step;
@@ -144,8 +159,43 @@ void PolyFaceCylindre (float hauteur, float rayon, int ns) {
     for (int j = 0 ; j <= ns ; j++) {
       x_v = rayon * sin (j * 2 * M_PI / ns);
       y_v = rayon * cos (j * 2 * M_PI / ns);
-      glNormal3d (x_v + textureRandom () * 0.1, textureRandom () * 0.2, y_v + textureRandom () * 0.1);
+      if (randomTexture) {
+        glNormal3d (x_v + textureRandom () * 0.1, textureRandom () * 0.2, y_v + textureRandom () * 0.1);
+      }
+      else {
+        glNormal3d (x_v, 0.0, y_v);
+      }
       glVertex3d (x_v, hauteur_step + hauteur / ns, y_v);
+      glVertex3d (x_v, hauteur_step, y_v);
+    }
+    glEnd ();
+  }
+  
+  glPopMatrix ();
+}
+
+void PolyFaceConeCut (float hauteur, float rayon_A, float rayon_B, int ns) {
+  glPushMatrix ();
+  
+  float cos_v, sin_v, x_v, y_v, hauteur_step;
+  float rayon_step = (rayon_B - rayon_A) / ns;
+  
+  for (int i = 0 ; i < ns ; i++) {
+    glBegin (GL_QUAD_STRIP);
+    hauteur_step = i * hauteur / ns;
+    for (int j = 0 ; j <= ns ; j++) {
+      
+      sin_v = sin (j * 2 * M_PI / ns);
+      cos_v = cos (j * 2 * M_PI / ns);
+      
+      x_v = (rayon_A + rayon_step * (i + 1)) * sin_v;
+      y_v = (rayon_A + rayon_step * (i + 1)) * cos_v;
+      
+      glNormal3d (sin (j * 2 * M_PI / ns), -(rayon_B - rayon_A) / hauteur, cos (j * 2 * M_PI / ns));
+      //glNormal3d (0.0F, rayon_B - rayon_A, -hauteur);
+      glVertex3d (x_v, hauteur_step + hauteur / ns, y_v);
+      x_v = (rayon_A + rayon_step * i) * sin_v;
+      y_v = (rayon_A + rayon_step * i) * cos_v;
       glVertex3d (x_v, hauteur_step, y_v);
     }
     glEnd ();
@@ -257,7 +307,38 @@ void PolyFacePrism (int face, int total_face, float height, float length_A, floa
   glPopMatrix ();
 }
 
-
+void PolyFaceSurface (float size_x, float size_y, int nbPolygon_x, int nbPolygon_y, bool randomTexture) {
+  glPushMatrix ();
+  
+  float step_x = size_x / nbPolygon_x;
+  float step_y = size_y / nbPolygon_y;
+  if (randomTexture) {
+    for (int x = 0 ; x < nbPolygon_x ; x++) {
+      glBegin (GL_QUAD_STRIP);
+      for (int y = 0 ; y <= nbPolygon_y ; y++) {
+        glNormal3f (textureRandom () * 2, textureRandom () * 2, 1.0F - textureRandom () / 2);
+        glVertex3f (-size_x / 2 + x * step_x,       -size_y / 2 + y * step_y, 0.0F);
+        
+        glNormal3f (textureRandom () * 2, textureRandom () * 2, 1.0F - textureRandom () / 2);
+        glVertex3f (-size_x / 2 + (x + 1) * step_x, -size_y / 2 + y * step_y, 0.0F);
+      }
+      glEnd ();
+    }
+  }
+  else {
+    glNormal3f (0.0F, 0.0F, 1.0F);
+    for (int x = 0 ; x < nbPolygon_x ; x++) {
+      glBegin (GL_QUAD_STRIP);
+      for (int y = 0 ; y <= nbPolygon_y ; y++) {
+        glVertex3f (-size_x / 2 + x * step_x,       -size_y / 2 + y * step_y, 0.0F);
+        glVertex3f (-size_x / 2 + (x + 1) * step_x, -size_y / 2 + y * step_y, 0.0F);
+      }
+      glEnd ();
+    }
+  }
+  
+  glPopMatrix ();
+}
 
 /* MÉMO
   for (int i = 0 ; i < XXX ; i++) {}
@@ -276,21 +357,35 @@ void PolyFacePrism (int face, int total_face, float height, float length_A, floa
   glutSolidSphere (0.5, 16, 16);
 */
 
+float LEM_anim () {
+  if (win_value) {
+    if (prst_animation - anim_LEM_offset > 100) {
+      return -60.0F;
+    }
+    return (prst_animation - anim_LEM_offset) * -1.8F + 120.0F;
+  }
+  else {
+    return 120.0F;
+  }
+}
+
 void LEM (void) {
   glPushMatrix ();
   
   material_gold ();
-  PolyFacePrism (8, 8, 1.0F, 0.5F * (1 + sqrt (2)), 0.5F * (1 + sqrt (2)), prst_nbPolygon, true, true); // Corps
+  PolyFacePrism (8, 8, 1.0F, 1.0823922F, 1.0823922F, prst_nbPolygon, true, true); // Corps
+  // 1.0823922F == 1 / cos (22.5 * 2 * M_PI / 360) ou le rayon du cercle inscrit d'un octogone de cercle circonscris de 1
   
+  glRotatef (22.5F, 0.0F, 1.0F, 0.0F);
   for (int i = 0 ; i < 4 ; i++) { // Pieds
     glPushMatrix ();
     glRotatef (i * 90.0F, 0.0F, 1.0F, 0.0F);
-    glTranslatef (1.5F, 0.15F, 0.0F);
-    PolyFaceCylindre (0.5F, 0.05F, prst_nbPolygon);
+    glTranslatef (1.3F, 0.15F, 0.0F);
+    PolyFaceCylindre (0.5F, 0.05F, prst_nbPolygon, true);
     
     glPushMatrix ();
     glRotatef (105.0F, 0.0F, 0.0F, 1.0F);
-    PolyFaceCylindre (0.35F, 0.05F, prst_nbPolygon);
+    PolyFaceCylindre (0.35F, 0.05F, prst_nbPolygon, true);
     glPopMatrix ();
     
     {
@@ -302,21 +397,21 @@ void LEM (void) {
       glutSolidSphere (0.05, prst_nbPolygon / 2, prst_nbPolygon / 2);
       
       glRotatef (50.0F, 0.0F, 0.0F, 1.0F);
-      PolyFaceCylindre (0.45F, 0.05F, prst_nbPolygon);
+      PolyFaceCylindre (0.45F, 0.05F, prst_nbPolygon, true);
       glPopMatrix ();
       
       glRotatef (-150.0F, 0.0F, 0.0F, 1.0F);
-      PolyFaceCylindre (1.0F, 0.05F, prst_nbPolygon);
+      PolyFaceCylindre (1.0F, 0.05F, prst_nbPolygon, true);
       
       glPopMatrix ();
     }
     
     glRotatef (-125.0F, 0.0F, 0.0F, 1.0F);
-    PolyFaceCylindre (0.6F, 0.05F, prst_nbPolygon);
+    PolyFaceCylindre (0.6F, 0.05F, prst_nbPolygon, true);
     
     glTranslatef (0.0F, 0.6F, 0.0F);
     glRotatef (-35.0F, 0.0F, 0.0F, 1.0F);
-    PolyFaceCylindre (0.2F, 0.05F, prst_nbPolygon);
+    PolyFaceCylindre (0.2F, 0.05F, prst_nbPolygon, true);
     
     glTranslatef (0.0F, 0.175F, 0.0F);
     glRotatef (-20.0F, 0.0F, 0.0F, 1.0F);
@@ -329,18 +424,119 @@ void LEM (void) {
   
   glPushMatrix (); // Tête
   
-  glRotatef (22.5F, 0.0F, 1.0F, 0.0F);
   glTranslatef (0.0F, 1.0F, 1.0F);
   
-  //glutSolidSphere (1.0F, 16, 8);
   glRotatef (-90.0F, 1.0F, 0.0F, 0.0F);
   PolyFacePrism (8, 16, 0.5F, 0.2F, 0.6F, prst_nbPolygon / 2, true, false);
   glTranslatef (0.0F, 0.5F, 0.0F);
   PolyFacePrism (8, 16, 0.25F, 0.6F, 1.0F, prst_nbPolygon / 2, false, false);
   glTranslatef (0.0F, 0.25F, 0.0F);
   PolyFacePrism (8, 16, 0.5F, 1.0F, 1.0F, prst_nbPolygon / 2, false, false);
-  glTranslatef (0.0F, 0.5F, 0.0F);
+  glTranslatef (0.0F, 0.5F, 0.0F);//*/
   PolyFacePrism (8, 16, 0.25F, 1.0F, 0.6F, prst_nbPolygon / 2, true, false);
+  glTranslatef (0.0F, 0.25F, 0.0F);
+  
+  glPushMatrix ();
+  glTranslatef (0.0F, 0.125F, 0.3F);
+  PolyFaceSurface (0.8F, 0.25F, prst_nbPolygon, prst_nbPolygon / 2, false);
+  glPopMatrix ();
+  glPushMatrix ();
+  glTranslatef (0.0F, 0.375F, 0.3F);
+  PolyFaceSurface (0.4F, 0.25F, prst_nbPolygon / 2, prst_nbPolygon / 2, false);
+  glPopMatrix ();
+  glPushMatrix ();
+  glTranslatef (0.0F, 0.5F, 0.15F);
+  glRotatef (-90.0F, 1.0F, 0.0F, 0.0F);
+  PolyFaceSurface (0.4F, 0.3F, prst_nbPolygon / 2, prst_nbPolygon / 2, false);
+  glPopMatrix ();
+  glPushMatrix ();
+  glTranslatef (0.0F, 0.25F, 0.15F);
+  glRotatef (-90.0F, 1.0F, 0.0F, 0.0F);
+  PolyFaceSurface (0.8F, 0.3F, prst_nbPolygon, prst_nbPolygon / 2, false);
+  glPopMatrix ();
+  glPushMatrix ();
+  glTranslatef (0.4F, 0.125F, 0.15F);
+  glRotatef (90.0F, 0.0F, 1.0F, 0.0F);
+  PolyFaceSurface (0.3F, 0.25F, prst_nbPolygon / 2, prst_nbPolygon / 2, false);
+  glPopMatrix ();
+  glPushMatrix ();
+  glTranslatef (-0.4F, 0.125F, 0.15F);
+  glRotatef (-90.0F, 0.0F, 1.0F, 0.0F);
+  PolyFaceSurface (0.3F, 0.25F, prst_nbPolygon / 2, prst_nbPolygon / 2, false);
+  glPopMatrix ();
+  glPushMatrix ();
+  glTranslatef (0.2F, 0.375F, 0.15F);
+  glRotatef (90.0F, 0.0F, 1.0F, 0.0F);
+  PolyFaceSurface (0.3F, 0.25F, prst_nbPolygon / 2, prst_nbPolygon / 2, false);
+  glPopMatrix ();
+  glPushMatrix ();
+  glTranslatef (-0.2F, 0.375F, 0.15F);
+  glRotatef (-90.0F, 0.0F, 1.0F, 0.0F);
+  PolyFaceSurface (0.3F, 0.25F, prst_nbPolygon / 2, prst_nbPolygon / 2, false);
+  glPopMatrix ();
+  
+  glPushMatrix ();
+  glTranslatef (0.0F, 0.125F, 0.3F + tan (30.0 * 2 * M_PI / 360) / 8);
+  glRotatef (-30.0F, 1.0F, 0.0F, 0.0F);
+  PolyFaceSurface (0.4F, 1.0F / (cos (30.0 * 2 * M_PI / 360) * 4.0F), prst_nbPolygon / 2, prst_nbPolygon / 2, false);
+  glPushMatrix ();
+  glTranslatef (0.2F, 0.0F, -0.15F);
+  glRotatef (90.0F, 0.0F, 1.0F, 0.0F);
+  PolyFaceSurface (0.3F, 1.0F / (cos (30.0 * 2 * M_PI / 360) * 4.0F), prst_nbPolygon / 2, prst_nbPolygon / 2, false);
+  glPopMatrix ();
+  glPushMatrix ();
+  glTranslatef (-0.2F, 0.0F, -0.15F);
+  glRotatef (-90.0F, 0.0F, 1.0F, 0.0F);
+  PolyFaceSurface (0.3F, 1.0F / (cos (30.0 * 2 * M_PI / 360) * 4.0F), prst_nbPolygon / 2, prst_nbPolygon / 2, false);
+  glPopMatrix ();
+  glPopMatrix ();
+  
+  glPopMatrix ();
+  
+  glPushMatrix ();
+  material_dark_grey (); // Tuyère
+  glRotatef (180.0F, 1.0F, 0.0F, 0.0F);
+  PolyFaceConeCut (0.3F, 0.3F, 0.4F, prst_nbPolygon);
+  glRotatef (180.0F, 1.0F, 0.0F, 0.0F);
+  PolyFaceConeCut (-0.1F, 0.0F, -0.2F, prst_nbPolygon);
+  glTranslatef (0.0F, -0.1F, 0.0F);
+  PolyFaceConeCut (-0.2F, -0.2F, -0.4F, prst_nbPolygon);
+  glPopMatrix ();
+
+  glPushMatrix ();
+  material_grey (); // Échelle
+  glRotatef (90.0F, 0.0F, 1.0F, 0.0F);
+  glTranslatef (1.3F, 0.8F, -0.1F);
+  
+  glPushMatrix ();
+  glRotatef (90.0F, 0.0F, 0.0F, 1.0F);
+  PolyFaceCylindre (0.3F, 0.015F, 4, false);
+  glTranslatef (0.0F, 0.0F, 0.2F);
+  PolyFaceCylindre (0.3F, 0.015F, 6, false);
+  glPopMatrix ();
+  
+  glRotatef (LEM_anim (), 0.0F, 0.0F, 1.0F);
+  glPushMatrix ();
+  glRotatef (-90.0F, 0.0F, 0.0F, 1.0F);
+  PolyFaceCylindre (1.2F, 0.015F, 4, false);
+  glTranslatef (0.0F, 0.0F, 0.2F);
+  PolyFaceCylindre (1.2F, 0.015F, 6, false);
+  glPopMatrix ();
+  
+  for (int i = 0 ; i < 4 ; i++) {
+    glPushMatrix ();
+    glTranslatef (1.2F * (i / 2), 0.0F, 0.2F * (i % 2));
+    glutSolidCube (0.05);
+    glPopMatrix ();
+  }
+  
+  glRotatef (90.0F, 1.0F, 0.0F, 0.0F);
+  for (int i = 0 ; i <= 8 ; i++) {
+    glPushMatrix ();
+    glTranslatef (0.15F * i, 0.0F, 0.0F);
+    PolyFaceCylindre (0.2F, 0.01F, 4, false);
+    glPopMatrix ();
+  }
   glPopMatrix ();
   
   glPopMatrix ();
@@ -350,6 +546,7 @@ void scene (void) {
   glPushMatrix ();
   
   glTranslatef (0.0F,-1.0F, 0.0F);
+  
   LEM ();
   
   glPopMatrix ();
@@ -376,7 +573,7 @@ void display (void) {
   glPushMatrix ();
   
   glTranslatef(0.0F, 0.0F, -5.0F);
-  test_light ();
+  //test_light ();
   glRotatef (prst_alpha, 1.0F, 0.0F, 0.0F);
   glRotatef (prst_beta, 0.0F, 1.0F, 0.0F);
   glScalef (prst_size, prst_size, prst_size);
@@ -416,14 +613,12 @@ void reshape (int wx, int wy) {
 
 void idle (void) {
   printf ("I\n");
-  prst_animation += (float) prst_animationSpeed / 5;
+  prst_animation += ((float) prst_animationSpeed) / 5.0F;
   if (prst_rotation && prst_rotationSpeed != 0) {
     prst_beta += (float) prst_rotationSpeed / 10;
     //sleep (1); // Anti-Lag
     glutPostRedisplay ();
   }
-  glMaterialfv (GL_FRONT, GL_DIFFUSE,  red);
-  glMaterialfv (GL_BACK, GL_DIFFUSE,  red);
 }
 
  /* Fonction exécutée lors de l'appui            */ 
@@ -438,10 +633,14 @@ void keyboard (unsigned char key, int x, int y) {
   
   keyboardAssistIntLoop (&prst_sceneId, key, 'M', 'm', 0, 3);
   
-  printf("Bool %d\n",
-  keyboardAssistFloatProportional (&prst_rotationSpeed, key, (char) GLUT_KEY_INSERT, 0x7f, -3600.0F, 3600.0F, 0.05F, 0.05F)
-  );
-  if (keyboardAssistBool (&prst_animated, key, 0X0D)) { // Entrée - Pause Animation
+  printf("Bool %d\n", keyboardAssistFloatProportional (&prst_rotationSpeed, key, (char) GLUT_KEY_INSERT, 0x7f, -3600.0F, 3600.0F, 0.05F, 0.05F));
+  if (key == 'w') { // Active Win condition
+    win_value = !win_value;
+    if (win_value) {
+      anim_LEM_offset = prst_animation;
+    }
+  }
+  else if (keyboardAssistBool (&prst_animated, key, 0X0D)) { // Entrée - Pause Animation
     printf ("Animation\n");    
     if (prst_animated) {
       glutIdleFunc (NULL);
@@ -529,53 +728,13 @@ void mouse (int button, int state, int x, int y) {
 
 void mouseMotion (int x, int y) {
   printf ("MM %4d %4d\n", x, y);
-  //prst_beta += x - prst_xMouse;
-  //prst_alpha += y - prst_yMouse;
+  prst_beta += x - prst_xMouse;
+  prst_alpha += y - prst_yMouse;
   prst_xMouse = x;
   prst_yMouse = y;
   glutPostRedisplay ();
 }
 
- /* Fonction executee lors du passage            */ 
- /* de la souris sur la fenetre                  */ 
- /* sans bouton presse                           */ 
-
-/*void passiveMouseMotion (int x, int y) {
-  printf ("PM %4d %4d\n", x, y);
-  glutPostRedisplay ();
-}*/
-
- /* Fonction exécutée automatiquement            */ 
- /* lors de l'exécution de la fonction exit ()   */ 
-
-void clean (void) {
-  printf ("Bye\n");
-}
-
- /* Fonction principale                          */ 
-
 int main (int argc, char **argv) {
-
-  atexit (clean);
-
-  glutInit (&argc, argv);
-  glutInitDisplayMode (GLUT_RGBA|GLUT_DEPTH|GLUT_DOUBLE);
-  glutInitWindowSize (prst_wTx, prst_wTy);
-  glutInitWindowPosition (prst_wPx, prst_wPy);
-  glutCreateWindow ("Gestion evenementielle de GLUt");
-  init ();
-  
   material_red ();
-  
-  glutKeyboardFunc (keyboard);
-  glutSpecialFunc (special);
-  glutMouseFunc (mouse);
-  glutMotionFunc (mouseMotion);
-  //glutPassiveMotionFunc (passiveMouseMotion);
-  glutReshapeFunc (reshape);
-  glutIdleFunc (idle);
-  glutIdleFunc (NULL);
-  glutDisplayFunc (display);
-  glutMainLoop ();
-  return (0); // Won't be reach cause the normal way to stop is exit the MainLoop
 }
