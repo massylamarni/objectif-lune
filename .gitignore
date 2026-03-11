@@ -36,6 +36,7 @@
 *.exe
 *.out
 *.app
+prog
 
 # debug information files
 *.dwo
@@ -43,3 +44,4 @@
 # Model Testing Executables
 LEM
 Explosion
+
