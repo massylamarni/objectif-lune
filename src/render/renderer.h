@@ -18,17 +18,13 @@ static int SCREEN_POSITION_X = 50;
 static int SCREEN_POSITION_Y = 50;
 
 void init(int *argc, char **argv);
-static void quad(void);
-static void scene(void);
-void display(void render_hook(void));
-static void reshape(int wx, int wy);
-static void idle(void);
-static void keyboard(unsigned char key, int x, int y);
-static void special(int specialKey, int x, int y);
-static void mouse(int button, int state, int x, int y);
-static void mouseMotion(int x, int y);
-static void passiveMouseMotion(int x, int y);
+static void set_perspective();
+static void display_start_frame();
+static void display_end_frame();
+void display(void display_hook(void));
+void idle(void update_hook(void));
 static void clean(void);
+static void reshape(int wx, int wy);
 } // namespace render
 
 #endif

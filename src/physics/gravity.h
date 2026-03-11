@@ -3,7 +3,6 @@
 
 #include "../output/logs.h"
 #include "../world/planet.h"
-#include "../world/world.h"
 #include "rigidbody.h"
 #include <cmath>
 #include <cstdio>

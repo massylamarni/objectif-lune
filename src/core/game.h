@@ -24,8 +24,9 @@ struct GameState {
 void game_init(int width, int height);
 void game_update();
 void game_update_callback();
+void game_update_hook();
 void game_display();
 void game_display_callback();
-void game_render_hook();
+void game_display_hook();
 
 #endif

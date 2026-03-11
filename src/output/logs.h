@@ -4,12 +4,12 @@
 #define LOG(msg, ...) output::log(output::get_logger(), msg, ##__VA_ARGS__)
 #define LOG_RENDER(msg, ...) output::log_render(output::get_logger(), msg, ##__VA_ARGS__)
 #define LOG_ERROR(msg, ...) output::log_error(output::get_logger(), msg, ##__VA_ARGS__)
-#define DEBOUNCE_CAP 1048576
-#define LOGD(msg, ...)                                                              \
+#define DEBOUNCE_CAP 1048576      // Needs to be power of 2
+#define LOGD(msg, ...)                                                         \
   do {                                                                         \
     static int _ctr = 0;                                                       \
     if ((_ctr++ & (DEBOUNCE_CAP - 1)) == 0)                                    \
-      output::log(output::get_logger(), msg, ##__VA_ARGS__);                                  \
+      output::log(output::get_logger(), msg, ##__VA_ARGS__);                   \
   } while (0)
 
 #include <errno.h>

@@ -65,17 +65,20 @@ static void display_end_frame() {
     printf("Attention erreur %d\n", error);
 }
 
-void display(void render_hook(void)) {
+void display(void display_hook(void)) {
   display_start_frame();
   glPushMatrix();
 
-  render_hook();
+  display_hook();
 
   glPopMatrix();
   display_end_frame();
 }
 
-static void idle(void) { glutPostRedisplay(); }
+void idle(void render_hook(void)) {
+  render_hook();
+  glutPostRedisplay();
+}
 
 static void clean(void) {
   // printf("Bye\n");

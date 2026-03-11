@@ -1,4 +1,5 @@
 #include "game.h"
+#include <cstdio>
 
 static GameState gst;
 
@@ -17,8 +18,12 @@ void game_update() {
 }
 
 void game_update_callback() {
+  render::idle(game_update_hook);
+}
+
+void game_update_hook() {
   core::time_update();
-  static float dt = core::time_delta();
+  float dt = core::time_delta();
 
   physics::RigidBody body;
 
@@ -29,7 +34,6 @@ void game_update_callback() {
 
   physics::apply_planet_gravity(body, gst.earth);
   physics::apply_planet_gravity(body, gst.moon);
-
   physics::rb_integrate(body, dt);
 
   gst.ship.position = body.position;
@@ -48,12 +52,11 @@ void game_display() {
   glutDisplayFunc(game_display_callback);
 }
 
-
 void game_display_callback() {
-  render::display(game_render_hook);
+  render::display(game_display_hook);
 }
 
-void game_render_hook() {
+void game_display_hook() {
   render::camera_apply(gst.camera);
 
   render::draw_planet(gst.earth);

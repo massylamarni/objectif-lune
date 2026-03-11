@@ -2,15 +2,15 @@
 #define PHYSICS_RIGIDBODY
 
 #include "../math/vec3.h"
+#include "../world/world.h"
+#include "../output/logs.h"
 
 namespace physics {
 struct RigidBody {
   int id;
   Vec3 position;
   Vec3 velocity;
-
   float mass;
-
   Vec3 accumulated_force;
 };
 
