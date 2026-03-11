@@ -1,6 +1,6 @@
 #include "logs.h"
 
-namespace logs {
+namespace output {
 static void log_to_file(FILE *file, const char *fmt, va_list args) {
   if (!file)
     return;
@@ -20,9 +20,9 @@ static void log_to_file(FILE *file, const char *fmt, va_list args) {
 
 Logger init() {
   Logger logger;
-  logger.general = fopen("general.log", "a");
-  logger.render = fopen("render.log", "a");
-  logger.errors = fopen("errors.log", "a");
+  logger.general = fopen("logs/general.log", "w");
+  logger.render = fopen("logs/render.log", "w");
+  logger.errors = fopen("logs/errors.log", "w");
 
   if (!logger.general) {
     printf("Failed to open general log file, exiting...\n");
@@ -82,4 +82,14 @@ void log_error(Logger *logger, const char *fmt, ...) {
   log_to_file(logger->errors, fmt, args);
   va_end(args);
 }
-} // namespace render
+
+output::Logger *get_logger() {
+  static output::Logger logger;
+  static bool initialized = false;
+  if (!initialized) {
+    logger = output::init();
+    initialized = true;
+  }
+  return &logger;
+}
+} // namespace output

@@ -17,7 +17,7 @@ struct Ship {
   bool thrusting;
 };
 
-Ship create_ship(const Vec3 &position);
+Ship create_ship(const Vec3 position);
 void ship_update(Ship &ship, float dt);
 void ship_apply_thrust(Ship &ship, float dt);
 Vec3 ship_forward(const Ship &ship);

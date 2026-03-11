@@ -5,6 +5,7 @@
 
 namespace physics {
 struct RigidBody {
+  int id;
   Vec3 position;
   Vec3 velocity;
 

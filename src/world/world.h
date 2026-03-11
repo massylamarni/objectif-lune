@@ -1,17 +1,29 @@
 #include "../math/vec3.h"
 
-const Vec3 EARTH_POSITION = Vec3(0, 0, 0),
-           MOON_POSITION = Vec3(10.0f, 0, 0),
-           SHIP_POSITION = Vec3(-10.0, 0, 0);
+#define EARTH_ID 0
+#define MOON_ID 1
+#define RIGID_BODY_ID 2
+#define EARTH_ID_RES "earth"
+#define MOON_ID_RES "moon"
+#define RIGIDBODY_ID_RES "rigidbody"
 
-const float EARTH_RADIUS = 5.0f, EARTH_GRAVITY = 50.0f,
-            MOON_RADIUS = 3.0f, MOON_GRAVITY = 8.0f;
+#define EARTH_POSITION Vec3(0, 0, 0)
+#define EARTH_RADIUS 5.0f
+#define EARTH_GRAVITY 50.0f
 
-const Vec3 SHIP_CAMERA_OFFSET = Vec3(0.0f, 3.0f, 8.0f);
+#define MOON_POSITION Vec3(10.0f, 0, 0)
+#define MOON_RADIUS 3.0f
+#define MOON_GRAVITY 8.0f
 
-const float SHIP_THRUST_POWER = 20.0f,
-            SHIP_MASS = 1.0f;
+#define SHIP_POSITION Vec3(-10.0, 0, 0)
+#define SHIP_CAMERA_OFFSET Vec3(0.0f, 3.0f, 8.0f)
+#define SHIP_THRUST_POWER 20.0f
+#define SHIP_MASS 1.0f
 
-const Vec3 CAMERA_POSITION = Vec3(0, 0, 30),
-           CAMERA_TARGET = Vec3(0, 0, 0),
-           CAMERA_UP = Vec3(0, 1, 0);
+#define CAMERA_POSITION Vec3(0, 0, 30)
+#define CAMERA_TARGET Vec3(0, 0, 0)
+#define CAMERA_UP Vec3(0, 1, 0)
+
+static const char ID_MAPPING[8][32] = {
+  "earth", "moon", "rigidbody"
+};

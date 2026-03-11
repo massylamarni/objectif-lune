@@ -3,6 +3,7 @@
 
 #include "../input/input.h"
 #include "../output/logs.h"
+#include "../output/debug.h"
 #include "../physics/collision.h"
 #include "../physics/gravity.h"
 #include "../render/camera.h"
@@ -11,7 +12,6 @@
 #include "../render/utils.h"
 #include "../world/planet.h"
 #include "../world/ship.h"
-#include "../world/world.h"
 #include "time.h"
 
 struct GameState {

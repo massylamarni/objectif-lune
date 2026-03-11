@@ -3,12 +3,10 @@
 static GameState gst;
 
 void game_init(int width, int height) {
-  gst.earth = world::create_planet(EARTH_POSITION, EARTH_RADIUS, EARTH_GRAVITY);
-  gst.moon = world::create_planet(MOON_POSITION, MOON_RADIUS, MOON_GRAVITY);
+  gst.earth = world::create_planet(EARTH_ID, EARTH_POSITION, EARTH_RADIUS, EARTH_GRAVITY);
+  gst.moon = world::create_planet(MOON_ID, MOON_POSITION, MOON_RADIUS, MOON_GRAVITY);
   gst.ship = world::create_ship(SHIP_POSITION);
-  gst.camera.position = CAMERA_POSITION;
-  gst.camera.target = CAMERA_TARGET;
-  gst.camera.up = CAMERA_UP;
+  gst.camera = render::create_camera(CAMERA_POSITION, CAMERA_TARGET, CAMERA_UP);
 
   game_display();
   game_update();
@@ -21,10 +19,10 @@ void game_update() {
 void game_update_callback() {
   core::time_update();
   static float dt = core::time_delta();
-  static logs::Logger logger = logs::init();
 
   physics::RigidBody body;
 
+  body.id = RIGID_BODY_ID;
   body.position = gst.ship.position;
   body.velocity = gst.ship.velocity;
   body.mass = gst.ship.mass;
@@ -62,12 +60,5 @@ void game_render_hook() {
   render::draw_planet(gst.moon);
 
   render::draw_ship(gst.ship);
-
-  
-  char buf[128];
-  snprintf(buf, sizeof(buf), "cam (%.1f, %.1f, %.1f)",
-           gst.camera.position.x, gst.camera.position.y, gst.camera.position.z);
-  const int margin = 30;
-  int textWidth = 200;
-  render::draw_text(buf, render::SCREEN_WIDTH - textWidth - margin, render::SCREEN_HEIGHT - margin);
+  output::debug_camera(gst.camera.position.x, gst.camera.position.y, gst.camera.position.z);
 }

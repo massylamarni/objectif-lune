@@ -2,7 +2,7 @@
 #include "world.h"
 
 namespace world {
-Ship create_ship(const Vec3 &position) {
+Ship create_ship(const Vec3 position) {
   Ship ship;
 
   ship.position = position;
