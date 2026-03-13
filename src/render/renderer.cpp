@@ -45,7 +45,7 @@ static void set_perspective() {
 
   const float NATURAL_PERSPECTIVE = 60.0f;
   gluPerspective(NATURAL_PERSPECTIVE,
-                 (double)render::SCREEN_WIDTH / (double)render::SCREEN_HEIGHT,
+                 (double)render::SCREEN_HEIGHT / (double)render::SCREEN_WIDTH,
                  0.1, 1000000.0);
 
   glMatrixMode(GL_MODELVIEW);

@@ -735,6 +735,46 @@ void mouseMotion (int x, int y) {
   glutPostRedisplay ();
 }
 
+ /* Fonction executee lors du passage            */ 
+ /* de la souris sur la fenetre                  */ 
+ /* sans bouton presse                           */ 
+
+/*void passiveMouseMotion (int x, int y) {
+  printf ("PM %4d %4d\n", x, y);
+  glutPostRedisplay ();
+}*/
+
+ /* Fonction exécutée automatiquement            */ 
+ /* lors de l'exécution de la fonction exit ()   */ 
+
+void clean (void) {
+  printf ("Bye\n");
+}
+
+ /* Fonction principale                          */ 
+
 int main (int argc, char **argv) {
+
+  atexit (clean);
+
+  glutInit (&argc, argv);
+  glutInitDisplayMode (GLUT_RGBA|GLUT_DEPTH|GLUT_DOUBLE);
+  glutInitWindowSize (prst_wTx, prst_wTy);
+  glutInitWindowPosition (prst_wPx, prst_wPy);
+  glutCreateWindow ("Gestion evenementielle de GLUt");
+  init ();
+  
   material_red ();
+  
+  glutKeyboardFunc (keyboard);
+  glutSpecialFunc (special);
+  glutMouseFunc (mouse);
+  glutMotionFunc (mouseMotion);
+  //glutPassiveMotionFunc (passiveMouseMotion);
+  glutReshapeFunc (reshape);
+  glutIdleFunc (idle);
+  //glutIdleFunc (NULL);
+  glutDisplayFunc (display);
+  glutMainLoop ();
+  return (0); // Won't be reach cause the normal way to stop is exit the MainLoop
 }

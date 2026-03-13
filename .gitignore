@@ -36,12 +36,12 @@
 *.exe
 *.out
 *.app
-prog
+build
 
 # debug information files
 *.dwo
 
 # Model Testing Executables
-LEM
-Explosion
+assets/models/LEM
+assets/models/Explosion
 
