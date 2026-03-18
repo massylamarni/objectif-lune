@@ -1,21 +1,11 @@
 #include "renderer.h"
+#include "renderer_settings.h"
 #include <GL/freeglut_std.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
 namespace render {
-static float alpha_x = 0.0F;
-static float alpha_y = 0.0F;
-static float alpha_z = 0.0F;
-
-static bool gl_line_toggle = false;
-static bool gl_depth_test_toggle = true;
-static bool gl_lighting_toggle = true;
-static int prev_x = 0;
-static int prev_y = 0;
-static int poly_count_step = 1;
-static int poly_count_x = 72;
-static int poly_count_y = 180;
+static render_settings rs = {0};
 
 void init(int *argc, char **argv) {
   atexit(clean);
@@ -25,9 +15,6 @@ void init(int *argc, char **argv) {
   glutInitWindowPosition(render::SCREEN_POSITION_X, render::SCREEN_POSITION_Y);
   glutCreateWindow("Gestion événementielle de GLUt");
 
-  gl_lighting_toggle ? glEnable(GL_LIGHTING) : glDisable(GL_LIGHTING);
-  gl_depth_test_toggle ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST);
-  glEnable(GL_LIGHT0);
   glDepthFunc(GL_LESS);
   glEnable(GL_NORMALIZE);
   // glEnable(GL_CULL_FACE);
@@ -37,6 +24,20 @@ void init(int *argc, char **argv) {
 
   glutReshapeFunc(reshape);
   // glutMainLoop();
+}
+
+static void set_lighting() {
+  float white[] =     { 1.0F, 1.0F, 1.0F, 1.0F };
+
+  glEnable(GL_LIGHT0);
+  glLightfv (GL_LIGHT0, GL_DIFFUSE,  white);
+  glLightfv (GL_LIGHT0, GL_SPECULAR, white);
+  glLightfv (GL_LIGHT0, GL_AMBIENT,  white);
+  glLightfv (GL_LIGHT0, GL_AMBIENT,  white);
+}
+
+static void set_material() {
+  glColorMaterial (GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 }
 
 static void set_perspective() {
@@ -54,7 +55,6 @@ static void set_perspective() {
 
 static void display_start_frame() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glPolygonMode(GL_FRONT_AND_BACK, gl_line_toggle ? GL_LINE : GL_FILL);
 }
 
 static void display_end_frame() {
