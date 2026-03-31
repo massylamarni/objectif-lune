@@ -16,6 +16,7 @@ static int SCREEN_WIDTH = 500;
 static int SCREEN_HEIGHT = 500;
 static int SCREEN_POSITION_X = 50;
 static int SCREEN_POSITION_Y = 50;
+static float NATURAL_PERSPECTIVE = 60.0f;
 
 void init(int *argc, char **argv);
 static void set_perspective();

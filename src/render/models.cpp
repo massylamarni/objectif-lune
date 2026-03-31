@@ -1,5 +1,5 @@
 #include "models.h"
-#include "../../assets/models/custom_preset.h"
+#include "../../assets/models/lem.h"
 
 namespace render {
 void draw_planet(const world::Planet &planet) {
@@ -19,6 +19,14 @@ void draw_ship(const world::Ship &ship) {
 
   glutSolidCube(1);
 
+  glPopMatrix();
+}
+
+void draw_lem() {
+  glPushMatrix();
+  glTranslatef(0.0F, -1.0F, 0.0F);
+
+  LEM();
   glPopMatrix();
 }
 } // namespace render

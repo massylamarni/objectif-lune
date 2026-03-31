@@ -26,25 +26,15 @@ void init(int *argc, char **argv) {
   // glutMainLoop();
 }
 
-static void set_lighting() {
-  float white[] =     { 1.0F, 1.0F, 1.0F, 1.0F };
-
-  glEnable(GL_LIGHT0);
-  glLightfv (GL_LIGHT0, GL_DIFFUSE,  white);
-  glLightfv (GL_LIGHT0, GL_SPECULAR, white);
-  glLightfv (GL_LIGHT0, GL_AMBIENT,  white);
-  glLightfv (GL_LIGHT0, GL_AMBIENT,  white);
-}
-
-static void set_material() {
-  glColorMaterial (GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-}
-
 static void set_perspective() {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
+  /*
+    double ratio = (double)w/h;
+    if (ratio < 1.0) gluPerspective(12.0/ratio, ratio, 90, 110);
+    else gluPerspective(12.0, ratio, 90, 110);
+  */
 
-  const float NATURAL_PERSPECTIVE = 60.0f;
   gluPerspective(NATURAL_PERSPECTIVE,
                  (double)render::SCREEN_HEIGHT / (double)render::SCREEN_WIDTH,
                  0.1, 1000000.0);

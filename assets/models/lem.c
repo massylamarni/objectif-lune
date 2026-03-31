@@ -1,17 +1,4 @@
-/* Modélisation d'un atterisseur spatial        */
-/*                                              */
-/* Projet Objectif Lune                         */
-
-#include <math.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
-
-#include "custom_preset.h"
+#include "lem.h"
 
 /* Variables globales                           */
 
@@ -556,86 +543,8 @@ void LEM(void) {
   glPopMatrix();
 }
 
-void scene(void) {
-  glPushMatrix();
 
-  glTranslatef(0.0F, -1.0F, 0.0F);
 
-  LEM();
-
-  glPopMatrix();
-}
-
-/* Fonction executee lors d'un rafraichissement */
-/* de la fenetre de dessin                      */
-
-void display(void) {
-  /* Préparation                                  */
-  printf("D\n");
-
-  if (prst_bufferBitMode == 0) {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  } else if (prst_bufferBitMode == 1) {
-    glClear(GL_DEPTH_BUFFER_BIT);
-  } else if (prst_bufferBitMode == 2) {
-    glClear(GL_COLOR_BUFFER_BIT);
-  }
-
-  /* Modélisation Géométrique                     */
-  glPushMatrix();
-
-  glTranslatef(0.0F, 0.0F, -5.0F);
-  // test_light ();
-  glRotatef(prst_alpha, 1.0F, 0.0F, 0.0F);
-  glRotatef(prst_beta, 0.0F, 1.0F, 0.0F);
-  glScalef(prst_size, prst_size, prst_size);
-
-  scene();
-
-  glPopMatrix();
-
-  /* Rastérisation                                */
-  glFlush();
-  glutSwapBuffers();
-  /* Erreurs                                      */
-
-  int error = glGetError();
-  if (error != GL_NO_ERROR)
-    printf("Attention erreur %d\n", error);
-}
-
-/* Fonction executee lors d'un changement       */
-/* de la taille de la fenetre OpenGL            */
-
-void reshape(int wx, int wy) {
-  printf("R\n");
-  prst_wTx = wx;
-  prst_wTy = wy;
-  glViewport(0, 0, wx, wy);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  // glOrtho (-4.0, 4.0, -4.0, 4.0, -10.0, 10.0);
-  glFrustum(-1.0, 1.0, -1.0 * wy / wx, 1.0 * wy / wx, prst_fov,
-            20.0 + prst_fov);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-}
-
-/* Fonction exécutée lorsqu'aucun évènement     */
-/* n'est en file d'attente                      */
-
-void idle(void) {
-  printf("I\n");
-  prst_animation += ((float)prst_animationSpeed) / 5.0F;
-  if (prst_rotation && prst_rotationSpeed != 0) {
-    prst_beta += (float)prst_rotationSpeed / 10;
-    // sleep (1); // Anti-Lag
-    glutPostRedisplay();
-  }
-}
-
-/* Fonction exécutée lors de l'appui            */
-/* d'une touche alphanumérique du clavier       */
 
 void keyboard(unsigned char key, int x, int y) {
   printf("K  %d %4c %4d %4d\n", key, key, x, y);
@@ -670,12 +579,6 @@ void keyboard(unsigned char key, int x, int y) {
   }
   glutPostRedisplay();
 }
-
-/* Fonction executee lors de l'appui            */
-/* d'une touche speciale du clavier :           */
-/*   - touches de curseur                       */
-/*   - touches de fonction                      */
-
 void special(int specialKey, int x, int y) {
   printf("S  %4d %4d %4d\n", specialKey, x, y);
 
@@ -712,10 +615,6 @@ void special(int specialKey, int x, int y) {
   }
   glutPostRedisplay();
 }
-
-/* Fonction executee lors de l'utilisation      */
-/* de la souris sur la fenetre                  */
-
 void mouse(int button, int state, int x, int y) {
   printf("M  %4d %4d %4d %4d\n", button, state, x, y);
   prst_xMouse = x;
@@ -728,11 +627,6 @@ void mouse(int button, int state, int x, int y) {
     prst_rotationSpeed = -prst_rotationSpeed;
   }
 }
-
-/* Fonction executee lors du passage            */
-/* de la souris sur la fenetre                  */
-/* avec un bouton presse                        */
-
 void mouseMotion(int x, int y) {
   printf("MM %4d %4d\n", x, y);
   prst_beta += x - prst_xMouse;
@@ -740,4 +634,33 @@ void mouseMotion(int x, int y) {
   prst_xMouse = x;
   prst_yMouse = y;
   glutPostRedisplay();
+}
+
+
+static void set_lighting() {
+  float white[] =     { 1.0F, 1.0F, 1.0F, 1.0F };
+
+  glEnable(GL_LIGHT0);
+  glLightfv (GL_LIGHT0, GL_DIFFUSE,  white);
+  glLightfv (GL_LIGHT0, GL_SPECULAR, white);
+  glLightfv (GL_LIGHT0, GL_AMBIENT,  white);
+  glLightfv (GL_LIGHT0, GL_AMBIENT,  white);
+}
+
+static void set_material() {
+  glColorMaterial (GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+}
+
+static void set_display() {
+  glRotatef(prst_alpha, 1.0F, 0.0F, 0.0F);
+  glRotatef(prst_beta, 0.0F, 1.0F, 0.0F);
+  glScalef(prst_size, prst_size, prst_size);
+}
+
+static void set_idle() {
+  prst_animation += ((float)prst_animationSpeed) / 5.0F;
+  if (prst_rotation && prst_rotationSpeed != 0) {
+    prst_beta += (float)prst_rotationSpeed / 10;
+    // sleep (1); // Anti-Lag
+  }
 }
