@@ -26,7 +26,7 @@ void draw_lem() {
   glPushMatrix();
   glTranslatef(0.0F, -1.0F, 0.0F);
 
-  LEM();
+  // LEM();
   glPopMatrix();
 }
 } // namespace render

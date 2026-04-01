@@ -16,7 +16,7 @@ void apply_render_settings(const render_settings *rs) {
   gltoggle_macro(GL_DEPTH_TEST);
   gltoggle_macro(GL_LIGHTING);
   gltoggle_macro(GL_LIGHTING);
-  gltoggle_macros((int[]){GL_FILL, GL_LINE, GL_POINT});
+  // gltoggle_macros((int[]){GL_FILL, GL_LINE, GL_POINT});
 
   if (rs->gl_polygone_mode == 0)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
