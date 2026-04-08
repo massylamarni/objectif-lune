@@ -1,8 +1,9 @@
 #include "utils.h"
 
-void toggle_on_key_press(bool *var, char key, char expected_key) {
+bool toggle_on_key_press(bool *var, char key, char expected_key) {
   if (key == expected_key)
     *var = !(*var);
+  return *var;
 }
 
 void update_on_key_press(float *var, char key, char inc_key, char dec_key,

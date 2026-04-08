@@ -14,7 +14,7 @@ struct InputState {
 
 void input_init();
 void input_update();
-const InputState &input_get_state();
+const InputState &get_input_state();
 
 } // namespace input
 

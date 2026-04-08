@@ -1,7 +1,8 @@
 #include "keyboard.h"
+#include "input.h"
 #include <GL/gl.h>
 
-void set_global_keyboard_listeners(unsigned char key, int x, int y) {
+void set_global_keyboard_listeners(unsigned char key, int x, int y, render::model_proprty mp) {
   key_to_macro_map ktom[] = {{'h', GL_DEPTH_TEST},
                              {'H', GL_CULL_FACE},
                              {'l', GL_LIGHTING},
@@ -16,22 +17,28 @@ void set_global_keyboard_listeners(unsigned char key, int x, int y) {
       {'p', '\0', {GL_FILL, GL_LINE, GL_POINT}},
   };
 
-  float prst_fov = 0;
-  float prst_polygon_count = 0;
-  float prst_scene_id = 0;
-  float prst_size = 0;
+  struct Vec2 alpha = {0, 0};
+  struct Vec2 mouse = {0, 0};
 
   key_to_float_map ktof[] = {
-      {'B', 'b', &prst_fov, 0, 4.4, 0.1, false},
-      {'M', 'm', &prst_polygon_count, 3, 1024, 1, false},
-      {'N', 'n', &prst_scene_id, 0.01, 10, 0.01, false},
-      {'M', 'm', &prst_size, 0, 3, 1, true},
+      {'B', 'b', &mp.ds.fov, 0, 4.4, 0.1, 1, false},
+      {'M', 'm', &mp.ds.poly_count, 3, 1024, 1, 1, false},
+      {'N', 'n', &mp.op.scale_value, 0.01, 10, 0.01, 1, false},
+      {'M', 'm', &mp.sp.scene_id, 0, 3, 1, 1, true},
+  };
+
+  key_to_float_map ktof_proportional[] = {
+      {GLUT_KEY_INSERT, 0x7f, &mp.ds.fov, -3600, 3600, 0.05, 0.05,
+       false},
   };
 
   size_t ktom_len = 4;
   size_t ktoms_len = 1;
   size_t ktoms_2p_len = 1;
   size_t ktof_len = 4;
+  size_t ktof_proportional_len = 1;
+
+  /* --- */
 
   for (int i = 0; i < ktom_len; i++) {
     gltoggle_on_key_press(ktom[i].macro, key, ktom[i].key);
@@ -49,5 +56,47 @@ void set_global_keyboard_listeners(unsigned char key, int x, int y) {
     update_on_key_press(ktof[i].fptr, key, ktof[i].key[0], ktof[i].key[1],
                         ktof[i].min_value, ktof[i].max_value, ktof[i].step,
                         ktof[i].is_wrapped);
+  }
+  for (int i = 0; i < ktof_proportional_len; i++) {
+    update_on_key_press_proportional(
+        ktof_proportional[i].fptr, key, ktof_proportional[i].key[0],
+        ktof_proportional[i].key[1], ktof_proportional[i].min_value,
+        ktof_proportional[i].max_value, ktof_proportional[i].step,
+        ktof_proportional[i].step_factor, ktof_proportional[i].is_wrapped);
+  }
+}
+
+void set_global_keyboard_listeners_s(unsigned char key, int x, int y, render::model_proprty mp) {
+  input::InputState is = input::get_input_state();
+
+  key_to_float_map ktofs[] = {
+      {GLUT_KEY_PAGE_UP, GLUT_KEY_PAGE_DOWN, &mp.ds.animation_speed, 0,
+       100, 1, 1, false},
+      {GLUT_KEY_INSERT, GLUT_KEY_PAGE_DOWN, &mp.ds.rotation_speed, 0,
+       100, 1, 1, false},
+      {GLUT_KEY_RIGHT, GLUT_KEY_LEFT, &is.mouse_position.x, 0, 100,
+       mp.ds.camera_speed, 1, false},
+      {GLUT_KEY_UP, GLUT_KEY_DOWN, &is.mouse_position.y, 0, 100, mp.ds.camera_speed,
+       1, true},
+  };
+
+  key_to_float_map ktof_proportional_s[] = {
+      {GLUT_KEY_HOME, GLUT_KEY_END, &mp.ds.camera_speed, 0, 3600, 0,
+       0.05, false},
+      {GLUT_KEY_INSERT, 0x7f, &mp.ds.rotation_speed, -3600, 3600, 0.05,
+       0.05, false},
+  };
+
+  size_t ktof_s_len = 4;
+  size_t ktof_proportional_s_len = 2;
+
+  /* --- */
+
+  for (int i = 0; i < ktof_proportional_s_len; i++) {
+    update_on_key_press_proportional(
+        ktof_proportional_s[i].fptr, key, ktof_proportional_s[i].key[0],
+        ktof_proportional_s[i].key[1], ktof_proportional_s[i].min_value,
+        ktof_proportional_s[i].max_value, ktof_proportional_s[i].step,
+        ktof_proportional_s[i].step_factor, ktof_proportional_s[i].is_wrapped);
   }
 }

@@ -12,18 +12,31 @@ typedef struct {
 } render_settings;
 
 typedef struct {
-  bool prst_animation;
-  int prst_animation_progress;
-  int prst_animation_speed; // 16
-  bool prst_auto_rotate;
-  int prst_auto_rotate_speed;
-  int prst_poly_count; // 16
+  float fov; // 0.5
+  float poly_count; // 16
+  float animation_total_speed;
+  float animation_speed; // 16
+  float rotation_speed;
+  bool is_animation_on;
+  bool is_rotation_on;
+  float camera_speed; // 3
 } display_settings;
 
 typedef struct {
-  int prst_scale_value;
+  float scene_id;
+} scene_property;
+
+typedef struct {
+  float scale_value; // 1
 } object_property;
 
+typedef struct {
+  display_settings ds;
+  scene_property sp;
+  object_property op;
+} model_proprty;
+
+model_proprty init_model_property();
 void apply_render_settings(const render_settings *rs);
 } // namespace render
 

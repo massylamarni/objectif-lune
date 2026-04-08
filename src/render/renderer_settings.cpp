@@ -2,22 +2,16 @@
 #include "../input/utils.h"
 
 namespace render {
+model_proprty init_model_property() {
+  display_settings ds = {0.5, 16, 0, 16, 0, false, false, 3};
+  scene_property sp = {0};
+  object_property op = {1};
+
+  model_proprty mp = {ds, sp, op};
+  return mp;
+}
+
 void apply_render_settings(const render_settings *rs) {
-  static float alpha_x = 0.0F;
-  static float alpha_y = 0.0F;
-  static float alpha_z = 0.0F;
-
-  static int prev_x = 0;
-  static int prev_y = 0;
-  static int poly_count_step = 1;
-  static int poly_count_x = 72;
-  static int poly_count_y = 180;
-
-  gltoggle_macro(GL_DEPTH_TEST);
-  gltoggle_macro(GL_LIGHTING);
-  gltoggle_macro(GL_LIGHTING);
-  // gltoggle_macros((int[]){GL_FILL, GL_LINE, GL_POINT});
-
   if (rs->gl_polygone_mode == 0)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   else if (rs->gl_polygone_mode == 1)

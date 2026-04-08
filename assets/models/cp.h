@@ -48,7 +48,7 @@ bool keyboardAssistFloatProportional (float* var, char current, char increment, 
 
 bool keyboardAssistFloatProportionalLoop (float* var, char current, char increment, char decrement, float min_value, float max_value, float step, float step_factor);
 
-void keyboardAssistToggle (int var, char current, char activation);
+bool keyboardAssistToggle (int var, char current, char activation);
 
 bool stdKeyboard (unsigned char key, int x, int y);
 

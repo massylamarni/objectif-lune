@@ -20,10 +20,11 @@ typedef struct {
   float min_value;
   float max_value;
   float step;
+  float step_factor;
   bool is_wrapped;
 } key_to_float_map;
 
-void toggle_on_key_press(bool *var, char key, char expected_key);
+bool toggle_on_key_press(bool *var, char key, char expected_key);
 
 void update_on_key_press(float *var, char key, char inc_key, char dec_key,
                          float min_value, float max_value, float step,

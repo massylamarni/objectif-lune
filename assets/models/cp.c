@@ -2,6 +2,7 @@
  /*                                              */ 
  /* Projet Objectif Lune                         */ 
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
@@ -9,8 +10,6 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
-
-//#include "customPreset.h"
 
 int prst_wTx = 800;              // Résolution horizontale de la fenêtre
 int prst_wTy = 800;              // Résolution verticale de la fenêtre
@@ -148,15 +147,18 @@ bool keyboardAssistFloatProportionalLoop (float* var, char current, char increme
   return false;
 }
 
-void keyboardAssistToggle (int var, char current, char activation) {
+bool keyboardAssistToggle (int var, char current, char activation) {
   if (current == activation) {
     if (glIsEnabled (var)) {
       glDisable(var);
+      return false;
     }
     else {
       glEnable(var);
+      return true;
     }
   }
+  return false;
 }
 
 bool stdKeyboard (unsigned char key, int x, int y) {
