@@ -1,4 +1,11 @@
-#include "polyface_object.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <math.h>
+
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
 
 float textureRandom () {
   return (((float) rand ()) / RAND_MAX - 0.5F) * 0.05F;

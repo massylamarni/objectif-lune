@@ -1,5 +1,4 @@
 #include "input.h"
-#include "../../assets/models/lem_model_editor.h"
 
 namespace input {
 static InputState state;
@@ -25,8 +24,7 @@ void set_space_key_state(unsigned char key, int x, int y, int isDown) {
 
 
 void keyboard_callback(unsigned char key, int x, int y) {
-  // printf("K  %4d %4d %4d\n",specialKey,x,y); 
-  lem_keyboard(key, x, y);
+  // printf("K  %4d %4d %4d\n",specialKey,x,y);
 }
 
 void keyboard_up_callback(unsigned char key, int x, int y) {
@@ -41,18 +39,15 @@ void special_callback(int specialKey, int x, int y) {
 
 void mouse_callback(int button, int state, int x, int y) {
   // printf("M  %4d %4d %4d %4d\n",button,state,x,y);
-  lem_mouse(button, state, x, y);
   
 }
 
 void mouse_motion_callback(int x, int y) {
   // printf("MM %4d %4d\n",x,y);
-  lem_mouse_motion(x, y);
 }
 
 void mouse_passive_motion_callback(int x, int y) {
   // printf("PM %4d %4d\n",x,y);
-  lem_passive_mouse_motion(x, y);
 }
 
 void input_init() {

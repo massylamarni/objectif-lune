@@ -1,5 +1,4 @@
 #include "game.h"
-#include <cstdio>
 
 static GameState gst;
 
@@ -52,9 +51,6 @@ void game_update_hook() {
   world::ship_update(gst.ship, dt);
 
   render::camera_follow_ship(gst.camera, gst.ship);
-
-  explosion_idle();
-  lem_idle();
 }
 
 void game_display() {
