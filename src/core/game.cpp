@@ -10,6 +10,7 @@ void game_init(int width, int height) {
 
   game_display();
   game_update();
+  input::input_init();
 }
 
 void game_update() {
@@ -50,6 +51,7 @@ void game_update_hook() {
 
   world::ship_update(gst.ship, dt);
 
+  input::input_update(gst.ship.position);
   render::camera_follow_ship(gst.camera, gst.ship);
 }
 

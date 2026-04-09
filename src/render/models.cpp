@@ -15,7 +15,7 @@ void draw_ship(const world::Ship &ship) {
 
   glTranslatef(ship.position.x, ship.position.y, ship.position.z);
   // glutSolidCube(1);
-  rectangle(7.5F, 5.0F);
+  rectangle(1, 1);
 
   glPopMatrix();
 }
