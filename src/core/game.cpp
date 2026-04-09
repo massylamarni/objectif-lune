@@ -31,17 +31,23 @@ void game_update_hook() {
   body.position = gst.ship.position;
   body.velocity = gst.ship.velocity;
   body.mass = gst.ship.mass;
+  body.radius = gst.ship.radius;
 
   physics::apply_planet_gravity(body, gst.earth);
   physics::apply_planet_gravity(body, gst.moon);
-  physics::rb_integrate(body, dt);
 
-  gst.ship.position = body.position;
-  gst.ship.velocity = body.velocity;
+  physics::rb_integrate(body, dt);
 
   if (physics::check_planet_collision(body, gst.earth)) {
     physics::resolve_planet_collision(body, gst.earth);
   }
+
+  if (physics::check_planet_collision(body, gst.moon)) {
+    physics::resolve_planet_collision(body, gst.moon);
+  }
+
+  gst.ship.position = body.position;
+  gst.ship.velocity = body.velocity;
 
   world::ship_update(gst.ship, dt);
 

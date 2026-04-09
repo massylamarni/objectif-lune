@@ -5,7 +5,7 @@ void draw_planet(const world::Planet &planet) {
   glPushMatrix();
 
   glTranslatef(planet.position.x, planet.position.y, planet.position.z);
-  // glutSolidSphere(planet.radius, 32, 32);
+  glutSolidSphere(planet.radius, 32, 32);
 
   glPopMatrix();
 }

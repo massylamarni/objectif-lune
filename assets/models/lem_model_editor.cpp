@@ -95,8 +95,7 @@ void lem_model(void) {
   glLightfv(GL_LIGHT1, GL_POSITION, pos_directionnal); // Moon
   glPopMatrix();
 
-  printf("LEM Parameters : Direction %f ; Power %f\n", rotation_direction_me,
-         rotation_power_me);
+  // printf("LEM Parameters : Direction %f ; Power %f\n", rotation_direction_me, rotation_power_me);
   lem(reactor_activity_me, rotation_direction_me, rotation_power_me,
       anim_win_offset_me, anim_reactor_offset_me, win_value_me,
       mp.ds.animation_total_speed, mp.ds.poly_count);

@@ -1,11 +1,12 @@
 #include "rigidbody.h"
 
 namespace physics {
-RigidBody create_rigidbody(const Vec3 &position, float mass) {
+RigidBody create_rigidbody(const Vec3 &position, float mass, float radius) {
   RigidBody body;
   body.position = position;
   body.velocity = Vec3(0, 0, 0);
   body.mass = mass;
+  body.radius = radius;
   body.accumulated_force = Vec3(0, 0, 0);
   return body;
 }

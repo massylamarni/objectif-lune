@@ -6,6 +6,7 @@
 *.lo
 *.o
 *.obj
+build
 
 # Precompiled Headers
 *.gch
@@ -36,10 +37,10 @@
 *.exe
 *.out
 *.app
-build
 
 # debug information files
 *.dwo
+*.log
 
 # Model Testing Executables
 assets/models/LEM

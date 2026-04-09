@@ -11,6 +11,7 @@ Ship create_ship(const Vec3 position) {
 
   ship.thrust_power = SHIP_THRUST_POWER;
   ship.mass = SHIP_MASS;
+  ship.radius = SHIP_RADIUS;
 
   ship.thrusting = false;
 

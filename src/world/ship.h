@@ -13,6 +13,7 @@ struct Ship {
 
   float thrust_power;
   float mass;
+  float radius;
 
   bool thrusting;
 };

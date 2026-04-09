@@ -120,7 +120,7 @@ void explosion_model() {
 }
 
 static void idle2(void) {
-  printf("I\n");
+  //printf("I\n");
   anim_saturation += (float)mp.ds.animation_speed / 120.0F;
   mp.ds.animation_total_speed += ((float)mp.ds.animation_speed) / 5.0F;
   fummee_idle();

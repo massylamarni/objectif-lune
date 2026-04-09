@@ -9,7 +9,7 @@ namespace render {
 static render_settings rs = {0};
 
 void init_lighting() {
-  glEnable(GL_LIGHTING);
+  // glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
   glEnable(GL_LIGHT1);
   // glDisable (GL_LIGHT0);
