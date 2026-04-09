@@ -8,11 +8,7 @@ BUILD_DIR = build
 
 SRC = $(shell find $(SRC_DIR) -name "*.cpp")
 ASSET_SRC = \
-	$(ASSET_DIR)/explosion.cpp \
-	$(ASSET_DIR)/lem_model_editor.cpp \
-	$(ASSET_DIR)/lem.c \
-	$(ASSET_DIR)/color_palette.c \
-	$(ASSET_DIR)/polyface_object.c
+	$(ASSET_DIR)/color_palette.c
 
 SRC_OBJ = $(SRC:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 ASSET_OBJ = $(patsubst $(ASSET_DIR)/%.cpp,$(BUILD_DIR)/$(ASSET_DIR)/%.o,$(filter %.cpp,$(ASSET_SRC))) \

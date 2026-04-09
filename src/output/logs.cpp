@@ -19,6 +19,11 @@ static void log_to_file(FILE *file, const char *fmt, va_list args) {
 }
 
 Logger init() {
+  if (mkdir("logs", 0755) != 0 && errno != EEXIST) {
+    printf("Failed to create logs directory due to missing permissions, please create it in at the root of the project, exiting...\n");
+    exit(1);
+  }
+
   Logger logger;
   logger.general = fopen("logs/general.log", "w");
   logger.render = fopen("logs/render.log", "w");
