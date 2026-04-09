@@ -1,20 +1,24 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -I./src
-LDFLAGS = -lGL -lGLU -lglut -lm
+LIBPNG_DIR = libs/libpng12
+PNG_LIB = -lpng -lz
+CXXFLAGS = -std=c++17 -Wall -I./src -I$(LIBPNG_DIR)/include
+LDFLAGS = -lGL -lGLU -lglut -lm -L$(LIBPNG_DIR)/lib -Wl,-rpath,$(LIBPNG_DIR)/lib $(PNG_LIB)
 
 SRC_DIR = src
 ASSET_DIR = assets/models
 BUILD_DIR = build
 
 SRC = $(shell find $(SRC_DIR) -name "*.cpp")
+PNG_SRC = $(shell find libs/PNG -name "*.cpp")
 ASSET_SRC = \
 	$(ASSET_DIR)/color_palette.c
 
 SRC_OBJ = $(SRC:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
+PNG_OBJ = $(PNG_SRC:libs/PNG/%.cpp=$(BUILD_DIR)/libs/PNG/%.o)
 ASSET_OBJ = $(patsubst $(ASSET_DIR)/%.cpp,$(BUILD_DIR)/$(ASSET_DIR)/%.o,$(filter %.cpp,$(ASSET_SRC))) \
 	$(patsubst $(ASSET_DIR)/%.c,$(BUILD_DIR)/$(ASSET_DIR)/%.o,$(filter %.c,$(ASSET_SRC)))
 
-OBJ = $(SRC_OBJ) $(ASSET_OBJ)
+OBJ = $(SRC_OBJ) $(PNG_OBJ) $(ASSET_OBJ)
 
 TARGET = $(BUILD_DIR)/prog
 
@@ -34,6 +38,10 @@ $(BUILD_DIR)/$(ASSET_DIR)/%.o: $(ASSET_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/$(ASSET_DIR)/%.o: $(ASSET_DIR)/%.c
+	mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/libs/PNG/%.o: libs/PNG/%.cpp
 	mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 

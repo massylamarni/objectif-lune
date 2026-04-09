@@ -4,6 +4,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include "../../assets/models/color_palette.h"
+#include "textures.h"
 
 namespace render {
 static render_settings rs = {0};
@@ -55,6 +56,7 @@ void init(int *argc, char **argv) {
   glDepthFunc(GL_LESS);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_NORMALIZE);
+  glEnable(GL_TEXTURE_2D);
   // glEnable(GL_CULL_FACE);
   // glCullFace(GL_BACK);
   glClearColor(0.02f, 0.02f, 0.05f, 1.0f);
@@ -64,6 +66,7 @@ void init(int *argc, char **argv) {
   glutReshapeFunc(reshape);
   // glutMainLoop();
   init_lighting();
+  load_all_emoji_textures_example();
 }
 
 static void set_perspective() {
@@ -112,6 +115,7 @@ void idle(void render_hook(void)) {
 
 static void clean(void) {
   // printf("Bye\n");
+  free_textures();
 }
 
 static void reshape(int wx, int wy) {
