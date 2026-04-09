@@ -19,7 +19,6 @@ build
 *.pdb
 
 # Compiled Dynamic libraries
-*.so
 *.dylib
 *.dll
 
@@ -29,8 +28,6 @@ build
 
 # Compiled Static libraries
 *.lai
-*.la
-*.a
 *.lib
 
 # Executables
