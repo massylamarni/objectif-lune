@@ -40,6 +40,7 @@ build
 *.log
 
 # Model Testing Executables
-assets/models/LEM
-assets/models/Explosion
+assets/models/lem_model_editor
+assets/models/explosion_model_editor
+assets/models/moon_model_editor
 
