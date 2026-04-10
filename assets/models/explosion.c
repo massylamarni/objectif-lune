@@ -1,6 +1,4 @@
-#include <GL/glut.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include "explosion.h"
 
 
 /* Variables globales                           */
@@ -10,6 +8,7 @@ int n_long=20;
 int animation_phase=0;
 float tremblement=0.0F;
 float explosion_size=0.0F;
+float fummee_size=0.0F;
 float saturation=0.0F;
 float anim_saturation=0.0F;
 float anim_explosion=0.0F;
@@ -92,7 +91,7 @@ void ExplosionModel(void) {
   glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
   for(int i=1; i<=20;i++){
     glRotatef(360.0F/20.0F, 0.0F, 0.0F, 1.0F);
-    fummee_anim(explosion_size);
+    fummee_anim(fummee_size);
   }
   glPopMatrix();
   glPopMatrix();
@@ -100,23 +99,19 @@ void ExplosionModel(void) {
 
 void startExplosionAnimation () {
   animation_phase=1;
+  tremblement=0.0F;
+  explosion_size=0.0F;
+  fummee_size=0.0F;
+  saturation=0.0F;
+  anim_saturation=0.0F;
+  anim_explosion=0.0F;
+  anim_fummee=0.0F;
 }
 
-void idle2 (float animation_time) {
-  anim_saturation += animation_time / 120.0F;
-  anim_fummee += animation_time / 10.0F;
-  fummee_idle ();
-  tremblement+=4.0F;
-  saturation=sqrt(anim_saturation);
-  if (anim_saturation>1.0F){
-    saturation=1.0F;
-    animation_phase=3;
-  }
-}
-
-void idle1 (float animation_time) {
+void phaseExplosion1 (float animation_time) {
   anim_explosion += animation_time / 240.0F;
   anim_fummee += animation_time / 5.0F;
+  fummee_size += animation_time / 300.0F;
   fummee_idle ();
   tremblement+=8.0F;
   if (anim_explosion<0.9F/7.0F){
@@ -126,15 +121,62 @@ void idle1 (float animation_time) {
   }
   if (explosion_size>1.0F){
     animation_phase=2;
+    explosion_size=1.0F;
   }
 }
 
+void phaseExplosion2 (float animation_time) {
+  anim_saturation += animation_time / 120.0F;
+  anim_fummee += animation_time / 10.0F;
+  fummee_size += animation_time / 400.0F;
+  fummee_idle ();
+  tremblement+=4.0F;
+  saturation=sqrt(anim_saturation);
+  if (anim_saturation>1.0F){
+    saturation=1.0F;
+    animation_phase=3;
+  }
+}
+
+void phaseExplosion3 (float animation_time) {
+  anim_explosion -= animation_time / 240.0F;
+  anim_fummee += animation_time / 15.0F;
+  fummee_size += animation_time / 500.0F;
+  fummee_idle ();
+  tremblement+=2.0F;
+  explosion_size=anim_explosion;
+  if (explosion_size<0.0F){
+    animation_phase=4;
+    explosion_size=0.0F;
+  }
+}
+
+void phaseExplosion4 (float animation_time) {
+  anim_fummee += animation_time / 20.0F;
+  fummee_size -= animation_time / 1000.0F;
+  fummee_idle ();
+  tremblement+=1.0F;
+  if (fummee_size<0.0F){
+    animation_phase=0;
+    fummee_size=0.0F;
+  }
+}
+
+// animation_time est la vitesse d'animation
 void explosion_idle (float animation_time) {
   switch(animation_phase){
     case 1:
-      idle1(animation_time);
+      phaseExplosion1(animation_time);
+      break;
     case 2:
-      idle2(animation_time);
+      phaseExplosion2(animation_time);
+      break;
+    case 3:
+      phaseExplosion3(animation_time);
+      break;
+    case 4:
+      phaseExplosion4(animation_time);
+      break;
   }
 }
 

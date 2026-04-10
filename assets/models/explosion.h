@@ -20,8 +20,12 @@ void ExplosionModel(void);
 
 void startExplosionAnimation ();
 
-void idle2 (float animation_time);
+void phaseExplosion1 (float animation_time);
 
-void idle1 (float animation_time);
+void phaseExplosion2 (float animation_time);
+
+void phaseExplosion3 (float animation_time);
+
+void phaseExplosion4 (float animation_time);
 
 void explosion_idle (float animation_time);
