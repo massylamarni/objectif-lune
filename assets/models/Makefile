@@ -1,9 +1,12 @@
 LD_FLAGS = -lGL -lGLU -lglut -lm
 
-all: explosion lem_model_editor moon_model_editor
+all: explosion_model_editor lem_model_editor moon_model_editor
 
-explosion: explosion.c custom_preset.o
-	gcc -Wall -Wextra explosion.c -o explosion custom_preset.o $(LD_FLAGS)
+explosion_model_editor: explosion_model_editor.c explosion.o custom_preset.o 
+	gcc -Wall -Wextra explosion_model_editor.c -o explosion_model_editor explosion.o custom_preset.o $(LD_FLAGS)
+	
+explosion.o: explosion.c
+	gcc -Wall -Wextra -c explosion.c -o explosion.o   $(LD_FLAGS)
 
 lem_model_editor: lem_model_editor.c lem.o custom_preset.o
 	gcc -Wall -Wextra lem_model_editor.c -o lem_model_editor lem.o custom_preset.o color_palette.o polyface_object.o $(LD_FLAGS)
@@ -27,4 +30,4 @@ custom_preset.o: custom_preset.c
 	gcc -Wall -Wextra -c custom_preset.c -o custom_preset.o $(LD_FLAGS)
 
 clean:
-	rm lem explosion custom_preset.o color_palette.o polyface_object.o moon.o
+	rm *_model_editor *.o
