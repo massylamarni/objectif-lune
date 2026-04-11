@@ -2,12 +2,12 @@
 #include <cstdio>
 
 namespace world {
-Planet create_planet(int id, const Vec3 position, float radius, float gravity) {
+Planet create_planet(int id, const Vec3 position, float radius, float mass) {
   Planet p;
   p.id = id;
   p.position = position;
   p.radius = radius;
-  p.gravity = gravity;
+  p.mass = mass;
   return p;
 }
 

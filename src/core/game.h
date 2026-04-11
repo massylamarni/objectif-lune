@@ -21,6 +21,12 @@ struct GameState {
   render::Camera camera;
 };
 
+struct GameFps {
+  int frame_count;
+  float fps_time_accumulator;
+  float fps;
+};
+
 void game_init(int width, int height);
 void game_update();
 void game_update_callback();
@@ -28,5 +34,6 @@ void game_update_hook();
 void game_display();
 void game_display_callback();
 void game_display_hook();
+void update_fps_counter(float dt);
 
 #endif

@@ -1,4 +1,5 @@
 #include "models.h"
+#include "../world/world.h"
 
 namespace render {
 void draw_planet(const world::Planet &planet) {
@@ -6,7 +7,11 @@ void draw_planet(const world::Planet &planet) {
   glPushMatrix();
 
   glTranslatef(planet.position.x, planet.position.y, planet.position.z);
-  glBindTexture(GL_TEXTURE_2D, texture_id_buf[MOON_TEXTURE]);
+  if (planet.id == MOON_ID) {
+    glBindTexture(GL_TEXTURE_2D, texture_id_buf[MOON_TEXTURE]);
+  } else {
+    glBindTexture(GL_TEXTURE_2D, texture_id_buf[EARTH_TEXTURE]);
+  }
   GLUquadric *quad = gluNewQuadric();
   gluQuadricTexture(quad, GL_TRUE);
   gluQuadricNormals(quad, GLU_SMOOTH);

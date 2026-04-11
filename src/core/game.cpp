@@ -1,10 +1,11 @@
 #include "game.h"
 
 static GameState gst;
+static GameFps gfps = {0};
 
 void game_init(int width, int height) {
-  gst.earth = world::create_planet(EARTH_ID, EARTH_POSITION, EARTH_RADIUS, EARTH_GRAVITY);
-  gst.moon = world::create_planet(MOON_ID, MOON_POSITION, MOON_RADIUS, MOON_GRAVITY);
+  gst.earth = world::create_planet(EARTH_ID, EARTH_POSITION, EARTH_RADIUS, EARTH_MASS);
+  gst.moon = world::create_planet(MOON_ID, MOON_POSITION, MOON_RADIUS, MOON_MASS);
   gst.ship = world::create_ship(SHIP_POSITION);
   gst.camera = render::create_camera(CAMERA_POSITION, CAMERA_TARGET, CAMERA_UP);
 
@@ -52,7 +53,9 @@ void game_update_hook() {
   world::ship_update(gst.ship, dt);
 
   input::input_update(gst.ship.velocity);
-  render::camera_follow_ship(gst.camera, gst.ship);
+  render::camera_follow_ship(gst.camera, gst.ship); 
+  
+  update_fps_counter(dt);
 }
 
 void game_display() {
@@ -70,4 +73,15 @@ void game_display_hook() {
   render::draw_planet(gst.moon);
   render::draw_ship(gst.ship);
   output::debug_camera(gst.camera.position.x, gst.camera.position.y, gst.camera.position.z);
+  output::debug_fps(gfps.fps);
+}
+
+void update_fps_counter(float dt) {
+  gfps.frame_count++;
+  gfps.fps_time_accumulator += dt;
+  if (gfps.fps_time_accumulator >= 0.5f) {
+    gfps.fps = gfps.frame_count / gfps.fps_time_accumulator;
+    gfps.frame_count = 0;
+    gfps.fps_time_accumulator = 0.0f;
+  }
 }

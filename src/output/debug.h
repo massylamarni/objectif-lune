@@ -8,6 +8,7 @@
 
 namespace output {
 void debug_camera(float x, float y, float z);
+void debug_fps(float fps);
 } // namespace render
 
 

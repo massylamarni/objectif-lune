@@ -66,7 +66,7 @@ void init(int *argc, char **argv) {
   glutReshapeFunc(reshape);
   // glutMainLoop();
   init_lighting();
-  load_moon_texture();
+  load_textures();
 }
 
 static void set_perspective() {

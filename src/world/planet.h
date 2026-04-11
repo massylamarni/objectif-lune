@@ -9,10 +9,10 @@ struct Planet {
   int id;
   Vec3 position;
   float radius;
-  float gravity;
+  float mass;
 };
 
-Planet create_planet(int id, const Vec3 position, float radius, float gravity);
+Planet create_planet(int id, const Vec3 position, float radius, float mass);
 float distance_to_surface(const Planet planet, const Vec3 point);
 } // namespace world
 

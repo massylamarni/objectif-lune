@@ -9,12 +9,12 @@
 #define RIGIDBODY_ID_RES "rigidbody"
 
 #define EARTH_POSITION Vec3(0, 0, 0)
-#define EARTH_RADIUS 5.0f
-#define EARTH_GRAVITY 50.0f
+#define EARTH_RADIUS 300.0f
+#define EARTH_MASS 27000.0f
 
-#define MOON_POSITION Vec3(10.0f, 0, 0)
-#define MOON_RADIUS 3.0f
-#define MOON_GRAVITY 8.0f
+#define MOON_POSITION Vec3(500.0f, 0, 0)
+#define MOON_RADIUS 100.0f
+#define MOON_MASS 1000.0f
 
 #define SHIP_POSITION Vec3(-10.0, 0, 0)
 #define SHIP_CAMERA_OFFSET Vec3(0.0f, 3.0f, 8.0f)

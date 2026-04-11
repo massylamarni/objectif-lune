@@ -44,17 +44,15 @@ void free_textures() {
   texture_id_buf_len = 0;
 }
 
-void load_all_emoji_textures() {
-  for (int i = 1; i <= 6; i++) {
+void load_textures() {
+  char texture_dirs[TEXTURE_ID_BUF_LEN][32] = {
+    "moon_8k.png",
+    "earth_8k.png"
+  };
+  for (int i = 0; i < 2; i++) {
     char file_path[TEXTURE_PATH_MAXLEN];
-    sprintf(file_path, "%s/emojis/emoji%i.png", TEXTURES_RELATIVE_PATH, i);
+    sprintf(file_path, "%s/%s", TEXTURES_RELATIVE_PATH, texture_dirs[i]);
     preload_texture(file_path);
   }
-}
-
-void load_moon_texture() {
-  char file_path[TEXTURE_PATH_MAXLEN];
-  sprintf(file_path, "%s/moon.png", TEXTURES_RELATIVE_PATH);
-  preload_texture(file_path);
 }
 } // namespace render
