@@ -1,21 +1,9 @@
 #include "input.h"
+#include "keyboard.h"
+#include "mouse.h"
 
 namespace input {
 static InputState state;
-
-static int last_mouse_x = 0;
-static int last_mouse_y = 0;
-
-void set_mouse_state(int x, int y) {
-  state.mouse_position.x = (float)x;
-  state.mouse_position.y = (float)y;
-
-  state.mouse_delta.x = (float)(x - last_mouse_x);
-  state.mouse_delta.y = (float)(y - last_mouse_y);
-
-  last_mouse_x = x;
-  last_mouse_y = y;
-}
 
 void set_key_state(unsigned char key, int x, int y, int isDown) {
   switch (key) {
@@ -28,8 +16,6 @@ void set_key_state(unsigned char key, int x, int y, int isDown) {
     case 'd': state.d_down = isDown; break;
   }
 }
-
-
 
 void keyboard_callback(unsigned char key, int x, int y) {
   // printf("K  %4d %4d %4d\n",specialKey,x,y);
@@ -56,18 +42,12 @@ void mouse_motion_callback(int x, int y) {
 
 void mouse_passive_motion_callback(int x, int y) {
   // printf("PM %4d %4d\n",x,y);
+  set_mouse_state(x, y);
 }
 
 void input_init() {
-  state.mouse_position = Vec2(0, 0);
-  state.mouse_delta = Vec2(0, 0);
-  state.space_down = false;
-  state.a_down = false;
-  state.z_down = false;
-  state.e_down = false;
-  state.q_down = false;
-  state.s_down = false;
-  state.d_down = false;
+  input_init_mouse();
+  input_init_keyboard();
 
   glutKeyboardFunc(keyboard_callback);
   glutKeyboardUpFunc(keyboard_up_callback);
@@ -78,16 +58,28 @@ void input_init() {
 }
 
 void input_update(Vec3 &position) {
-  //state.mouse_delta = Vec2(0, 0);
-  const int UPDATE_SPEED = 1;
-  if (state.q_down) position.x -= UPDATE_SPEED;
-  if (state.d_down) position.x += UPDATE_SPEED;
+  const float UPDATE_SPEED = 1;
+  if (state.q_down) position += rotate_yaw(Vec3(-UPDATE_SPEED, 0, 0), state.mouse_rotation_delta.x);
+  if (state.d_down) position += rotate_yaw(Vec3(UPDATE_SPEED, 0, 0), state.mouse_rotation_delta.x);
   if (state.a_down) position.y -= UPDATE_SPEED;
   if (state.e_down) position.y += UPDATE_SPEED;
-  if (state.z_down) position.z -= UPDATE_SPEED;
-  if (state.s_down) position.z += UPDATE_SPEED;
+  if (state.z_down) position += rotate_yaw(Vec3(0, 0, -UPDATE_SPEED), state.mouse_rotation_delta.x);
+  if (state.s_down) position += rotate_yaw(Vec3(0, 0, UPDATE_SPEED), state.mouse_rotation_delta.x);
 }
 
-const InputState &get_input_state() { return state; }
+Vec3 rotate_yaw(const Vec3 &v, float yaw) {
+  float cos_y = cos(yaw);
+  float sin_y = sin(yaw);
+  return Vec3(v.x * cos_y - v.z * sin_y, v.y, v.x * sin_y + v.z * cos_y);
+}
+
+Vec3 rotate_pitch(const Vec3 &v, float pitch) {
+  float cos_p = cos(pitch);
+  float sin_p = sin(pitch);
+  return Vec3(v.x, v.y * cos_p - v.z * sin_p, v.y * sin_p + v.z * cos_p);
+}
+
+
+InputState &get_input_state() { return state; }
 
 } // namespace input

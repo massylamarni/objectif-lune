@@ -8,7 +8,7 @@
 
 namespace input {
 struct InputState {
-  Vec2 mouse_position;
+  Vec2 mouse_rotation_delta;
   Vec2 mouse_delta;
 
   bool space_down;
@@ -22,7 +22,9 @@ struct InputState {
 
 void input_init();
 void input_update(Vec3 &position);
-const InputState &get_input_state();
+Vec3 rotate_yaw(const Vec3 &v, float yaw);
+Vec3 rotate_pitch(const Vec3 &v, float pitch);
+InputState &get_input_state();
 
 } // namespace input
 

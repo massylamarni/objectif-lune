@@ -2,7 +2,9 @@
 #include "input.h"
 #include <GL/gl.h>
 
-void set_global_keyboard_listeners(unsigned char key, int x, int y, render::model_proprty mp) {
+namespace input {
+void set_global_keyboard_listeners(unsigned char key, int x, int y,
+                                   render::model_proprty mp) {
   key_to_macro_map ktom[] = {{'h', GL_DEPTH_TEST},
                              {'H', GL_CULL_FACE},
                              {'l', GL_LIGHTING},
@@ -28,8 +30,7 @@ void set_global_keyboard_listeners(unsigned char key, int x, int y, render::mode
   };
 
   key_to_float_map ktof_proportional[] = {
-      {GLUT_KEY_INSERT, 0x7f, &mp.ds.fov, -3600, 3600, 0.05, 0.05,
-       false},
+      {GLUT_KEY_INSERT, 0x7f, &mp.ds.fov, -3600, 3600, 0.05, 0.05, false},
   };
 
   size_t ktom_len = 4;
@@ -66,25 +67,26 @@ void set_global_keyboard_listeners(unsigned char key, int x, int y, render::mode
   }
 }
 
-void set_global_keyboard_listeners_s(unsigned char key, int x, int y, render::model_proprty mp) {
-  input::InputState is = input::get_input_state();
+void set_global_keyboard_listeners_s(unsigned char key, int x, int y,
+                                     render::model_proprty mp) {
+  input::InputState &is = input::get_input_state();
 
   key_to_float_map ktofs[] = {
-      {GLUT_KEY_PAGE_UP, GLUT_KEY_PAGE_DOWN, &mp.ds.animation_speed, 0,
-       100, 1, 1, false},
-      {GLUT_KEY_INSERT, GLUT_KEY_PAGE_DOWN, &mp.ds.rotation_speed, 0,
-       100, 1, 1, false},
-      {GLUT_KEY_RIGHT, GLUT_KEY_LEFT, &is.mouse_position.x, 0, 100,
+      {GLUT_KEY_PAGE_UP, GLUT_KEY_PAGE_DOWN, &mp.ds.animation_speed, 0, 100, 1,
+       1, false},
+      {GLUT_KEY_INSERT, GLUT_KEY_PAGE_DOWN, &mp.ds.rotation_speed, 0, 100, 1, 1,
+       false},
+      {GLUT_KEY_RIGHT, GLUT_KEY_LEFT, &is.mouse_rotation_delta.x, 0, 100,
        mp.ds.camera_speed, 1, false},
-      {GLUT_KEY_UP, GLUT_KEY_DOWN, &is.mouse_position.y, 0, 100, mp.ds.camera_speed,
-       1, true},
+      {GLUT_KEY_UP, GLUT_KEY_DOWN, &is.mouse_rotation_delta.y, 0, 100,
+       mp.ds.camera_speed, 1, true},
   };
 
   key_to_float_map ktof_proportional_s[] = {
-      {GLUT_KEY_HOME, GLUT_KEY_END, &mp.ds.camera_speed, 0, 3600, 0,
-       0.05, false},
-      {GLUT_KEY_INSERT, 0x7f, &mp.ds.rotation_speed, -3600, 3600, 0.05,
-       0.05, false},
+      {GLUT_KEY_HOME, GLUT_KEY_END, &mp.ds.camera_speed, 0, 3600, 0, 0.05,
+       false},
+      {GLUT_KEY_INSERT, 0x7f, &mp.ds.rotation_speed, -3600, 3600, 0.05, 0.05,
+       false},
   };
 
   size_t ktof_s_len = 4;
@@ -100,3 +102,15 @@ void set_global_keyboard_listeners_s(unsigned char key, int x, int y, render::mo
         ktof_proportional_s[i].step_factor, ktof_proportional_s[i].is_wrapped);
   }
 }
+
+void input_init_keyboard() {
+  InputState &state = get_input_state();
+  state.space_down = false;
+  state.a_down = false;
+  state.z_down = false;
+  state.e_down = false;
+  state.q_down = false;
+  state.s_down = false;
+  state.d_down = false;
+}
+} // namespace input

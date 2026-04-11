@@ -1,3 +1,4 @@
+#include "../math/vec2.h"
 #include "../math/vec3.h"
 
 #define EARTH_ID 0
