@@ -29,3 +29,7 @@
 static const char ID_MAPPING[8][32] = {
   "earth", "moon", "rigidbody"
 };
+
+#define INPUT_VEC3_UPDATE_VALUE 0.1
+#define MOUSE_SENSITIVITY 0.005f // radians per pixel
+

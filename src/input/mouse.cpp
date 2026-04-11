@@ -1,4 +1,5 @@
 #include "mouse.h"
+#include "../world/world.h"
 
 namespace input {
 static int last_mouse_x = 0;
@@ -31,7 +32,6 @@ void set_mouse_state(int x, int y) {
   state.mouse_delta.y = (float)(center.y - y);
 
   if (center.x > 0 && center.y > 0) {
-    const float MOUSE_SENSITIVITY = 0.005f; // radians per pixel
     state.mouse_rotation_delta.x += state.mouse_delta.x * MOUSE_SENSITIVITY;
     state.mouse_rotation_delta.y += state.mouse_delta.y * MOUSE_SENSITIVITY;
 

@@ -8,7 +8,6 @@ static void log_to_file(FILE *file, const char *fmt, va_list args) {
   time_t t = time(NULL);
   struct tm *tm_info = localtime(&t);
 
-  const int TIME_BUFFER_SIZE = 26;
   char buffer[TIME_BUFFER_SIZE];
   strftime(buffer, TIME_BUFFER_SIZE, "%Y-%m-%d %H:%M:%S", tm_info);
 

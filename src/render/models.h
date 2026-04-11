@@ -14,7 +14,6 @@ void draw_planet(const world::Planet &planet);
 void draw_ship(const world::Ship &ship);
 void draw_lem();
 void draw_explosion();
-void rectangle(float largeur, float hauteur);
 } // namespace render
 
 #endif

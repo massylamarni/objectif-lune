@@ -11,6 +11,8 @@
     if ((_ctr++ & (DEBOUNCE_CAP - 1)) == 0)                                    \
       output::log(output::get_logger(), msg, ##__VA_ARGS__);                   \
   } while (0)
+#define TIME_BUFFER_SIZE 26
+
 
 #include <errno.h>
 #include <stdarg.h>

@@ -1,6 +1,7 @@
 #include "input.h"
 #include "keyboard.h"
 #include "mouse.h"
+#include "../world/world.h"
 
 namespace input {
 static InputState state;
@@ -57,14 +58,13 @@ void input_init() {
   glutPassiveMotionFunc(mouse_passive_motion_callback);
 }
 
-void input_update(Vec3 &position) {
-  const float UPDATE_SPEED = 1;
-  if (state.q_down) position += rotate_yaw(Vec3(-UPDATE_SPEED, 0, 0), state.mouse_rotation_delta.x);
-  if (state.d_down) position += rotate_yaw(Vec3(UPDATE_SPEED, 0, 0), state.mouse_rotation_delta.x);
-  if (state.a_down) position.y -= UPDATE_SPEED;
-  if (state.e_down) position.y += UPDATE_SPEED;
-  if (state.z_down) position += rotate_yaw(Vec3(0, 0, -UPDATE_SPEED), state.mouse_rotation_delta.x);
-  if (state.s_down) position += rotate_yaw(Vec3(0, 0, UPDATE_SPEED), state.mouse_rotation_delta.x);
+void input_update(Vec3 &vec3) {
+  if (state.q_down) vec3 += rotate_yaw(Vec3(-INPUT_VEC3_UPDATE_VALUE, 0, 0), state.mouse_rotation_delta.x);
+  if (state.d_down) vec3 += rotate_yaw(Vec3(INPUT_VEC3_UPDATE_VALUE, 0, 0), state.mouse_rotation_delta.x);
+  if (state.a_down) vec3.y -= INPUT_VEC3_UPDATE_VALUE;
+  if (state.e_down) vec3.y += INPUT_VEC3_UPDATE_VALUE;
+  if (state.z_down) vec3 += rotate_yaw(Vec3(0, 0, -INPUT_VEC3_UPDATE_VALUE), state.mouse_rotation_delta.x);
+  if (state.s_down) vec3 += rotate_yaw(Vec3(0, 0, INPUT_VEC3_UPDATE_VALUE), state.mouse_rotation_delta.x);
 }
 
 Vec3 rotate_yaw(const Vec3 &v, float yaw) {
