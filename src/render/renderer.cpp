@@ -10,39 +10,12 @@ namespace render {
 static render_settings rs = {0};
 
 void init_lighting() {
-  // glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
-  glEnable(GL_LIGHT1);
-  // glDisable (GL_LIGHT0);
 
   glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
   glLightfv(GL_LIGHT0, GL_SPECULAR, white);
-  glLightfv(GL_LIGHT0, GL_AMBIENT, white);
-
-  glLightfv(GL_LIGHT1, GL_DIFFUSE, grey);
-  glLightfv(GL_LIGHT1, GL_SPECULAR, grey);
-  glLightfv(GL_LIGHT1, GL_AMBIENT, grey);
-
-  glLightfv(GL_LIGHT2, GL_DIFFUSE, red_boost);
-  glLightfv(GL_LIGHT2, GL_SPECULAR, gold);
-  glLightfv(GL_LIGHT2, GL_AMBIENT, white);
-  glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 0.0F);
-  glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 1.0F);
-  glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 1.0F);
-
-  glLightfv(GL_LIGHT3, GL_DIFFUSE, red_boost);
-  glLightfv(GL_LIGHT3, GL_SPECULAR, gold);
-  glLightfv(GL_LIGHT3, GL_AMBIENT, white);
-  glLightf(GL_LIGHT3, GL_CONSTANT_ATTENUATION, 0.0F);
-  glLightf(GL_LIGHT3, GL_LINEAR_ATTENUATION, 1.0F);
-  glLightf(GL_LIGHT3, GL_QUADRATIC_ATTENUATION, 1.0F);
-
-  glLightfv(GL_LIGHT4, GL_DIFFUSE, red_boost);
-  glLightfv(GL_LIGHT4, GL_SPECULAR, gold);
-  glLightfv(GL_LIGHT4, GL_AMBIENT, white);
-  glLightf(GL_LIGHT4, GL_CONSTANT_ATTENUATION, 0.0F);
-  glLightf(GL_LIGHT4, GL_LINEAR_ATTENUATION, 1.0F);
-  glLightf(GL_LIGHT4, GL_QUADRATIC_ATTENUATION, 1.0F);
+  glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
 }
 
 void init(int *argc, char **argv) {

@@ -47,9 +47,10 @@ void free_textures() {
 void load_textures() {
   char texture_dirs[TEXTURE_ID_BUF_LEN][32] = {
     "moon_8k.png",
-    "earth_8k.png"
+    "earth_8k.png",
+    "sun_4k.png"
   };
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < 3; i++) {
     char file_path[TEXTURE_PATH_MAXLEN];
     sprintf(file_path, "%s/%s", TEXTURES_RELATIVE_PATH, texture_dirs[i]);
     preload_texture(file_path);

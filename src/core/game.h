@@ -17,6 +17,7 @@
 struct GameState {
   world::Planet earth;
   world::Planet moon;
+  world::Planet sun;
   world::Ship ship;
   render::Camera camera;
 };

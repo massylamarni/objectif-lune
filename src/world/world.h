@@ -3,9 +3,11 @@
 
 #define EARTH_ID 0
 #define MOON_ID 1
-#define RIGID_BODY_ID 2
+#define SUN_ID 2
+#define RIGID_BODY_ID 3
 #define EARTH_ID_RES "earth"
 #define MOON_ID_RES "moon"
+#define SUN_ID_RES "sun"
 #define RIGIDBODY_ID_RES "rigidbody"
 
 #define EARTH_POSITION Vec3(0, 0, 0)
@@ -14,9 +16,13 @@
 
 #define MOON_POSITION Vec3(500.0f, 0, 0)
 #define MOON_RADIUS 100.0f
-#define MOON_MASS 1000.0f
+#define MOON_MASS 333.0f
 
-#define SHIP_POSITION Vec3(-10.0, 0, 0)
+#define SUN_POSITION Vec3(200000.0f, 0, 0)
+#define SUN_RADIUS 10900.0f
+#define SUN_MASS 9000000.0f
+
+#define SHIP_POSITION Vec3(250.0, 0, 150)
 #define SHIP_CAMERA_OFFSET Vec3(0.0f, 3.0f, 8.0f)
 #define SHIP_THRUST_POWER 20.0f
 #define SHIP_MASS 1.0f
@@ -27,7 +33,7 @@
 #define CAMERA_UP Vec3(0, 1, 0)
 
 static const char ID_MAPPING[8][32] = {
-  "earth", "moon", "rigidbody"
+  "earth", "moon", "sun", "rigidbody"
 };
 
 #define INPUT_VEC3_UPDATE_VALUE 0.1

@@ -6,6 +6,7 @@ static GameFps gfps = {0};
 void game_init(int width, int height) {
   gst.earth = world::create_planet(EARTH_ID, EARTH_POSITION, EARTH_RADIUS, EARTH_MASS);
   gst.moon = world::create_planet(MOON_ID, MOON_POSITION, MOON_RADIUS, MOON_MASS);
+  gst.sun = world::create_planet(SUN_ID, SUN_POSITION, SUN_RADIUS, SUN_MASS);
   gst.ship = world::create_ship(SHIP_POSITION);
   gst.camera = render::create_camera(CAMERA_POSITION, CAMERA_TARGET, CAMERA_UP);
 
@@ -36,6 +37,7 @@ void game_update_hook() {
 
   physics::apply_planet_gravity(body, gst.earth);
   physics::apply_planet_gravity(body, gst.moon);
+  physics::apply_planet_gravity(body, gst.sun);
 
   physics::rb_integrate(body, dt);
 
@@ -69,8 +71,16 @@ void game_display_callback() {
 void game_display_hook() {
   render::camera_apply(gst.camera);
 
+  // Sun
+  Vec3 sun_dir = gst.sun.position;
+  float len = length(sun_dir);
+  if (len > 0) sun_dir = sun_dir / len;
+  float light_pos[4] = {sun_dir.x, sun_dir.y, sun_dir.z, 0.0f};
+  glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+
   render::draw_planet(gst.earth);
   render::draw_planet(gst.moon);
+  render::draw_planet(gst.sun);
   render::draw_ship(gst.ship);
   output::debug_camera(gst.camera.position.x, gst.camera.position.y, gst.camera.position.z);
   output::debug_fps(gfps.fps);

@@ -1,5 +1,6 @@
 #include "models.h"
 #include "../world/world.h"
+#include "../../assets/models/color_palette.h"
 
 namespace render {
 void draw_planet(const world::Planet &planet) {
@@ -7,10 +8,16 @@ void draw_planet(const world::Planet &planet) {
   glPushMatrix();
 
   glTranslatef(planet.position.x, planet.position.y, planet.position.z);
+  
   if (planet.id == MOON_ID) {
+    material_white();
     glBindTexture(GL_TEXTURE_2D, texture_id_buf[MOON_TEXTURE]);
-  } else {
+  } else if (planet.id == EARTH_ID) {
+    material_white();
     glBindTexture(GL_TEXTURE_2D, texture_id_buf[EARTH_TEXTURE]);
+  } else {
+    material_sun();
+    glBindTexture(GL_TEXTURE_2D, texture_id_buf[SUN_TEXTURE]);
   }
   GLUquadric *quad = gluNewQuadric();
   gluQuadricTexture(quad, GL_TRUE);
