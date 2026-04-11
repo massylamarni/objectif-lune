@@ -12,13 +12,13 @@ void fummee_idle ();
 
 void fummee_anim (float power);
 
-static float resteDivf(float dividende, float diviseur);
+float resteDivf(float dividende, float diviseur);
 
-static void ExplosionSphere(int nb_frag, float rayon_int, float rayon_ext);
+void ExplosionSphere(int nb_frag, float rayon_int, float rayon_ext);
 
-void ExplosionModel(void);
+void explosion_model();
 
-void startExplosionAnimation ();
+void start_explosion_animation ();
 
 void phaseExplosion1 (float animation_time);
 

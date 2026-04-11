@@ -86,7 +86,7 @@ void scene (void) {
   glLightfv (GL_LIGHT1, GL_POSITION, pos_directionnal); // Moon
   glPopMatrix ();
 
-  ExplosionModel();
+  explosion_model();
   
   glPopMatrix ();
 }
@@ -170,7 +170,7 @@ void keyboard (unsigned char key, int x, int y) {
     }
     else {
       glutIdleFunc (idle);
-      startExplosionAnimation();
+      start_explosion_animation();
     }
   }
   else if (key == 0X1B) { // Échap - Sortie

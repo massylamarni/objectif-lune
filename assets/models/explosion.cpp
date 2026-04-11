@@ -3,17 +3,17 @@
 
 /* Variables globales                           */
 
-int n_lat=40;
-int n_long=20;
-int animation_phase=0;
-float tremblement=0.0F;
-float explosion_size=0.0F;
-float fummee_size=0.0F;
-float saturation=0.0F;
-float anim_saturation=0.0F;
-float anim_explosion=0.0F;
-float anim_fummee=0.0F;
-float anim_fummee_offset [] = { 0.0F, 5.0F, 10.0F, 15.0F, 20.0F, 25.0F, 30.0F, 35.0F, 40.0F, 45.0F, 50.0F, 55.0F, 60.0F, 65.0F, 70.0F, 75.0F, 80.0F, 85.0F, 90.0F, 95.0F };
+static int n_lat=40;
+static int n_long=20;
+static int animation_phase=0;
+static float tremblement=0.0F;
+static float explosion_size=0.0F;
+static float fummee_size=0.0F;
+static float saturation=0.0F;
+static float anim_saturation=0.0F;
+static float anim_explosion=0.0F;
+static float anim_fummee=0.0F;
+static float anim_fummee_offset [] = { 0.0F, 5.0F, 10.0F, 15.0F, 20.0F, 25.0F, 30.0F, 35.0F, 40.0F, 45.0F, 50.0F, 55.0F, 60.0F, 65.0F, 70.0F, 75.0F, 80.0F, 85.0F, 90.0F, 95.0F };
 
 void fummee_idle () {
     for (int i = 0 ; i < 20 ; i++) {
@@ -45,14 +45,14 @@ void fummee_anim (float power) {
     }
   }
 
-static float resteDivf(float dividende, float diviseur) {
+float resteDivf(float dividende, float diviseur) {
   while (dividende>= diviseur) {
     dividende-=diviseur;
   }
   return dividende;
 }
 
-static void ExplosionSphere(int nb_frag, float rayon_int, float rayon_ext) {
+void ExplosionSphere(int nb_frag, float rayon_int, float rayon_ext) {
     for(int i=1; i<=nb_frag;i++){
       glPushMatrix();
       glRotatef(81.0F*i*rayon_ext*nb_frag,1.0F,0.0F,0.0F);
@@ -64,7 +64,7 @@ static void ExplosionSphere(int nb_frag, float rayon_int, float rayon_ext) {
     }
 }
 
-void ExplosionModel(void) {
+void explosion_model(void) {
   glPushMatrix();
   float col_explosion_rouge[] = { 1.0F-(saturation*0.9F), 0.0F+(saturation*0.1F), 0.0F+(saturation*0.1F), 1.0F };
   float col_explosion_orange[] = { 1.0F-(saturation*0.8F), 0.33F-(saturation*0.13F), 0.0F+(saturation*0.2F), 1.0F };
@@ -97,7 +97,7 @@ void ExplosionModel(void) {
   glPopMatrix();
 }
 
-void startExplosionAnimation () {
+void start_explosion_animation () {
   animation_phase=1;
   tremblement=0.0F;
   explosion_size=0.0F;

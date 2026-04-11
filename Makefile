@@ -11,6 +11,7 @@ BUILD_DIR = build
 SRC = $(shell find $(SRC_DIR) -name "*.cpp")
 PNG_SRC = $(shell find libs/PNG -name "*.cpp")
 ASSET_SRC = \
+	$(ASSET_DIR)/explosion.cpp \
 	$(ASSET_DIR)/color_palette.c
 
 SRC_OBJ = $(SRC:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
