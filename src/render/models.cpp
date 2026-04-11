@@ -2,10 +2,16 @@
 
 namespace render {
 void draw_planet(const world::Planet &planet) {
+  const uint *texture_id_buf = get_texture_id_buf();
   glPushMatrix();
 
   glTranslatef(planet.position.x, planet.position.y, planet.position.z);
-  glutSolidSphere(planet.radius, 32, 32);
+  glBindTexture(GL_TEXTURE_2D, texture_id_buf[MOON_TEXTURE]);
+  GLUquadric *quad = gluNewQuadric();
+  gluQuadricTexture(quad, GL_TRUE);
+  gluQuadricNormals(quad, GLU_SMOOTH);
+  gluSphere(quad, planet.radius, 32, 32);
+  gluDeleteQuadric(quad);
 
   glPopMatrix();
 }

@@ -1,7 +1,8 @@
 #include "textures.h"
+#include "../output/logs.h"
 
 namespace render {
-static uint texture_id_buf[32];
+static uint texture_id_buf[TEXTURE_ID_BUF_LEN];
 static uint texture_id_buf_len = 0;
 
 const uint *get_texture_id_buf() { return texture_id_buf; }
@@ -24,14 +25,11 @@ void preload_texture_to_gpu(unsigned char *img, int rx, int ry) {
 void preload_texture(char *file_path) {
   int rx;
   int ry;
-  printf("%s\n", file_path);
   unsigned char *img = chargeImagePng(file_path, &rx, &ry);
   if (img) {
-    printf("Resolution en x : %8d\n", rx);
-    printf("Resolution en y : %8d\n", ry);
-    printf("Adresse         : %p, %d octets\n", img, 3 * rx * ry);
+    LOG_RENDER("Loaded texture %s, (%d x %d px), (@%p, %d bytes)", file_path, rx, ry, img, 3*rx*ry);
   } else {
-    printf("Adresse         : %p\n", img);
+    LOG_RENDER("Failed to load texture %s, (@%p)", file_path, img);
   }
   printf("\n");
 
@@ -40,17 +38,23 @@ void preload_texture(char *file_path) {
 }
 
 void free_textures() {
-  for (int i = 0; i < texture_id_buf_len; i++) {
+  for (uint i = 0; i < texture_id_buf_len; i++) {
     glDeleteTextures(1, &texture_id_buf[i]);
   }
   texture_id_buf_len = 0;
 }
 
-void load_all_emoji_textures_example() {
+void load_all_emoji_textures() {
   for (int i = 1; i <= 6; i++) {
-    char file_path[32];
+    char file_path[TEXTURE_PATH_MAXLEN];
     sprintf(file_path, "%s/emojis/emoji%i.png", TEXTURES_RELATIVE_PATH, i);
     preload_texture(file_path);
   }
+}
+
+void load_moon_texture() {
+  char file_path[TEXTURE_PATH_MAXLEN];
+  sprintf(file_path, "%s/moon.png", TEXTURES_RELATIVE_PATH);
+  preload_texture(file_path);
 }
 } // namespace render
