@@ -73,6 +73,7 @@ void explosion_model(void) {
   glPushMatrix();
   glScalef(1.2F, 1.2F, 1.2F);
   glTranslatef(0.0F,0.5F*explosion_size,0.0F);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, col_explosion_noir);
   glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col_explosion_jaune);
   glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, col_explosion_jaune);
   ExplosionSphere(40, 0.075F, 0.125F);
@@ -108,10 +109,14 @@ void start_explosion_animation () {
   anim_fummee=0.0F;
 }
 
+int getExplosionPhase (){
+  return animation_phase;
+}
+
 void phaseExplosion1 (float animation_time) {
-  anim_explosion += animation_time / 240.0F;
-  anim_fummee += animation_time / 5.0F;
-  fummee_size += animation_time / 300.0F;
+  anim_explosion += animation_time * 0.33F;
+  anim_fummee += animation_time * 12.0F;
+  fummee_size += animation_time * 0.25F;
   fummee_idle ();
   tremblement+=8.0F;
   if (anim_explosion<0.9F/7.0F){
@@ -126,9 +131,9 @@ void phaseExplosion1 (float animation_time) {
 }
 
 void phaseExplosion2 (float animation_time) {
-  anim_saturation += animation_time / 120.0F;
-  anim_fummee += animation_time / 10.0F;
-  fummee_size += animation_time / 400.0F;
+  anim_saturation += animation_time * 0.33F;
+  anim_fummee += animation_time * 5.99F;
+  fummee_size += animation_time * 0.18F;
   fummee_idle ();
   tremblement+=4.0F;
   saturation=sqrt(anim_saturation);
@@ -139,9 +144,9 @@ void phaseExplosion2 (float animation_time) {
 }
 
 void phaseExplosion3 (float animation_time) {
-  anim_explosion -= animation_time / 240.0F;
-  anim_fummee += animation_time / 15.0F;
-  fummee_size += animation_time / 500.0F;
+  anim_explosion -= animation_time * 0.25F;
+  anim_fummee += animation_time * 4.0F;
+  fummee_size += animation_time * 0.12F;
   fummee_idle ();
   tremblement+=2.0F;
   explosion_size=anim_explosion;
@@ -152,8 +157,8 @@ void phaseExplosion3 (float animation_time) {
 }
 
 void phaseExplosion4 (float animation_time) {
-  anim_fummee += animation_time / 20.0F;
-  fummee_size -= animation_time / 1000.0F;
+  anim_fummee += animation_time * 3.0F;
+  fummee_size -= animation_time * 0.01F;
   fummee_idle ();
   tremblement+=1.0F;
   if (fummee_size<0.0F){

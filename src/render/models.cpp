@@ -45,10 +45,10 @@ void draw_lem() {
   glPopMatrix();
 }
 
-void draw_explosion() {
+void draw_explosion(const world::Ship &ship) {
   glPushMatrix();
 
-  glTranslatef(0.0F, -1.0F, 0.0F);
+  glTranslatef(ship.position.x, ship.position.y-3.0F, ship.position.z);
   explosion_model();
 
   glPopMatrix();

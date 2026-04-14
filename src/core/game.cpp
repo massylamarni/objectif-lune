@@ -56,6 +56,11 @@ void game_update_hook() {
 
   input::input_update(gst.ship.velocity);
   render::camera_follow_ship(gst.camera, gst.ship); 
+  explosion_idle(dt);
+  int phaseExplosion = getExplosionPhase();
+  if (phaseExplosion<1  || phaseExplosion>4){
+    start_explosion_animation();
+  }
   
   update_fps_counter(dt);
 }
@@ -82,6 +87,7 @@ void game_display_hook() {
   render::draw_planet(gst.moon);
   render::draw_planet(gst.sun);
   render::draw_ship(gst.ship);
+  render::draw_explosion(gst.ship);
   output::debug_camera(gst.camera.position.x, gst.camera.position.y, gst.camera.position.z);
   output::debug_fps(gfps.fps);
 }
