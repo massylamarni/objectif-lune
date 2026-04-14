@@ -1,6 +1,7 @@
 #include "input.h"
 #include "keyboard.h"
 #include "mouse.h"
+#include "../ui/minimap.h"
 #include "../world/world.h"
 
 namespace input {
@@ -15,6 +16,7 @@ void set_key_state(unsigned char key, int x, int y, int isDown) {
     case 'q': state.q_down = isDown; break;
     case 's': state.s_down = isDown; break;
     case 'd': state.d_down = isDown; break;
+    case 'u': state.u_down = isDown; break;
   }
 }
 
@@ -65,6 +67,7 @@ void input_update(Vec3 &vec3) {
   if (state.e_down) vec3.y += INPUT_VEC3_UPDATE_VALUE;
   if (state.z_down) vec3 += rotate_yaw(Vec3(0, 0, -INPUT_VEC3_UPDATE_VALUE), state.mouse_rotation_delta.x);
   if (state.s_down) vec3 += rotate_yaw(Vec3(0, 0, INPUT_VEC3_UPDATE_VALUE), state.mouse_rotation_delta.x);
+  ui::toggle_orbit_main_view(state.u_down);
 }
 
 Vec3 rotate_yaw(const Vec3 &v, float yaw) {
@@ -78,7 +81,6 @@ Vec3 rotate_pitch(const Vec3 &v, float pitch) {
   float sin_p = sin(pitch);
   return Vec3(v.x, v.y * cos_p - v.z * sin_p, v.y * sin_p + v.z * cos_p);
 }
-
 
 InputState &get_input_state() { return state; }
 

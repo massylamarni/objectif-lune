@@ -87,6 +87,7 @@ void game_display_hook() {
   render::draw_planet(gst.moon);
   render::draw_planet(gst.sun);
   render::draw_ship(gst.ship);
+  ui::draw_minimaps(gst.ship, gst.earth, gst.moon, gst.sun, gst.camera);
   render::draw_explosion(gst.ship);
   output::debug_camera(gst.camera.position.x, gst.camera.position.y, gst.camera.position.z);
   output::debug_fps(gfps.fps);

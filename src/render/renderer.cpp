@@ -32,7 +32,7 @@ void init(int *argc, char **argv) {
   glEnable(GL_TEXTURE_2D);
   // glEnable(GL_CULL_FACE);
   // glCullFace(GL_BACK);
-  glClearColor(0.02f, 0.02f, 0.05f, 1.0f);
+  glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
   // glEnable(GL_COLOR_MATERIAL);
   glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 

@@ -112,5 +112,6 @@ void input_init_keyboard() {
   state.q_down = false;
   state.s_down = false;
   state.d_down = false;
+  state.u_down = false;
 }
 } // namespace input

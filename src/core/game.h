@@ -10,6 +10,7 @@
 #include "../render/models.h"
 #include "../render/renderer.h"
 #include "../render/utils.h"
+#include "../ui/minimap.h"
 #include "../world/planet.h"
 #include "../world/ship.h"
 #include "time.h"

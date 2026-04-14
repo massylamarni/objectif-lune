@@ -37,6 +37,14 @@ void draw_ship(const world::Ship &ship) {
   glPopMatrix();
 }
 
+void draw_mini_ship(const world::Ship &ship) {
+  glPushMatrix();
+
+  glutSolidCube(1);
+
+  glPopMatrix();
+}
+
 void draw_lem() {
   glPushMatrix();
 
