@@ -10,19 +10,19 @@
 #define SUN_ID_RES "sun"
 #define RIGIDBODY_ID_RES "rigidbody"
 
-#define EARTH_POSITION Vec3(0, 0, 0)
-#define EARTH_RADIUS 300.0f
-#define EARTH_MASS 27000.0f
+#define EARTH_POSITION Vec3(-200000.0f, 0, 0)
+#define EARTH_RADIUS 1.0f
+#define EARTH_MASS 1.0f
 
 #define MOON_POSITION Vec3(500.0f, 0, 0)
-#define MOON_RADIUS 100.0f
+#define MOON_RADIUS 500.0f
 #define MOON_MASS 333.0f
 
 #define SUN_POSITION Vec3(200000.0f, 0, 0)
-#define SUN_RADIUS 10900.0f
-#define SUN_MASS 9000000.0f
+#define SUN_RADIUS 1.0f
+#define SUN_MASS 1.0f
 
-#define SHIP_POSITION Vec3(250.0, 0, 150)
+#define SHIP_POSITION Vec3(1500.0, 0, 500.0f)
 #define SHIP_CAMERA_OFFSET Vec3(0.0f, 3.0f, 8.0f)
 #define SHIP_THRUST_POWER 20.0f
 #define SHIP_MASS 1.0f

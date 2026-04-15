@@ -12,12 +12,8 @@ void draw_planet(const world::Planet &planet) {
   if (planet.id == MOON_ID) {
     material_white();
     glBindTexture(GL_TEXTURE_2D, texture_id_buf[MOON_TEXTURE]);
-  } else if (planet.id == EARTH_ID) {
-    material_white();
-    glBindTexture(GL_TEXTURE_2D, texture_id_buf[EARTH_TEXTURE]);
   } else {
     material_sun();
-    glBindTexture(GL_TEXTURE_2D, texture_id_buf[SUN_TEXTURE]);
   }
   GLUquadric *quad = gluNewQuadric();
   gluQuadricTexture(quad, GL_TRUE);
