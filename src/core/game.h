@@ -21,6 +21,7 @@ struct GameState {
   world::Planet sun;
   world::Ship ship;
   render::Camera camera;
+  bool player_won;
 };
 
 struct GameFps {

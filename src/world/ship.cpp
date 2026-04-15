@@ -14,6 +14,7 @@ Ship create_ship(const Vec3 position) {
   ship.radius = SHIP_RADIUS;
 
   ship.thrusting = false;
+  ship.state = SHIP_ROAMING;
 
   return ship;
 }

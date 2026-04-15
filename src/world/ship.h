@@ -5,6 +5,13 @@
 #include <cmath>
 
 namespace world {
+
+typedef enum {
+  SHIP_ROAMING,
+  SHIP_LANDED,
+  SHIP_DESTORYED
+} ship_state;
+
 struct Ship {
   Vec3 position;
   Vec3 velocity;
@@ -16,6 +23,7 @@ struct Ship {
   float radius;
 
   bool thrusting;
+  ship_state state;
 };
 
 Ship create_ship(const Vec3 position);

@@ -60,7 +60,7 @@ void input_init() {
   glutPassiveMotionFunc(mouse_passive_motion_callback);
 }
 
-void input_update(Vec3 &vec3) {
+void input_update(Vec3 &vec3, Vec3 &rotation) {
   if (state.q_down) vec3 += rotate_yaw(Vec3(-INPUT_VEC3_UPDATE_VALUE, 0, 0), state.mouse_rotation_delta.x);
   if (state.d_down) vec3 += rotate_yaw(Vec3(INPUT_VEC3_UPDATE_VALUE, 0, 0), state.mouse_rotation_delta.x);
   if (state.a_down) vec3.y -= INPUT_VEC3_UPDATE_VALUE;
@@ -68,6 +68,8 @@ void input_update(Vec3 &vec3) {
   if (state.z_down) vec3 += rotate_yaw(Vec3(0, 0, -INPUT_VEC3_UPDATE_VALUE), state.mouse_rotation_delta.x);
   if (state.s_down) vec3 += rotate_yaw(Vec3(0, 0, INPUT_VEC3_UPDATE_VALUE), state.mouse_rotation_delta.x);
   ui::toggle_orbit_main_view(state.u_down);
+  rotation.x = state.mouse_rotation_delta.y;
+  rotation.y = state.mouse_rotation_delta.x;
 }
 
 Vec3 rotate_yaw(const Vec3 &v, float yaw) {

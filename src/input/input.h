@@ -22,7 +22,7 @@ struct InputState {
 };
 
 void input_init();
-void input_update(Vec3 &vec3);
+void input_update(Vec3 &vec3, Vec3 &rotation);
 Vec3 rotate_yaw(const Vec3 &v, float yaw);
 Vec3 rotate_pitch(const Vec3 &v, float pitch);
 InputState &get_input_state();

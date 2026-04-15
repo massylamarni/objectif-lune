@@ -4,28 +4,28 @@ static GameState gst;
 static GameFps gfps = {0};
 
 void game_init(int width, int height) {
-  gst.earth = world::create_planet(EARTH_ID, EARTH_POSITION, EARTH_RADIUS, EARTH_MASS);
-  gst.moon = world::create_planet(MOON_ID, MOON_POSITION, MOON_RADIUS, MOON_MASS);
+  gst.earth =
+      world::create_planet(EARTH_ID, EARTH_POSITION, EARTH_RADIUS, EARTH_MASS);
+  gst.moon =
+      world::create_planet(MOON_ID, MOON_POSITION, MOON_RADIUS, MOON_MASS);
   gst.sun = world::create_planet(SUN_ID, SUN_POSITION, SUN_RADIUS, SUN_MASS);
   gst.ship = world::create_ship(SHIP_POSITION);
   gst.camera = render::create_camera(CAMERA_POSITION, CAMERA_TARGET, CAMERA_UP);
+  gst.player_won = false;
 
   game_display();
   game_update();
   input::input_init();
 }
 
-void game_update() {
-  glutIdleFunc(game_update_callback);
-}
+void game_update() { glutIdleFunc(game_update_callback); }
 
-void game_update_callback() {
-  render::idle(game_update_hook);
-}
+void game_update_callback() { render::idle(game_update_hook); }
 
 void game_update_hook() {
   core::time_update();
   float dt = core::time_delta();
+  const world::ship_state previous_ship_state = gst.ship.state;
 
   physics::RigidBody body;
 
@@ -51,27 +51,31 @@ void game_update_hook() {
 
   gst.ship.position = body.position;
   gst.ship.velocity = body.velocity;
-
   world::ship_update(gst.ship, dt);
+  input::input_update(gst.ship.velocity, gst.ship.rotation);
 
-  input::input_update(gst.ship.velocity);
-  render::camera_follow_ship(gst.camera, gst.ship); 
-  explosion_idle(dt);
-  int phaseExplosion = getExplosionPhase();
-  if (phaseExplosion<1  || phaseExplosion>4){
+  physics::update_ship_collision_state(gst.ship, gst.earth);
+  physics::update_ship_collision_state(gst.ship, gst.moon);
+  if (gst.ship.state == world::SHIP_DESTORYED &&
+      previous_ship_state != world::SHIP_DESTORYED) {
     start_explosion_animation();
   }
-  
+
+  gst.player_won = (gst.ship.state == world::SHIP_LANDED);
+  if (gst.player_won || gst.ship.state == world::SHIP_DESTORYED) {
+    explosion_idle(dt);
+    return;
+  }
+
+  render::camera_follow_ship(gst.camera, gst.ship);
+  explosion_idle(dt);
+
   update_fps_counter(dt);
 }
 
-void game_display() {
-  glutDisplayFunc(game_display_callback);
-}
+void game_display() { glutDisplayFunc(game_display_callback); }
 
-void game_display_callback() {
-  render::display(game_display_hook);
-}
+void game_display_callback() { render::display(game_display_hook); }
 
 void game_display_hook() {
   render::camera_apply(gst.camera);
@@ -79,17 +83,32 @@ void game_display_hook() {
   // Sun
   Vec3 sun_dir = gst.sun.position;
   float len = length(sun_dir);
-  if (len > 0) sun_dir = sun_dir / len;
+  if (len > 0)
+    sun_dir = sun_dir / len;
   float light_pos[4] = {sun_dir.x, sun_dir.y, sun_dir.z, 0.0f};
   glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
   render::draw_planet(gst.earth);
   render::draw_planet(gst.moon);
   render::draw_planet(gst.sun);
-  render::draw_ship(gst.ship);
+
+  if (gst.ship.state != world::SHIP_DESTORYED) {
+    render::draw_ship(gst.ship);
+  }
+  if (gst.ship.state == world::SHIP_DESTORYED && getExplosionPhase() != 0) {
+    render::draw_explosion(gst.ship);
+  }
+  if (gst.ship.state == world::SHIP_LANDED) {
+    render::draw_text("Landing successful - You win!", 20,
+                      render::SCREEN_HEIGHT - 70);
+  } else if (gst.ship.state == world::SHIP_DESTORYED) {
+    render::draw_text("Crash detected - Ship destroyed!", 20,
+                      render::SCREEN_HEIGHT - 70);
+  }
+
   ui::draw_minimaps(gst.ship, gst.earth, gst.moon, gst.sun, gst.camera);
-  render::draw_explosion(gst.ship);
-  output::debug_camera(gst.camera.position.x, gst.camera.position.y, gst.camera.position.z);
+  output::debug_camera(gst.camera.position.x, gst.camera.position.y,
+                       gst.camera.position.z);
   output::debug_fps(gfps.fps);
 }
 
