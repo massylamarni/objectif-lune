@@ -1,4 +1,5 @@
 #include "game.h"
+#include <algorithm>
 #include <cstdio>
 
 static GameState gst;
@@ -16,6 +17,27 @@ void update_fov() {
   static float smooth_fov = 60.0f;
   smooth_fov += (fov - smooth_fov) * 0.1f;
   render::set_perspective(smooth_fov);
+}
+
+void update_fog() {
+  const float MIN_FOG = 10.0f;
+  const float MAX_FOG = 1000.0f;
+
+  float distance = world::distance_to_surface(gst.moon, gst.ship.position);
+
+  float t =
+      std::clamp((distance - MIN_FOG) / (MAX_FOG - MIN_FOG), 0.0f, 1.0f);
+
+  float fog_start = 20.0f + t * 300.0f;
+  float fog_end = 80.0f + t * 1500.0f;
+
+  static float s_start = fog_start;
+  static float s_end = fog_end;
+
+  s_start += (fog_start - s_start) * 0.1f;
+  s_end += (fog_end - s_end) * 0.1f;
+
+  render::set_fog(s_start, s_end);
 }
 
 void game_init(int width, int height) {
@@ -42,6 +64,7 @@ void game_update_hook() {
   float dt = core::time_delta();
   const world::ship_state previous_ship_state = gst.ship.state;
   update_fov();
+  update_fog();
 
   physics::RigidBody body;
 

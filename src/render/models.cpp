@@ -18,7 +18,7 @@ void draw_planet(const world::Planet &planet) {
   GLUquadric *quad = gluNewQuadric();
   gluQuadricTexture(quad, GL_TRUE);
   gluQuadricNormals(quad, GLU_SMOOTH);
-  gluSphere(quad, planet.radius, 32, 32);
+  gluSphere(quad, planet.radius, 64, 64);
   gluDeleteQuadric(quad);
 
   glPopMatrix();

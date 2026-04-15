@@ -19,7 +19,8 @@ static int SCREEN_POSITION_Y = 50;
 static float NATURAL_PERSPECTIVE = 60.0f;
 
 void init(int *argc, char **argv);
-void set_perspective(float fov);
+void set_fog(const float fog_start, const float fog_end);
+void set_perspective(const float fov);
 static void display_start_frame();
 static void display_end_frame();
 void display(void display_hook(void));
