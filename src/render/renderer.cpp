@@ -42,7 +42,7 @@ void init(int *argc, char **argv) {
   load_textures();
 }
 
-static void set_perspective() {
+void set_perspective(float fov) {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   /*
@@ -50,10 +50,9 @@ static void set_perspective() {
     if (ratio < 1.0) gluPerspective(12.0/ratio, ratio, 90, 110);
     else gluPerspective(12.0, ratio, 90, 110);
   */
-
-  gluPerspective(NATURAL_PERSPECTIVE,
-                 (double)render::SCREEN_HEIGHT / (double)render::SCREEN_WIDTH,
-                 0.1, 1000000.0);
+  gluPerspective(fov,
+                 (double)render::SCREEN_WIDTH / (double)render::SCREEN_HEIGHT,
+                 0.1, 1000.0);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
@@ -93,10 +92,10 @@ static void clean(void) {
 
 static void reshape(int wx, int wy) {
   // printf("R\n");
-  render::SCREEN_HEIGHT = wx;
-  render::SCREEN_WIDTH = wy;
+  render::SCREEN_WIDTH = wx;
+  render::SCREEN_HEIGHT = wy;
   glViewport(0, 0, wx, wy);
-  set_perspective();
+  set_perspective(NATURAL_PERSPECTIVE);
 }
 } // namespace render
 

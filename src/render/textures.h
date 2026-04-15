@@ -1,3 +1,6 @@
+#ifndef RENDER_TEXTURES
+#define RENDER_TEXTURES
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,3 +27,5 @@ void preload_texture(char *file_path);
 void free_textures();
 void load_textures();
 } // namespace render
+
+#endif

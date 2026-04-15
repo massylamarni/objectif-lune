@@ -15,7 +15,7 @@
 #define EARTH_MASS 1.0f
 
 #define MOON_POSITION Vec3(500.0f, 0, 0)
-#define MOON_RADIUS 500.0f
+#define MOON_RADIUS 300.0f
 #define MOON_MASS 333.0f
 
 #define SUN_POSITION Vec3(200000.0f, 0, 0)

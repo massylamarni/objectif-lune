@@ -1,7 +1,22 @@
 #include "game.h"
+#include <cstdio>
 
 static GameState gst;
 static GameFps gfps = {0};
+
+void update_fov() {
+  const float FOV_CONST = 500.0f;
+  const float MIN_FOV = 30.0f;
+  const float MAX_FOV = 80.0f;
+
+  float distance = world::distance_to_surface(gst.moon, gst.ship.position);
+  float t = distance / (distance + FOV_CONST);
+
+  float fov = MIN_FOV + t * (MAX_FOV - MIN_FOV);
+  static float smooth_fov = 60.0f;
+  smooth_fov += (fov - smooth_fov) * 0.1f;
+  render::set_perspective(smooth_fov);
+}
 
 void game_init(int width, int height) {
   gst.earth =
@@ -26,6 +41,7 @@ void game_update_hook() {
   core::time_update();
   float dt = core::time_delta();
   const world::ship_state previous_ship_state = gst.ship.state;
+  update_fov();
 
   physics::RigidBody body;
 
