@@ -1,6 +1,7 @@
 #ifndef RENDER_MODELS
 #define RENDER_MODELS
 
+#include "../math/vec3.h"
 #include "../world/planet.h"
 #include "../world/ship.h"
 #include "../../assets/models/explosion.h"
@@ -11,6 +12,7 @@
 
 namespace render {
 void draw_planet(const world::Planet &planet);
+void draw_moon(const world::Planet &moon, const Vec3 &ship_position);
 void draw_ship(const world::Ship &ship);
 void draw_mini_ship(const world::Ship &ship);
 void draw_lem();
