@@ -1,3 +1,6 @@
+#ifndef WORLD_WORLD
+#define WORLD_WORLD
+
 #include "../math/vec2.h"
 #include "../math/vec3.h"
 
@@ -39,3 +42,4 @@ static const char ID_MAPPING[8][32] = {
 #define INPUT_VEC3_UPDATE_VALUE 0.1
 #define MOUSE_SENSITIVITY 0.005f // radians per pixel
 
+#endif
