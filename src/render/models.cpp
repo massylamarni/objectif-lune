@@ -4,18 +4,22 @@
 #include <GL/gl.h>
 #include <algorithm>
 #include <cmath>
-#include "moon_model.h"
+#include <cstdio>
 
 namespace render {
 
-void draw_moon(const world::Planet &moon, const Vec3 &ship_position) {
+void draw_moon(const world::Planet &moon, physics::RigidBody &body, const Vec3 &ship_position) {
   float dist = world::distance_to_surface(moon, ship_position);
 
   float t = (dist - TERRAIN_FADE_END) / (TERRAIN_FADE_START - TERRAIN_FADE_END);
   t = std::clamp(t, 0.0f, 1.0f);
 
-  draw_moon_sphere(moon);
-  draw_moon_terrain(moon, ship_position, t);
+  models::draw_moon_sphere(moon);
+  models::draw_moon_terrain(moon, ship_position, t);
+  if (models::check_planet_collision(body, moon, ship_position, t)) {
+    printf("collision\n");
+    models::resolve_planet_collision(body, moon, ship_position, t);
+  }
 }
 
 void draw_planet(const world::Planet &planet) {

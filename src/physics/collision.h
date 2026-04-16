@@ -15,6 +15,7 @@ world::ship_state check_ship_planet_collision(const world::Ship &ship,
 void resolve_planet_collision(RigidBody &body, const world::Planet &planet);
 void update_ship_collision_state(world::Ship &ship,
                                  const world::Planet &planet);
+Vec3 ship_down_direction(const world::Ship &ship);
 } // namespace physics
 
 #endif

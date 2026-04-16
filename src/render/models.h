@@ -9,10 +9,11 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include "textures.h"
+#include "moon_model.h"
 
 namespace render {
 void draw_planet(const world::Planet &planet);
-void draw_moon(const world::Planet &moon, const Vec3 &ship_position);
+void draw_moon(const world::Planet &moon, physics::RigidBody &body, const Vec3 &ship_position);
 void draw_ship(const world::Ship &ship);
 void draw_mini_ship(const world::Ship &ship);
 void draw_lem();

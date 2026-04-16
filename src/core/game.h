@@ -20,6 +20,7 @@ struct GameState {
   world::Planet moon;
   world::Planet sun;
   world::Ship ship;
+  physics::RigidBody body;
   render::Camera camera;
   bool player_won;
 };

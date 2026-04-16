@@ -1,12 +1,13 @@
 #include "rigidbody.h"
 
 namespace physics {
-RigidBody create_rigidbody(const Vec3 &position, float mass, float radius) {
+RigidBody create_rigidbody(const int id, const world::Ship ship) {
   RigidBody body;
-  body.position = position;
-  body.velocity = Vec3(0, 0, 0);
-  body.mass = mass;
-  body.radius = radius;
+  body.id = id;
+  body.position = ship.position;
+  body.velocity = ship.velocity;
+  body.mass = ship.mass;
+  body.radius = ship.radius;
   body.accumulated_force = Vec3(0, 0, 0);
   return body;
 }

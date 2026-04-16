@@ -47,6 +47,7 @@ void game_init(int width, int height) {
       world::create_planet(MOON_ID, MOON_POSITION, MOON_RADIUS, MOON_MASS);
   gst.sun = world::create_planet(SUN_ID, SUN_POSITION, SUN_RADIUS, SUN_MASS);
   gst.ship = world::create_ship(SHIP_POSITION);
+  gst.body = physics::create_rigidbody(RIGID_BODY_ID, gst.ship);
   gst.camera = render::create_camera(CAMERA_POSITION, CAMERA_TARGET, CAMERA_UP);
   gst.player_won = false;
 
@@ -65,31 +66,25 @@ void game_update_hook() {
   const world::ship_state previous_ship_state = gst.ship.state;
   update_fov();
   update_fog();
+  gst.body.position = gst.ship.position;
+  gst.body.velocity = gst.ship.velocity;
+  gst.body.mass = gst.ship.mass;
+  gst.body.radius = gst.ship.radius;
 
-  physics::RigidBody body;
+  physics::apply_planet_gravity(gst.body, gst.earth);
+  physics::apply_planet_gravity(gst.body, gst.moon);
+  physics::apply_planet_gravity(gst.body, gst.sun);
 
-  body.id = RIGID_BODY_ID;
-  body.position = gst.ship.position;
-  body.velocity = gst.ship.velocity;
-  body.mass = gst.ship.mass;
-  body.radius = gst.ship.radius;
+  physics::rb_integrate(gst.body, dt);
 
-  physics::apply_planet_gravity(body, gst.earth);
-  physics::apply_planet_gravity(body, gst.moon);
-  physics::apply_planet_gravity(body, gst.sun);
-
-  physics::rb_integrate(body, dt);
-
-  if (physics::check_planet_collision(body, gst.earth)) {
-    physics::resolve_planet_collision(body, gst.earth);
+  /*
+  if (physics::check_planet_collision(gst.body, gst.moon)) {
+    physics::resolve_planet_collision(gst.body, gst.moon);
   }
+  */
 
-  if (physics::check_planet_collision(body, gst.moon)) {
-    physics::resolve_planet_collision(body, gst.moon);
-  }
-
-  gst.ship.position = body.position;
-  gst.ship.velocity = body.velocity;
+  gst.ship.position = gst.body.position;
+  gst.ship.velocity = gst.body.velocity;
   world::ship_update(gst.ship, dt);
   input::input_update(gst.ship.velocity, gst.ship.rotation);
 
@@ -128,7 +123,7 @@ void game_display_hook() {
   glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
   render::draw_planet(gst.earth);
-  render::draw_moon(gst.moon, gst.ship.position);
+  render::draw_moon(gst.moon, gst.body, gst.ship.position);
   render::draw_planet(gst.sun);
 
   if (gst.ship.state != world::SHIP_DESTORYED) {

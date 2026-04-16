@@ -1,6 +1,6 @@
 #include "moon_model.h"
-#include <vector>
 
+namespace models {
 struct PrecomputedVertex {
   Vec3 base_dir;
   float raw_h;
@@ -37,20 +37,38 @@ void initialize_grid(const world::Planet &moon) {
       float xc = ((float)x - half) * SCALE;
       float zc = ((float)z - half) * SCALE;
 
-      float xs = xc * 0.05f, zs = zc * 0.05f;
-      float sx = std::sin(xs), cx = std::cos(xs);
-      float sz = std::sin(zs), cz = std::cos(zs);
-
       PrecomputedVertex &pv = s_precomp_grid[z * SIZE + x];
-
       pv.base_dir = normalize(Vec3(xc * inv_radius, 1.0f, zc * inv_radius));
 
-      pv.raw_h = sx * cz * MOON_HEIGHT_BIAS;
+      float h = 0.0f;
+      float dx = 0.0f;
+      float dz = 0.0f;
 
-      float dx = 0.05f * cx * cz * MOON_HEIGHT_BIAS;
-      float dz = -0.05f * sx * sz * MOON_HEIGHT_BIAS;
+      // Base rolling hills (Low frequency, high amplitude)
+      float f1 = 0.02f;
+      float a1 = 1.0f;
+      h += a1 * std::sin(xc * f1) * std::cos(zc * f1);
+      dx += a1 * f1 * std::cos(xc * f1) * std::cos(zc * f1);
+      dz -= a1 * f1 * std::sin(xc * f1) * std::sin(zc * f1);
 
-      pv.grad_vec = Vec3(-dx, 0.0f, -dz);
+      // Mid-level irregularities (Offset phase to break the grid)
+      float fx2 = 0.057f, fz2 = 0.043f;
+      float a2 = 0.4f;
+      h += a2 * std::sin(xc * fx2 + 1.2f) * std::cos(zc * fz2 + 0.8f);
+      dx += a2 * fx2 * std::cos(xc * fx2 + 1.2f) * std::cos(zc * fz2 + 0.8f);
+      dz -= a2 * fz2 * std::sin(xc * fx2 + 1.2f) * std::sin(zc * fz2 + 0.8f);
+
+      // High-frequency spikes/details
+      float fx3 = 0.131f, fz3 = 0.173f;
+      float a3 = 0.15f;
+      h += a3 * std::sin(xc * fx3 - 0.5f) * std::cos(zc * fz3 + 2.1f);
+      dx += a3 * fx3 * std::cos(xc * fx3 - 0.5f) * std::cos(zc * fz3 + 2.1f);
+      dz -= a3 * fz3 * std::sin(xc * fx3 - 0.5f) * std::sin(zc * fz3 + 2.1f);
+
+      pv.raw_h = h * MOON_HEIGHT_BIAS;
+
+      pv.grad_vec = Vec3(-dx * MOON_HEIGHT_BIAS, 0.0f, -dz * MOON_HEIGHT_BIAS);
+
       pv.u_tex = xc * 0.01f;
       pv.v_tex = zc * 0.01f;
     }
@@ -139,4 +157,101 @@ void draw_moon_terrain(const world::Planet &moon, const Vec3 &ship_position,
   glMultMatrixf(mat);
   glCallList(s_terrain_list);
   glPopMatrix();
+}
+
+float get_moon_height_at_pos(const world::Planet &planet,
+                             const Vec3 &ship_position, const Vec3 &target_pos,
+                             float t) {
+  Vec3 to_ship = normalize(ship_position - planet.position);
+  Vec3 e1, e2;
+
+  Vec3 ref = (std::fabs(to_ship.y) < 0.9f) ? Vec3(0.0f, 1.0f, 0.0f)
+                                           : Vec3(1.0f, 0.0f, 0.0f);
+  e1 = normalize(cross(ref, to_ship));
+  e2 = normalize(cross(to_ship, e1));
+
+  Vec3 rel_pos = target_pos - planet.position;
+  float y_local = dot(rel_pos, to_ship);
+  float x_local = dot(rel_pos, e1);
+  float z_local = dot(rel_pos, e2);
+
+  if (y_local <= 0.0f)
+    return 0.0f;
+
+  float xc = (x_local / y_local) * planet.radius;
+  float zc = (z_local / y_local) * planet.radius;
+
+  float h = 0.0f;
+  h += 1.00f * std::sin(xc * 0.020f) * std::cos(zc * 0.020f);
+  h += 0.40f * std::sin(xc * 0.057f + 1.2f) * std::cos(zc * 0.043f + 0.8f);
+  h += 0.15f * std::sin(xc * 0.131f - 0.5f) * std::cos(zc * 0.173f + 2.1f);
+
+  float raw_u = 1.0f - t;
+  float u_w = raw_u * raw_u * (3.0f - 2.0f * raw_u);
+
+  return (MOON_HEIGHT_BIAS + (h * MOON_HEIGHT_BIAS)) * u_w;
+}
+
+bool check_planet_collision(const physics::RigidBody &body,
+                            const world::Planet &planet, const Vec3 &ship_pos,
+                            float t) {
+  float terrain_h = get_moon_height_at_pos(planet, ship_pos, body.position, t);
+
+  Vec3 diff = body.position - planet.position;
+  float dist = length(diff);
+
+  return dist <= (planet.radius + terrain_h + body.radius);
+}
+
+void resolve_planet_collision(physics::RigidBody &body,
+                              const world::Planet &planet, const Vec3 &ship_pos,
+                              float t) {
+  float terrain_h = get_moon_height_at_pos(planet, ship_pos, body.position, t);
+
+  Vec3 normal = normalize(body.position - planet.position);
+  body.position =
+      planet.position + normal * (planet.radius + terrain_h + body.radius);
+
+  float velocity_normal = dot(body.velocity, normal);
+  if (velocity_normal < 0.0f) {
+    body.velocity -= normal * velocity_normal;
+  }
+}
+
+void update_ship_collision_state(world::Ship &ship, const world::Planet &planet,
+                                 float t) {
+  if (ship.state == world::SHIP_LANDED || ship.state == world::SHIP_DESTORYED) {
+    return;
+  }
+
+  physics::RigidBody body;
+  body.position = ship.position;
+  body.radius = ship.radius;
+
+  if (!check_planet_collision(body, planet, ship.position, t)) {
+    ship.state = world::ship_state::SHIP_ROAMING;
+    return;
+  }
+
+  resolve_planet_collision(body, planet, ship.position, t);
+  ship.position = body.position;
+
+  Vec3 to_planet = normalize(planet.position - ship.position);
+  Vec3 ship_down = physics::ship_down_direction(ship);
+  float landing_alignment = dot(ship_down, to_planet);
+  float speed = length(ship.velocity);
+
+  if (landing_alignment >= LANDING_ALIGNMENT_THRESHOLD) {
+    ship.state = world::ship_state::SHIP_LANDED;
+    ship.velocity = Vec3(0, 0, 0);
+    return;
+  }
+
+  if (speed > CRASH_SPEED_THRESHOLD) {
+    ship.state = world::ship_state::SHIP_DESTORYED;
+    return;
+  }
+
+  ship.state = world::ship_state::SHIP_ROAMING;
+}
 }
