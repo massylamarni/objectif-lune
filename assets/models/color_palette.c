@@ -8,6 +8,8 @@ float dark_grey[] = {0.2F, 0.2F, 0.2F, 1.0F};
 
 float grey[] = {0.5F, 0.5F, 0.5F, 1.0F};
 
+float light_grey[] = {0.8F, 0.8F, 0.8F, 1.0F};
+
 float gold[] = {0.9F, 0.6F, 0.1F, 1.0F};
 
 float red[] = {1.0F, 0.0F, 0.0F, 1.0F};
@@ -60,6 +62,18 @@ void material_dark_grey() {
   glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 70.0F);
 
   glColor4fv(dark_grey);
+}
+
+void material_light_grey() {
+  // printf ("Material LIGHT GREY\n");
+
+  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, light_grey);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dark_grey);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, black);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, black);
+  glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20.0F);
+
+  glColor4fv(light_grey);
 }
 
 void material_red() {

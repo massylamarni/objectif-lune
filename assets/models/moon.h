@@ -16,9 +16,7 @@
 
  /* Fonction d'initialisation des paramètres     */ 
  /* OpenGL ne changeant pas ou peu au cours de   */ 
- /* la vie du programme                          */ 
-
-void load_moon (void);
+ /* la vie du programme                          */
 
 void moon_sphere (int nbPolygon);
 
