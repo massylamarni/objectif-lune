@@ -17,6 +17,7 @@ void set_key_state(unsigned char key, int x, int y, int isDown) {
     case 's': state.s_down = isDown; break;
     case 'd': state.d_down = isDown; break;
     case 'u': state.u_down = isDown; break;
+    case 'r': state.r_down = isDown; break;
   }
 }
 

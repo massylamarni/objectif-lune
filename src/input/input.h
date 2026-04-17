@@ -19,6 +19,7 @@ struct InputState {
   bool s_down;
   bool d_down;
   bool u_down;
+  bool r_down;
 };
 
 void input_init();

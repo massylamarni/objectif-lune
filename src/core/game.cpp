@@ -92,7 +92,10 @@ void game_update_hook() {
   gst.ship.velocity = body.velocity;
   world::ship_update(gst.ship, dt);
   input::input_update(gst.ship.velocity, gst.ship.rotation);
-
+  input::InputState iState= input::get_input_state();
+  if (iState.r_down){
+    gst.ship = world::create_ship(SHIP_POSITION);
+  }
   physics::update_ship_collision_state(gst.ship, gst.earth);
   physics::update_ship_collision_state(gst.ship, gst.moon);
   if (gst.ship.state == world::SHIP_DESTORYED &&
