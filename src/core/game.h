@@ -22,6 +22,7 @@ struct GameState {
   world::Ship ship;
   render::Camera camera;
   bool player_won;
+  bool pause;
 };
 
 struct GameFps {
@@ -34,6 +35,7 @@ void game_init(int width, int height);
 void game_update();
 void game_update_callback();
 void game_update_hook();
+void game_update_pause();
 void game_display();
 void game_display_callback();
 void game_display_hook();

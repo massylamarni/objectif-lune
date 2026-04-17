@@ -49,6 +49,7 @@ void game_init(int width, int height) {
   gst.ship = world::create_ship(SHIP_POSITION);
   gst.camera = render::create_camera(CAMERA_POSITION, CAMERA_TARGET, CAMERA_UP);
   gst.player_won = false;
+  gst.pause = false;
 
   game_display();
   game_update();
@@ -57,7 +58,7 @@ void game_init(int width, int height) {
 
 void game_update() { glutIdleFunc(game_update_callback); }
 
-void game_update_callback() { render::idle(game_update_hook); }
+void game_update_callback() { if(!gst.pause) render::idle(game_update_hook); else render::idle(game_update_pause);}
 
 void game_update_hook() {
   core::time_update();
@@ -95,6 +96,11 @@ void game_update_hook() {
   input::InputState iState= input::get_input_state();
   if (iState.r_down){
     gst.ship = world::create_ship(SHIP_POSITION);
+    gst.player_won = false;
+  }
+  if (iState.p_down){
+    gst.pause = !gst.pause;
+    iState.p_down = false;
   }
   physics::update_ship_collision_state(gst.ship, gst.earth);
   physics::update_ship_collision_state(gst.ship, gst.moon);
@@ -113,6 +119,16 @@ void game_update_hook() {
   explosion_idle(dt);
 
   update_fps_counter(dt);
+}
+
+void game_update_pause() {
+  input::input_update(gst.ship.velocity, gst.ship.rotation);
+  input::InputState iState= input::get_input_state();
+  if (iState.p_down){
+    gst.pause = !gst.pause;
+    iState.p_down = false;
+  }
+  
 }
 
 void game_display() { glutDisplayFunc(game_display_callback); }
@@ -143,9 +159,17 @@ void game_display_hook() {
   if (gst.ship.state == world::SHIP_LANDED) {
     render::draw_text("Landing successful - You win!", 20,
                       render::SCREEN_HEIGHT - 70);
+    render::draw_text("Press r to Restart", 20,
+                      render::SCREEN_HEIGHT - 90);
   } else if (gst.ship.state == world::SHIP_DESTORYED) {
     render::draw_text("Crash detected - Ship destroyed!", 20,
                       render::SCREEN_HEIGHT - 70);
+    render::draw_text("Press r to Restart", 20,
+                      render::SCREEN_HEIGHT - 90);
+  }
+  if (gst.pause) {
+    render::draw_text("PAUSE", render::SCREEN_WIDTH/2 -35,
+                      render::SCREEN_HEIGHT);
   }
 
   ui::draw_minimaps(gst.ship, gst.earth, gst.moon, gst.sun, gst.camera);
