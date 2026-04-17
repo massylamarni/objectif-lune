@@ -12,12 +12,14 @@
 
 float textureRandom ();
 
-void PolyFaceCylindre (float hauteur, float rayon, int ns, float randomTexture);
+void PolyFaceCylindre (float hauteur, float rayon, int ns, int tex_part_index, bool randomTexture);
 
-void PolyFaceConeCut (float hauteur, float rayon_A, float rayon_B, int ns);
+void PolyFaceConeCut (float hauteur, float rayon_A, float rayon_B, int ns, int tex_part_index);
 
-void PolyFacePrism (int face, int total_face, float height, float length_A, float length_B, int nbPolygon, bool closed, bool randomTexture);
+void PolyFacePrism (int face, int total_face, float height, float length_A, float length_B, int nbPolygon, bool closed, int tex_part_index, bool randomTexture);
 
-void PolyFaceSurface (float size_x, float size_y, int nbPolygon_x, int nbPolygon_y, bool randomTexture);
+void PolyFaceSurface (float size_x, float size_y, int nbPolygon_x, int nbPolygon_y, int tex_part_index, bool randomTexture);
+
+void PolyFaceCube (float size, int nbPolygon, int tex_part_index);
 
 #endif

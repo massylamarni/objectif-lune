@@ -13,6 +13,7 @@
 
 #include "custom_preset.h"
 #include "lem.h"
+#include "../../libs/PNG/ChargePngFile.h"
 
  /* Variables globales                           */
 
@@ -25,9 +26,25 @@ bool reactor_activity_me = false;
 float rotation_power_me = 0.0F;
 float rotation_direction_me = 0.0F;
 
- /* Fonction d'initialisation des paramètres     */
- /* OpenGL ne changeant pas ou peu au cours de   */
- /* la vie du programme                          */
+unsigned int texture_id;
+
+int tex_x, tex_y;
+
+void load_lem (void) {
+  char textureLEM [64] = "../textures/texture_LEM.png";
+  unsigned char * img = chargeImagePng(textureLEM, &tex_x, &tex_y);
+
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  glGenTextures(1, &texture_id);
+  glBindTexture(GL_TEXTURE_2D, texture_id);
+  glTexImage2D(GL_TEXTURE_2D, 0, 3, tex_x, tex_y, 0, GL_RGB, GL_UNSIGNED_BYTE, img);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glEnable (GL_TEXTURE_2D);
+  free (img);
+}
 
 void test_light () {
   glPushMatrix ();
@@ -65,7 +82,8 @@ void init (void) {
   glLightfv (GL_LIGHT1, GL_SPECULAR, grey);
   glLightfv (GL_LIGHT1, GL_AMBIENT,  grey);
   
-  init_lem ();
+  load_lem ();
+  init_lem (texture_id);
   
   glColorMaterial (GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
   

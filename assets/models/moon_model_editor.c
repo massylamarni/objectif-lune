@@ -12,20 +12,39 @@
 #include <GL/glu.h>
 
 #include "custom_preset.h"
-#include "lem.h"
+#include "moon.h"
+#include "../../libs/PNG/ChargePngFile.h"
 
  /* Variables globales                           */
 
+float pos_directionnal[] = { 1.0F, 0.0F, 0.0F, 0.0F };
 
+unsigned int texture_id;
+
+int tex_x, tex_y;
+
+void load_moon (void) {
+  char moon_file [32] = "../textures/moon_2k.png";
+  unsigned char * img = chargeImagePng(moon_file, &tex_x, &tex_y);
+
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  glGenTextures(1, &texture_id);
+  glBindTexture(GL_TEXTURE_2D, texture_id);
+  glTexImage2D(GL_TEXTURE_2D, 0, 3, tex_x, tex_y, 0, GL_RGB, GL_UNSIGNED_BYTE, img);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glEnable (GL_TEXTURE_2D);
+  free (img);
+}
 
  /* Fonction d'initialisation des paramètres     */
  /* OpenGL ne changeant pas ou peu au cours de   */
  /* la vie du programme                          */
 
-
-
 void init (void) {
-  glEnable (GL_LIGHTING);
+  glEnable (GL_LIGHTING); 
   glEnable (GL_LIGHT0);
   glEnable (GL_LIGHT1);
   //glDisable (GL_LIGHT0);
@@ -41,6 +60,7 @@ void init (void) {
   glEnable (GL_NORMALIZE);
   glClearColor (0.1F, 0.3F, 0.2F, 1.0F);
   
+  //glActiveTexture (GL_TEXTURE0);
   load_moon ();
 }
 
@@ -67,13 +87,12 @@ void init (void) {
 void scene (void) {
   glPushMatrix ();
   
-  glTranslatef (0.0F,-1.0F, 0.0F);
-  
   glPushMatrix ();
   glRotatef (prst_animation / 10.0F, 0.0F, 1.0F, 0.5F);
-  glLightfv (GL_LIGHT0, GL_POSITION, pos_directionnal); // Sun
+  //glLightfv (GL_LIGHT0, GL_POSITION, pos_directionnal); // Sun
   glPopMatrix ();
-
+  glBindTexture (GL_TEXTURE_2D, texture_id);
+  
   moon_sphere (prst_nbPolygon);
   
   glPopMatrix ();
@@ -150,10 +169,6 @@ void idle (void) {
     //sleep (1); // Anti-Lag
     glutPostRedisplay ();
   }
-  
-  if (reactor_activity_me) {
-    reactor_idle (anim_reactor_offset_me, prst_animation);
-  }
 }
 
  /* Fonction exécutée lors de l'appui            */ 
@@ -169,13 +184,7 @@ void keyboard (unsigned char key, int x, int y) {
   keyboardAssistIntLoop (&prst_sceneId, key, 'M', 'm', 0, 3);
   
   printf("Bool %d\n", keyboardAssistFloatProportional (&prst_rotationSpeed, key, (char) GLUT_KEY_INSERT, 0x7f, -3600.0F, 3600.0F, 0.05F, 0.05F));
-  if (key == 'w') { // Active Win condition
-    win_value_me = !win_value_me;
-    if (win_value_me) {
-      anim_win_offset_me = prst_animation;
-    }
-  }
-  else if (keyboardAssistBool (&prst_animated, key, 0X0D)) { // Entrée - Pause Animation
+  if (keyboardAssistBool (&prst_animated, key, 0X0D)) { // Entrée - Pause Animation
     printf ("Animation\n");    
     if (prst_animated) {
       glutIdleFunc (NULL);
@@ -271,17 +280,19 @@ void mouseMotion (int x, int y) {
  /* Fonction executee lors du passage            */ 
  /* de la souris sur la fenetre                  */ 
  /* sans bouton presse                           */ 
-
+/*
 void passiveMouseMotion (int x, int y) {
   //printf ("PM %4d %4d\n", x, y);
   
   glutPostRedisplay (); 
 }
-
+*/
  /* Fonction exécutée automatiquement            */ 
  /* lors de l'exécution de la fonction exit ()   */ 
 
 void clean (void) {
+
+  glDeleteTextures(1, &texture_id);
   printf ("Bye\n");
 }
 

@@ -17,29 +17,20 @@
 #include "lem.h"
 
  /* Variables globales                           */
+ 
+unsigned int texture_lem_id;
 
- /* Fonction d'initialisation des paramètres     */
- /* OpenGL ne changeant pas ou peu au cours de   */
- /* la vie du programme                          */
-
-void init_lem (void) {
-  glLightfv (GL_LIGHT2, GL_DIFFUSE,  red_boost);
-  glLightfv (GL_LIGHT2, GL_SPECULAR, gold);
-  glLightfv (GL_LIGHT2, GL_AMBIENT,  white);
+void init_lem (unsigned int texture_id) {
+  texture_lem_id = texture_id;
+  
   glLightf  (GL_LIGHT2, GL_CONSTANT_ATTENUATION, 0.0F);
   glLightf  (GL_LIGHT2, GL_LINEAR_ATTENUATION, 1.0F);
   glLightf  (GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 1.0F);
   
-  glLightfv (GL_LIGHT3, GL_DIFFUSE,  red_boost);
-  glLightfv (GL_LIGHT3, GL_SPECULAR, gold);
-  glLightfv (GL_LIGHT3, GL_AMBIENT,  white);
   glLightf  (GL_LIGHT3, GL_CONSTANT_ATTENUATION, 0.0F);
   glLightf  (GL_LIGHT3, GL_LINEAR_ATTENUATION, 1.0F);
   glLightf  (GL_LIGHT3, GL_QUADRATIC_ATTENUATION, 1.0F);
   
-  glLightfv (GL_LIGHT4, GL_DIFFUSE,  red_boost);
-  glLightfv (GL_LIGHT4, GL_SPECULAR, gold);
-  glLightfv (GL_LIGHT4, GL_AMBIENT,  white);
   glLightf  (GL_LIGHT4, GL_CONSTANT_ATTENUATION, 0.0F);
   glLightf  (GL_LIGHT4, GL_LINEAR_ATTENUATION, 1.0F);
   glLightf  (GL_LIGHT4, GL_QUADRATIC_ATTENUATION, 1.0F);
@@ -116,39 +107,31 @@ void reactor_anim (float power, float anim_reactor_offset [], float general_anim
 void rotation_module (float rotation_direction, float rotation_power, float anim_reactor_offset [], float general_animation, int nbPolygon) {
   glPushMatrix ();
   
-  //glTranslatef (0.125F, 0.0F, 0.0F);
-  
   for (int i = 0 ; i < 4 ; i++) {
     glPushMatrix ();
     material_dark_grey (); // Mini-Tuyère
     glRotatef (90.0F * i, 1.0F, 0.0F, 0.0F);
     glTranslatef (0.0F, 0.125F, 0.0F);
-    PolyFaceConeCut (0.125F, 0.1F, 0.125F, nbPolygon);
+    PolyFaceConeCut (0.125F, 0.1F, 0.125F, nbPolygon, 3);
     glRotatef (180.0F, 1.0F, 0.0F, 0.0F);
     glTranslatef (0.0F, -0.025F, 0.0F);
-    PolyFaceConeCut (-0.05F, 0.0F, -0.1F, nbPolygon);
+    PolyFaceConeCut (-0.05F, 0.0F, -0.1F, nbPolygon, 3);
     glTranslatef (0.0F, -0.05F, 0.0F);
-    PolyFaceConeCut (-0.05F, -0.1F, -0.125F, nbPolygon);
+    PolyFaceConeCut (-0.05F, -0.1F, -0.125F, nbPolygon, 3);
     glScalef (0.2F, 0.35F, 0.2F);
     reactor_anim (4.0F * rotation_power * cos ((90.0F + 90.0F * i + rotation_direction) / 180.0 * M_PI), anim_reactor_offset, general_animation); // Flamme
     glPopMatrix ();
   }
   
   material_grey (); // Support
-  glPushMatrix (); // TODO Vérifier que les calculs de lumière soit correct et remplacer si besoin
+  glPushMatrix ();
   glScalef (1.2F, 1.0F, 1.0F);
-  glutSolidCube (0.25);
+  PolyFaceCube (0.25F, 3, 2);
+  
   glPopMatrix ();
   
   glPopMatrix ();
 }
-/*
-void colorCoeff (float base[], float coeff) {
-  tmp_color[0] = base[0] * coeff;
-  tmp_color[1] = base[1] * coeff;
-  tmp_color[2] = base[2] * coeff;
-  tmp_color[3] = base[3] * coeff;
-}*/
 
 void lem (bool reactor_activity, float rotation_direction, float rotation_power, float anim_win_offset, float anim_reactor_offset [], bool win_value, float general_animation, int nbPolygon) {
   glPushMatrix ();
@@ -212,7 +195,7 @@ void lem (bool reactor_activity, float rotation_direction, float rotation_power,
   glRotatef (-22.5F, 0.0F, 1.0F, 0.0F);
   
   material_gold ();
-  PolyFacePrism (8, 8, 1.0F, 1.0823922F, 1.0823922F, nbPolygon, true, true); // Corps
+  PolyFacePrism (8, 8, 1.0F, 1.0823922F, 1.0823922F, nbPolygon, true, 1, true); // Corps
   // 1.0823922F == 1 / cos (22.5 * 2 * M_PI / 360) ou le rayon du cercle inscrit d'un octogone de cercle circonscris de 1
   
   glRotatef (22.5F, 0.0F, 1.0F, 0.0F);
@@ -220,11 +203,11 @@ void lem (bool reactor_activity, float rotation_direction, float rotation_power,
     glPushMatrix ();
     glRotatef (i * 90.0F, 0.0F, 1.0F, 0.0F);
     glTranslatef (1.3F, 0.15F, 0.0F);
-    PolyFaceCylindre (0.5F, 0.05F, nbPolygon, true);
+    PolyFaceCylindre (0.5F, 0.05F, nbPolygon, 4, true);
     
     glPushMatrix ();
     glRotatef (105.0F, 0.0F, 0.0F, 1.0F);
-    PolyFaceCylindre (0.35F, 0.05F, nbPolygon, true);
+    PolyFaceCylindre (0.35F, 0.05F, nbPolygon, 4, true);
     glPopMatrix ();
     
     {
@@ -234,27 +217,28 @@ void lem (bool reactor_activity, float rotation_direction, float rotation_power,
       glPushMatrix ();
       
       glutSolidSphere (0.05, nbPolygon / 2, nbPolygon / 2);
+      PolyFaceCube (0.1, 1, 4);
       
       glRotatef (50.0F, 0.0F, 0.0F, 1.0F);
-      PolyFaceCylindre (0.45F, 0.05F, nbPolygon, true);
+      PolyFaceCylindre (0.45F, 0.05F, nbPolygon, 4, true);
       glPopMatrix ();
       
       glRotatef (-150.0F, 0.0F, 0.0F, 1.0F);
-      PolyFaceCylindre (1.0F, 0.05F, nbPolygon, true);
+      PolyFaceCylindre (1.0F, 0.05F, nbPolygon, 4, true);
       
       glPopMatrix ();
     }
     
     glRotatef (-125.0F, 0.0F, 0.0F, 1.0F);
-    PolyFaceCylindre (0.6F, 0.05F, nbPolygon, true);
+    PolyFaceCylindre (0.6F, 0.05F, nbPolygon, 1, true);
     
     glTranslatef (0.0F, 0.6F, 0.0F);
     glRotatef (-35.0F, 0.0F, 0.0F, 1.0F);
-    PolyFaceCylindre (0.2F, 0.05F, nbPolygon, true);
+    PolyFaceCylindre (0.2F, 0.05F, nbPolygon, 1, true);
     
     glTranslatef (0.0F, 0.175F, 0.0F);
     glRotatef (-20.0F, 0.0F, 0.0F, 1.0F);
-    PolyFacePrism (8, 8, 0.05F, 0.2F, 0.17F, nbPolygon / 2, true, true);
+    PolyFacePrism (8, 8, 0.05F, 0.2F, 0.17F, nbPolygon / 2, true, 1, true);
     
     glPopMatrix ();
   }
@@ -265,11 +249,11 @@ void lem (bool reactor_activity, float rotation_direction, float rotation_power,
   
   glTranslatef (0.0F, 1.0F, 1.0F);
   glRotatef (-90.0F, 1.0F, 0.0F, 0.0F);
-  PolyFacePrism (8, 16, 0.5F, 0.2F, 0.6F, nbPolygon / 2, true, false);
+  PolyFacePrism (8, 16, 0.5F,  0.2F, 0.6F, nbPolygon / 2, true, 2, false);
   glTranslatef (0.0F, 0.5F, 0.0F);
-  PolyFacePrism (8, 16, 0.25F, 0.6F, 1.0F, nbPolygon / 2, false, false);
+  PolyFacePrism (8, 16, 0.25F, 0.6F, 1.0F, nbPolygon / 2, false, 2, false);
   glTranslatef (0.0F, 0.25F, 0.0F);
-  PolyFacePrism (8, 16, 0.5F, 1.0F, 1.0F, nbPolygon / 2, false, false);
+  PolyFacePrism (8, 16, 0.5F,  1.0F, 1.0F, nbPolygon / 2, false, 2, false);
   {
     glPushMatrix ();
     glRotatef (-10.0F, 0.0F, 1.0F, 0.0F);
@@ -284,61 +268,61 @@ void lem (bool reactor_activity, float rotation_direction, float rotation_power,
     glPopMatrix ();
   }
   glTranslatef (0.0F, 0.5F, 0.0F);
-  PolyFacePrism (8, 16, 0.25F, 1.0F, 0.6F, nbPolygon / 2, true, false);
+  PolyFacePrism (8, 16, 0.25F, 1.0F, 0.6F, nbPolygon / 2, true, 2, false);
   glTranslatef (0.0F, 0.25F, 0.0F);
   
   glPushMatrix ();
   glTranslatef (0.0F, 0.125F, 0.3F);
-  PolyFaceSurface (0.8F, 0.25F, nbPolygon, nbPolygon / 2, false);
+  PolyFaceSurface (0.8F, 0.25F, nbPolygon, nbPolygon / 2, 2, false);
   glPopMatrix ();
   glPushMatrix ();
   glTranslatef (0.0F, 0.375F, 0.3F);
-  PolyFaceSurface (0.4F, 0.25F, nbPolygon / 2, nbPolygon / 2, false);
+  PolyFaceSurface (0.4F, 0.25F, nbPolygon / 2, nbPolygon / 2, 2, false);
   glPopMatrix ();
   glPushMatrix ();
   glTranslatef (0.0F, 0.5F, 0.15F);
   glRotatef (-90.0F, 1.0F, 0.0F, 0.0F);
-  PolyFaceSurface (0.4F, 0.3F, nbPolygon / 2, nbPolygon / 2, false);
+  PolyFaceSurface (0.4F, 0.3F, nbPolygon / 2, nbPolygon / 2, 2, false);
   glPopMatrix ();
   glPushMatrix ();
   glTranslatef (0.0F, 0.25F, 0.15F);
   glRotatef (-90.0F, 1.0F, 0.0F, 0.0F);
-  PolyFaceSurface (0.8F, 0.3F, nbPolygon, nbPolygon / 2, false);
+  PolyFaceSurface (0.8F, 0.3F, nbPolygon, nbPolygon / 2, 2, false);
   glPopMatrix ();
   glPushMatrix ();
   glTranslatef (0.4F, 0.125F, 0.15F);
   glRotatef (90.0F, 0.0F, 1.0F, 0.0F);
-  PolyFaceSurface (0.3F, 0.25F, nbPolygon / 2, nbPolygon / 2, false);
+  PolyFaceSurface (0.3F, 0.25F, nbPolygon / 2, nbPolygon / 2, 2, false);
   glPopMatrix ();
   glPushMatrix ();
   glTranslatef (-0.4F, 0.125F, 0.15F);
   glRotatef (-90.0F, 0.0F, 1.0F, 0.0F);
-  PolyFaceSurface (0.3F, 0.25F, nbPolygon / 2, nbPolygon / 2, false);
+  PolyFaceSurface (0.3F, 0.25F, nbPolygon / 2, nbPolygon / 2, 2, false);
   glPopMatrix ();
   glPushMatrix ();
   glTranslatef (0.2F, 0.375F, 0.15F);
   glRotatef (90.0F, 0.0F, 1.0F, 0.0F);
-  PolyFaceSurface (0.3F, 0.25F, nbPolygon / 2, nbPolygon / 2, false);
+  PolyFaceSurface (0.3F, 0.25F, nbPolygon / 2, nbPolygon / 2, 2, false);
   glPopMatrix ();
   glPushMatrix ();
   glTranslatef (-0.2F, 0.375F, 0.15F);
   glRotatef (-90.0F, 0.0F, 1.0F, 0.0F);
-  PolyFaceSurface (0.3F, 0.25F, nbPolygon / 2, nbPolygon / 2, false);
+  PolyFaceSurface (0.3F, 0.25F, nbPolygon / 2, nbPolygon / 2, 2, false);
   glPopMatrix ();
   
   glPushMatrix ();
   glTranslatef (0.0F, 0.125F, 0.3F + tan (30.0 * 2 * M_PI / 360) / 8);
   glRotatef (-30.0F, 1.0F, 0.0F, 0.0F);
-  PolyFaceSurface (0.4F, 1.0F / (cos (30.0 * 2 * M_PI / 360) * 4.0F), nbPolygon / 2, nbPolygon / 2, false);
+  PolyFaceSurface (0.4F, 1.0F / (cos (30.0 * 2 * M_PI / 360) * 4.0F), nbPolygon / 2, nbPolygon / 2, 2, false);
   glPushMatrix ();
   glTranslatef (0.2F, 0.0F, -0.15F);
   glRotatef (90.0F, 0.0F, 1.0F, 0.0F);
-  PolyFaceSurface (0.3F, 1.0F / (cos (30.0 * 2 * M_PI / 360) * 4.0F), nbPolygon / 2, nbPolygon / 2, false);
+  PolyFaceSurface (0.3F, 1.0F / (cos (30.0 * 2 * M_PI / 360) * 4.0F), nbPolygon / 2, nbPolygon / 2, 2, false);
   glPopMatrix ();
   glPushMatrix ();
   glTranslatef (-0.2F, 0.0F, -0.15F);
   glRotatef (-90.0F, 0.0F, 1.0F, 0.0F);
-  PolyFaceSurface (0.3F, 1.0F / (cos (30.0 * 2 * M_PI / 360) * 4.0F), nbPolygon / 2, nbPolygon / 2, false);
+  PolyFaceSurface (0.3F, 1.0F / (cos (30.0 * 2 * M_PI / 360) * 4.0F), nbPolygon / 2, nbPolygon / 2, 2, false);
   glPopMatrix ();
   glPopMatrix ();
   
@@ -347,11 +331,11 @@ void lem (bool reactor_activity, float rotation_direction, float rotation_power,
   glPushMatrix ();
   material_dark_grey (); // Tuyère
   glRotatef (180.0F, 1.0F, 0.0F, 0.0F);
-  PolyFaceConeCut (0.3F, 0.3F, 0.4F, nbPolygon);
+  PolyFaceConeCut (0.3F, 0.3F, 0.4F, nbPolygon, 3);
   glRotatef (180.0F, 1.0F, 0.0F, 0.0F);
-  PolyFaceConeCut (-0.1F, 0.0F, -0.2F, nbPolygon);
+  PolyFaceConeCut (-0.1F, 0.0F, -0.2F, nbPolygon, 3);
   glTranslatef (0.0F, -0.1F, 0.0F);
-  PolyFaceConeCut (-0.2F, -0.2F, -0.4F, nbPolygon);
+  PolyFaceConeCut (-0.2F, -0.2F, -0.4F, nbPolygon, 3);
   glScalef (1.0F, 1.5F, 1.0F);
   reactor_anim (1.0F, anim_reactor_offset, general_animation); // Flamme
   glPopMatrix ();
@@ -363,23 +347,23 @@ void lem (bool reactor_activity, float rotation_direction, float rotation_power,
   
   glPushMatrix ();
   glRotatef (90.0F, 0.0F, 0.0F, 1.0F);
-  PolyFaceCylindre (0.3F, 0.015F, 4, false);
+  PolyFaceCylindre (0.3F, 0.015F, 4, 3, false);
   glTranslatef (0.0F, 0.0F, 0.2F);
-  PolyFaceCylindre (0.3F, 0.015F, 6, false);
+  PolyFaceCylindre (0.3F, 0.015F, 6, 3, false);
   glPopMatrix ();
   
   glRotatef (lem_anim (win_value, general_animation, anim_win_offset), 0.0F, 0.0F, 1.0F);
   glPushMatrix ();
   glRotatef (-90.0F, 0.0F, 0.0F, 1.0F);
-  PolyFaceCylindre (1.2F, 0.015F, 4, false);
+  PolyFaceCylindre (1.2F, 0.015F, 4, 3, false);
   glTranslatef (0.0F, 0.0F, 0.2F);
-  PolyFaceCylindre (1.2F, 0.015F, 6, false);
+  PolyFaceCylindre (1.2F, 0.015F, 6, 3, false);
   glPopMatrix ();
   
   for (int i = 0 ; i < 4 ; i++) {
     glPushMatrix ();
     glTranslatef (1.2F * (i / 2), 0.0F, 0.2F * (i % 2));
-    glutSolidCube (0.05);
+    PolyFaceCube (0.05F, 1, 5);
     glPopMatrix ();
   }
   
@@ -387,7 +371,7 @@ void lem (bool reactor_activity, float rotation_direction, float rotation_power,
   for (int i = 0 ; i <= 8 ; i++) {
     glPushMatrix ();
     glTranslatef (0.15F * i, 0.0F, 0.0F);
-    PolyFaceCylindre (0.2F, 0.01F, 4, false);
+    PolyFaceCylindre (0.2F, 0.01F, 4, 3, false);
     glPopMatrix ();
   }
   glPopMatrix ();

@@ -18,7 +18,7 @@
  /* OpenGL ne changeant pas ou peu au cours de   */ 
  /* la vie du programme                          */ 
 
-void init_lem (void);
+void init_lem (unsigned int texture_id);
 
 void reactor_init (float anim_reactor_offset [], float general_animation) ;
 
