@@ -18,7 +18,7 @@ void set_key_state(unsigned char key, int x, int y, int isDown) {
     case 'd': state.d_down = isDown; break;
     case 'u': state.u_down = isDown; break;
     case 'r': state.r_down = isDown; break;
-    case 'p': state.p_down = isDown; break;
+    case 'p': if (!state.p_down) state.pause = true; state.p_down = isDown; break;
   }
 }
 
@@ -87,5 +87,20 @@ Vec3 rotate_pitch(const Vec3 &v, float pitch) {
 }
 
 InputState &get_input_state() { return state; }
+
+void stop_pause() { state.pause=false; }
+
+void stop_mouse_input(bool stop) {
+  if (stop){
+    glutMouseFunc(NULL);
+    glutMotionFunc(NULL);
+    glutPassiveMotionFunc(NULL);
+  }else{
+    glutMouseFunc(mouse_callback);
+    glutMotionFunc(mouse_motion_callback);
+    glutPassiveMotionFunc(mouse_passive_motion_callback);
+  }
+    
+}
 
 } // namespace input

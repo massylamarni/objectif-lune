@@ -23,4 +23,5 @@ void draw_text(const char *text, int x, int y) {
 
   glMatrixMode(GL_MODELVIEW);
 }
+
 } // namespace render

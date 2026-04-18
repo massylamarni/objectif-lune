@@ -98,9 +98,10 @@ void game_update_hook() {
     gst.ship = world::create_ship(SHIP_POSITION);
     gst.player_won = false;
   }
-  if (iState.p_down){
+  if (iState.pause){
+    input::stop_pause();
     gst.pause = !gst.pause;
-    iState.p_down = false;
+    input::stop_mouse_input(gst.pause);
   }
   physics::update_ship_collision_state(gst.ship, gst.earth);
   physics::update_ship_collision_state(gst.ship, gst.moon);
@@ -122,12 +123,16 @@ void game_update_hook() {
 }
 
 void game_update_pause() {
-  input::input_update(gst.ship.velocity, gst.ship.rotation);
+  core::time_update();
+  update_fov();
+  update_fog();
   input::InputState iState= input::get_input_state();
-  if (iState.p_down){
+  if (iState.pause){
+    input::stop_pause();
     gst.pause = !gst.pause;
-    iState.p_down = false;
+    input::stop_mouse_input(gst.pause);
   }
+  render::camera_follow_ship(gst.camera, gst.ship);
   
 }
 
@@ -168,8 +173,8 @@ void game_display_hook() {
                       render::SCREEN_HEIGHT - 90);
   }
   if (gst.pause) {
-    render::draw_text("PAUSE", render::SCREEN_WIDTH/2 -35,
-                      render::SCREEN_HEIGHT);
+    render::draw_text("PAUSE", 20,
+                      render::SCREEN_HEIGHT-110);
   }
 
   ui::draw_minimaps(gst.ship, gst.earth, gst.moon, gst.sun, gst.camera);
