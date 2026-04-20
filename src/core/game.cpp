@@ -152,7 +152,7 @@ void game_display_hook() {
   glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
   render::draw_planet(gst.earth);
-  render::draw_moon(gst.moon, gst.ship.position);
+  render::draw_planet(gst.moon);
   render::draw_planet(gst.sun);
 
   if (gst.ship.state != world::SHIP_DESTORYED) {
