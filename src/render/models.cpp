@@ -25,6 +25,8 @@ void draw_planet(const world::Planet &planet) {
 }
 
 void draw_ship(const world::Ship &ship) {
+  float anim_reactor_offset [] = { 0.0F, 10.0F, 20.0F, 30.0F, 40.0F, 50.0F, 60.0F, 70.0F, 80.0F, 90.0F };
+
   glPushMatrix();
 
   glTranslatef(ship.position.x, ship.position.y, ship.position.z);

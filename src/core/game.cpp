@@ -102,7 +102,6 @@ void game_update_hook() {
 void game_update_pause() {
   core::time_update();
   update_fov();
-  update_fog();
   input::InputState iState= input::get_input_state();
   if (iState.pause){
     input::stop_pause();
