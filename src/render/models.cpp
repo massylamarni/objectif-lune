@@ -8,6 +8,8 @@
 
 namespace render {
 
+float anim_reactor_offset [] = { 0.0F, 10.0F, 20.0F, 30.0F, 40.0F, 50.0F, 60.0F, 70.0F, 80.0F, 90.0F };
+
 void draw_moon(const world::Planet &moon, const Vec3 &ship_position) {
   float dist = world::distance_to_surface(moon, ship_position);
 
@@ -36,8 +38,12 @@ void draw_ship(const world::Ship &ship) {
   glPushMatrix();
 
   glTranslatef(ship.position.x, ship.position.y, ship.position.z);
-  glutSolidCube(1);
-
+  glutWireCube(1);
+  init_lem (2); // TODO find the texture index after loading the LEM texture
+  glScalef (0.28F, 0.28F, 0.28F);
+  glTranslatef(0.0F, -1.4F, 0.0F);
+  lem (true, 0.0F, 0.0F, 0.0F, anim_reactor_offset, false, 0.0F, 16);
+  glBindTexture(GL_TEXTURE_2D, 0);
   glPopMatrix();
 }
 

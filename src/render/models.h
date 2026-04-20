@@ -5,6 +5,7 @@
 #include "../world/planet.h"
 #include "../world/ship.h"
 #include "../../assets/models/explosion.h"
+#include "../../assets/models/lem.h"
 #include <GL/freeglut_std.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
