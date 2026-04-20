@@ -1,25 +1,22 @@
 #include "models.h"
 #include "../world/world.h"
 #include "../../assets/models/color_palette.h"
+#include <cmath>
 
 namespace render {
-void draw_planet(const world::Planet &planet) {
+
+void draw_planet(const world::Planet &planet, const Vec3 *ship_position) {
   const uint *texture_id_buf = get_texture_id_buf();
   glPushMatrix();
 
   glTranslatef(planet.position.x, planet.position.y, planet.position.z);
   
   if (planet.id == MOON_ID) {
-    material_white();
-    glBindTexture(GL_TEXTURE_2D, texture_id_buf[MOON_TEXTURE]);
+    draw_moon(planet, ship_position);
   } else {
     material_sun();
+    draw_planet_sphere(planet.radius);
   }
-  GLUquadric *quad = gluNewQuadric();
-  gluQuadricTexture(quad, GL_TRUE);
-  gluQuadricNormals(quad, GLU_SMOOTH);
-  gluSphere(quad, planet.radius, 32, 32);
-  gluDeleteQuadric(quad);
 
   glPopMatrix();
 }

@@ -128,7 +128,7 @@ void game_display_hook() {
   glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
   render::draw_planet(gst.earth);
-  render::draw_planet(gst.moon);
+  render::draw_planet(gst.moon, &gst.ship.position);
   render::draw_planet(gst.sun);
 
   if (gst.ship.state != world::SHIP_DESTORYED) {
@@ -157,6 +157,7 @@ void game_display_hook() {
   output::debug_camera(gst.camera.position.x, gst.camera.position.y,
                        gst.camera.position.z);
   output::debug_fps(gfps.fps);
+  draw_moon_transition_overlay();
 }
 
 void update_fps_counter(float dt) {

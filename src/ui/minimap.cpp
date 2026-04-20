@@ -47,9 +47,9 @@ void draw_world(const world::Ship &ship, const world::Planet &earth,
   const float light_pos[4] = {sun_dir.x, sun_dir.y, sun_dir.z, 0.0f};
   glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
-  render::draw_planet(earth);
-  render::draw_planet(moon);
-  render::draw_planet(sun);
+  render::draw_planet(earth, nullptr);
+  render::draw_planet(moon, nullptr);
+  render::draw_planet(sun, nullptr);
   render::draw_ship(ship);
 }
 
