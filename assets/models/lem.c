@@ -134,6 +134,7 @@ void rotation_module (float rotation_direction, float rotation_power, float anim
 }
 
 void lem (bool reactor_activity, float rotation_direction, float rotation_power, float anim_win_offset, float anim_reactor_offset [], bool win_value, float general_animation, int nbPolygon) {
+  glBindTexture(GL_TEXTURE_2D, texture_lem_id);
   glPushMatrix ();
   if (reactor_activity) {
     glEnable (GL_LIGHT2);

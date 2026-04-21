@@ -30,7 +30,6 @@ void init(int *argc, char **argv) {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_NORMALIZE);
   glEnable(GL_TEXTURE_2D);
-  glEnable(GL_FOG);
   // glEnable(GL_CULL_FACE);
   // glCullFace(GL_BACK);
   glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -41,18 +40,9 @@ void init(int *argc, char **argv) {
   // glutMainLoop();
   init_lighting();
   load_textures();
-  set_fog(900, 1000);
 }
 
-void set_fog(const float fog_start, const float fog_end) {
-  GLfloat fogColor[4] = {0.2f, 0.2f, 0.2f, 1.0f};
-  glFogfv(GL_FOG_COLOR, fogColor);
-  glFogi(GL_FOG_MODE, GL_LINEAR);
-  glFogf(GL_FOG_START, fog_start);
-  glFogf(GL_FOG_END, fog_end);
-}
-
-void set_perspective(const float fov) {
+void set_perspective(float fov) {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   /*

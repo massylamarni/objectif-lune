@@ -1,6 +1,3 @@
-#ifndef WORLD_WORLD
-#define WORLD_WORLD
-
 #include "../math/vec2.h"
 #include "../math/vec3.h"
 
@@ -18,7 +15,7 @@
 #define EARTH_MASS 1.0f
 
 #define MOON_POSITION Vec3(500.0f, 0, 0)
-#define MOON_RADIUS 500.0f
+#define MOON_RADIUS 300.0f
 #define MOON_MASS 333.0f
 
 #define SUN_POSITION Vec3(200000.0f, 0, 0)
@@ -42,4 +39,3 @@ static const char ID_MAPPING[8][32] = {
 #define INPUT_VEC3_UPDATE_VALUE 0.1
 #define MOUSE_SENSITIVITY 0.005f // radians per pixel
 
-#endif

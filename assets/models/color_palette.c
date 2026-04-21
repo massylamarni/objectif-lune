@@ -31,7 +31,7 @@ float ambient[] = {0.5f, 0.5f, 0.5f, 1.0f};
 void material_gold() {
   // printf ("Material GOLD\n");
 
-  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, gold);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, white);//
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, grey);
   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, black);
   glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, black);
@@ -43,7 +43,7 @@ void material_gold() {
 void material_grey() {
   // printf ("Material GREY\n");
 
-  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, grey);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, white);//
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, dark_grey);
   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, black);
   glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, black);
@@ -55,7 +55,7 @@ void material_grey() {
 void material_dark_grey() {
   // printf ("Material DARK GREY\n");
 
-  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dark_grey);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, grey);
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, grey);
   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, black);
   glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, black);

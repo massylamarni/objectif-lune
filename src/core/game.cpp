@@ -1,5 +1,4 @@
 #include "game.h"
-#include <algorithm>
 #include <cstdio>
 
 static GameState gst;
@@ -17,27 +16,6 @@ void update_fov() {
   static float smooth_fov = 60.0f;
   smooth_fov += (fov - smooth_fov) * 0.1f;
   render::set_perspective(smooth_fov);
-}
-
-void update_fog() {
-  const float MIN_FOG = 10.0f;
-  const float MAX_FOG = 1000.0f;
-
-  float distance = world::distance_to_surface(gst.moon, gst.ship.position);
-
-  float t =
-      std::clamp((distance - MIN_FOG) / (MAX_FOG - MIN_FOG), 0.0f, 1.0f);
-
-  float fog_start = 20.0f + t * 300.0f;
-  float fog_end = 80.0f + t * 1500.0f;
-
-  static float s_start = fog_start;
-  static float s_end = fog_end;
-
-  s_start += (fog_start - s_start) * 0.1f;
-  s_end += (fog_end - s_end) * 0.1f;
-
-  render::set_fog(s_start, s_end);
 }
 
 void game_init(int width, int height) {
@@ -65,7 +43,6 @@ void game_update_hook() {
   float dt = core::time_delta();
   const world::ship_state previous_ship_state = gst.ship.state;
   update_fov();
-  update_fog();
 
   physics::RigidBody body;
 
@@ -125,7 +102,6 @@ void game_update_hook() {
 void game_update_pause() {
   core::time_update();
   update_fov();
-  update_fog();
   input::InputState iState= input::get_input_state();
   if (iState.pause){
     input::stop_pause();
@@ -152,7 +128,7 @@ void game_display_hook() {
   glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
   render::draw_planet(gst.earth);
-  render::draw_moon(gst.moon, gst.ship.position);
+  render::draw_planet(gst.moon, &gst.ship.position);
   render::draw_planet(gst.sun);
 
   if (gst.ship.state != world::SHIP_DESTORYED) {
@@ -181,6 +157,7 @@ void game_display_hook() {
   output::debug_camera(gst.camera.position.x, gst.camera.position.y,
                        gst.camera.position.z);
   output::debug_fps(gfps.fps);
+  draw_moon_transition_overlay();
 }
 
 void update_fps_counter(float dt) {

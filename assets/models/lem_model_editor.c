@@ -83,7 +83,7 @@ void init (void) {
   glLightfv (GL_LIGHT1, GL_AMBIENT,  grey);
   
   load_lem ();
-  init_lem (texture_id);
+  init_lem (texture_id); // LEM.H
   
   glColorMaterial (GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
   
@@ -127,6 +127,19 @@ void scene (void) {
 
   printf ("LEM Parameters : Direction %f ; Power %f\n", rotation_direction_me, rotation_power_me);
   lem (reactor_activity_me, rotation_direction_me, rotation_power_me, anim_win_offset_me, anim_reactor_offset_me, win_value_me, prst_animation, prst_nbPolygon);
+  
+  glPushMatrix ();
+  
+  glTranslatef (0.0F,-0.4F, 0.0F);
+  
+  glBegin (GL_POLYGON);
+  glVertex3f(-2.0F, 0.0F, -2.0F);
+  glVertex3f(-2.0F, 0.0F, 2.0F);
+  glVertex3f(2.0F, 0.0F, 2.0F);
+  glVertex3f(2.0F, 0.0F, -2.0F);
+  glEnd ();
+  
+  glPopMatrix ();
   
   glPopMatrix ();
 }
@@ -204,7 +217,7 @@ void idle (void) {
   }
   
   if (reactor_activity_me) {
-    reactor_idle (anim_reactor_offset_me, prst_animation);
+    reactor_idle (anim_reactor_offset_me, prst_animation); // LEM.H
   }
 }
 
@@ -221,7 +234,7 @@ void keyboard (unsigned char key, int x, int y) {
   if (keyboardAssistToggle (GL_LIGHT2, key, ' ')) {
     if (!reactor_activity_me) {
       reactor_activity_me = true;
-      reactor_init (anim_reactor_offset_me, prst_animation);
+      reactor_init (anim_reactor_offset_me, prst_animation); // LEM.H
     }
     glEnable (GL_LIGHT3);// TODO FIX
     glEnable (GL_LIGHT4);// TODO FIX
@@ -336,7 +349,7 @@ void mouse (int button, int state, int x, int y) {
     }
   }
   
-  rotation_update (x, y, prst_wTx, prst_wTy, &rotation_direction_me, &rotation_power_me);
+  rotation_update (x, y, prst_wTx, prst_wTy, &rotation_direction_me, &rotation_power_me); // LEM.H
 }
 
  /* Fonction executee lors du passage            */ 
