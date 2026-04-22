@@ -149,8 +149,8 @@ void game_display_hook() {
                       render::SCREEN_HEIGHT - 90);
   }
   if (gst.pause) {
-    render::draw_text("PAUSE", 20,
-                      render::SCREEN_HEIGHT-110);
+    render::draw_text_pause("PAUSE", render::SCREEN_WIDTH/2-110.0F,
+                      render::SCREEN_HEIGHT/2.0F);
   }
 
   ui::draw_minimaps(gst.ship, gst.earth, gst.moon, gst.sun, gst.camera);
