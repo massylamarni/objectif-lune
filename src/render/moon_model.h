@@ -20,6 +20,7 @@ struct moon_transition_state {
   int last_time;
 };
 
+float get_lunar_height(float wx, float wz);
 void draw_moon_container(const world::Planet &planet, Vec3 *ship_position);
 void draw_moon(const world::Planet &planet, const Vec3 *ship_position);
 void draw_planet_sphere(float radius);

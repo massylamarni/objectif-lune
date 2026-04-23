@@ -1,7 +1,48 @@
 #include "moon_model.h"
+#include "../math/noise.h"
+#include <limits.h>
 
 moon_scene current_scene = MOON_SCENE_ORBIT;
 moon_transition_state transition = {false, false, 0.0f, 0};
+
+const int GRID_STEPS = 128;
+static float heightmap[GRID_STEPS + 1][GRID_STEPS + 1];
+static Vec3 normalmap[GRID_STEPS + 1][GRID_STEPS + 1];
+
+static int last_grid_x = INT_MIN;
+static int last_grid_z = INT_MIN;
+
+void update_terrain_cache(float origin_x, float origin_z, float step,
+                          float half) {
+  for (int i = 0; i <= GRID_STEPS; ++i) {
+    for (int j = 0; j <= GRID_STEPS; ++j) {
+
+      float x = i * step - half;
+      float z = j * step - half;
+
+      float wx = x + origin_x;
+      float wz = z + origin_z;
+
+      float h = get_lunar_height(wx, wz);
+      heightmap[i][j] = h;
+
+      float hL = get_lunar_height(wx - step, wz);
+      float hR = get_lunar_height(wx + step, wz);
+      float hD = get_lunar_height(wx, wz - step);
+      float hU = get_lunar_height(wx, wz + step);
+
+      float nx = hL - hR;
+      float ny = 2.0f * step;
+      float nz = hD - hU;
+
+      float len = std::sqrt(nx * nx + ny * ny + nz * nz);
+      if (len == 0.0f)
+        len = 1.0f;
+
+      normalmap[i][j] = {nx / len, ny / len, nz / len};
+    }
+  }
+}
 
 void draw_moon_container(const world::Planet &planet, Vec3 *ship_position) {
   const uint *texture_id_buf = render::get_texture_id_buf();
@@ -12,6 +53,9 @@ void draw_moon_container(const world::Planet &planet, Vec3 *ship_position) {
             : ship_position->y;
     update_moon_transition(moon_distance, ship_position);
   }
+
+  material_white();
+  glBindTexture(GL_TEXTURE_2D, texture_id_buf[render::MOON_TEXTURE]);
   if (current_scene == MOON_SCENE_ORBIT) {
     draw_moon(planet, ship_position);
   } else if (current_scene == MOON_SCENE_SURFACE) {
@@ -21,9 +65,6 @@ void draw_moon_container(const world::Planet &planet, Vec3 *ship_position) {
 
 void draw_moon(const world::Planet &planet, const Vec3 *ship_position) {
   const uint *texture_id_buf = render::get_texture_id_buf();
-
-  material_white();
-  glBindTexture(GL_TEXTURE_2D, texture_id_buf[render::MOON_TEXTURE]);
 
   if (current_scene == MOON_SCENE_ORBIT) {
     draw_planet_sphere(planet.radius);
@@ -38,66 +79,80 @@ void draw_planet_sphere(float radius) {
   gluDeleteQuadric(quad);
 }
 
-float get_lunar_height(float x, float z) {
-  float height = 0.0f;
-  height += std::sin(x * 0.005f) * std::cos(z * 0.005f) * 30.0f;
-  height += std::sin(x * 0.05f + 1.0f) * std::cos(z * 0.04f - 0.5f) * 5.0f;
-  height += std::sin(x * 0.2f) * std::sin(z * 0.2f) * 1.5f;
-  return height;
+float get_lunar_height(float x, float z) { return fbm(x, z) * 50.0f; }
+
+void compute_normal(float x, float z, float step, float &nx, float &ny,
+                    float &nz) {
+  float hL = get_lunar_height(x - step, z);
+  float hR = get_lunar_height(x + step, z);
+  float hD = get_lunar_height(x, z - step);
+  float hU = get_lunar_height(x, z + step);
+
+  nx = hL - hR;
+  ny = 2.0f * step;
+  nz = hD - hU;
+
+  float len = std::sqrt(nx * nx + ny * ny + nz * nz);
+  if (len == 0.0f)
+    len = 1.0f;
+
+  nx /= len;
+  ny /= len;
+  nz /= len;
 }
 
 void draw_moon_surface(Vec3 *ship_position) {
   if (!ship_position)
     return;
+
   const float PATCH_SIZE = 2000.0f;
-  const int GRID_STEPS = 128;
   const float step = PATCH_SIZE / GRID_STEPS;
   const float half = PATCH_SIZE / 2.0f;
+  const float TEXTURE_SCALE = 0.01f;
+
+  int grid_x = (int)std::floor(ship_position->x / step);
+  int grid_z = (int)std::floor(ship_position->z / step);
+
+  float origin_x = grid_x * step;
+  float origin_z = grid_z * step;
+
+  // Only recompute when entering a new cell
+  if (grid_x != last_grid_x || grid_z != last_grid_z) {
+    update_terrain_cache(origin_x, origin_z, step, half);
+    last_grid_x = grid_x;
+    last_grid_z = grid_z;
+  }
 
   glPushMatrix();
+  glTranslatef(origin_x, 0.0f, origin_z);
 
-  glTranslatef(ship_position->x, 0.0f, ship_position->z);
+  for (int j = 0; j < GRID_STEPS; ++j) {
 
-  glBegin(GL_QUADS);
-  for (int i = 0; i < GRID_STEPS; ++i) {
-    for (int j = 0; j < GRID_STEPS; ++j) {
-      float x0 = i * step - half;
+    glBegin(GL_TRIANGLE_STRIP);
+
+    for (int i = 0; i <= GRID_STEPS; ++i) {
+
+      float x = i * step - half;
       float z0 = j * step - half;
-      float x1 = x0 + step;
-      float z1 = z0 + step;
+      float z1 = (j + 1) * step - half;
 
-      float world_x0 = x0 + ship_position->x;
-      float world_z0 = z0 + ship_position->z;
+      float wx = x + origin_x;
+      float wz0 = z0 + origin_z;
+      float wz1 = z1 + origin_z;
 
-      float world_x1 = x1 + ship_position->x;
-      float world_z1 = z1 + ship_position->z;
+      Vec3 n0 = normalmap[i][j];
+      glNormal3f(n0.x, n0.y, n0.z);
+      glTexCoord2f(wx * TEXTURE_SCALE, wz0 * TEXTURE_SCALE);
+      glVertex3f(x, heightmap[i][j], z0);
 
-      float y00 = get_lunar_height(world_x0, world_z0);
-      float y10 = get_lunar_height(world_x1, world_z0);
-      float y01 = get_lunar_height(world_x0, world_z1);
-      float y11 = get_lunar_height(world_x1, world_z1);
-
-      // Normals
-      float sx = step;
-      float sz = step;
-      float nx = (y00 - y10);
-      float nz = (y00 - y01);
-      float ny = 2.0f;
-      float length = std::sqrt(nx * nx + ny * ny + nz * nz);
-      if (length == 0.0f)
-        length = 1.0f;
-      nx /= length;
-      ny /= length;
-      nz /= length;
-      glNormal3f(nx, ny, nz);
-
-      glVertex3f(x0, y00, z0);
-      glVertex3f(x1, y10, z0);
-      glVertex3f(x1, y11, z1);
-      glVertex3f(x0, y01, z1);
+      Vec3 n1 = normalmap[i][j + 1];
+      glNormal3f(n1.x, n1.y, n1.z);
+      glTexCoord2f(wx * TEXTURE_SCALE, wz1 * TEXTURE_SCALE);
+      glVertex3f(x, heightmap[i][j + 1], z1);
     }
+
+    glEnd();
   }
-  glEnd();
 
   glPopMatrix();
 }
