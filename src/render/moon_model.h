@@ -7,24 +7,22 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#define TERRAIN_SWAP_DISTANCE 250.0f
+#define ENTER_SURFACE_DISTANCE 250.0f // TODO make it relative to planet size
+#define EXIT_SURFACE_DISTANCE 350.0f
 #define TERRAIN_TRANSITION_SPEED 1.8f
 
-enum moon_render_mode { MOON_SPHERE, MOON_SURFACE };
-enum fade_transition_phase { PHASE_NONE, PHASE_FADE_OUT, PHASE_FADE_IN };
+enum moon_scene { MOON_SCENE_ORBIT, MOON_SCENE_SURFACE };
 
 struct moon_transition_state {
-  bool initialized;
-  moon_render_mode current_mode;
-  moon_render_mode pending_mode;
-  fade_transition_phase phase;
-  float fade_alpha;
-  int last_update_ms;
+  bool active;
+  bool fading_out;
+  float alpha;
+  int last_time;
 };
 
+void draw_moon_container(const world::Planet &planet, Vec3 *ship_position);
 void draw_moon(const world::Planet &planet, const Vec3 *ship_position);
 void draw_planet_sphere(float radius);
-void draw_moon_surface_patch(const world::Planet &planet,
-                             const Vec3 &ship_position);
-void update_moon_transition(float moon_distance);
+void draw_moon_surface(Vec3 *ship_position);
+void update_moon_transition(float moon_distance, Vec3 *ship_position);
 void draw_moon_transition_overlay();

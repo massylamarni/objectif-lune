@@ -5,14 +5,14 @@
 
 namespace render {
 
-void draw_planet(const world::Planet &planet, const Vec3 *ship_position) {
+void draw_planet(const world::Planet &planet, Vec3 *ship_position) {
   const uint *texture_id_buf = get_texture_id_buf();
   glPushMatrix();
 
   glTranslatef(planet.position.x, planet.position.y, planet.position.z);
   
   if (planet.id == MOON_ID) {
-    draw_moon(planet, ship_position);
+    draw_moon_container(planet, ship_position);
   } else {
     material_sun();
     draw_planet_sphere(planet.radius);

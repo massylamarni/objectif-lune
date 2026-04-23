@@ -13,7 +13,7 @@
 #include "textures.h"
 
 namespace render {
-void draw_planet(const world::Planet &planet, const Vec3 *ship_position = nullptr);
+void draw_planet(const world::Planet &planet, Vec3 *ship_position = nullptr);
 void draw_ship(const world::Ship &ship);
 void draw_mini_ship(const world::Ship &ship);
 void draw_lem();

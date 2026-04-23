@@ -1,21 +1,31 @@
 #include "moon_model.h"
 
-moon_transition_state moon_ts = {false,      MOON_SPHERE, MOON_SPHERE,
-                                 PHASE_NONE, 0.0f,        0};
+moon_scene current_scene = MOON_SCENE_ORBIT;
+moon_transition_state transition = {false, false, 0.0f, 0};
 
-void draw_moon(const world::Planet &planet, const Vec3 *ship_position) {
+void draw_moon_container(const world::Planet &planet, Vec3 *ship_position) {
   const uint *texture_id_buf = render::get_texture_id_buf();
   if (ship_position != nullptr) {
     const float moon_distance =
-        world::distance_to_surface(planet, *ship_position);
-    update_moon_transition(moon_distance);
+        current_scene == MOON_SCENE_ORBIT
+            ? world::distance_to_surface(planet, *ship_position)
+            : ship_position->y;
+    update_moon_transition(moon_distance, ship_position);
   }
+  if (current_scene == MOON_SCENE_ORBIT) {
+    draw_moon(planet, ship_position);
+  } else if (current_scene == MOON_SCENE_SURFACE) {
+    draw_moon_surface(ship_position);
+  }
+}
+
+void draw_moon(const world::Planet &planet, const Vec3 *ship_position) {
+  const uint *texture_id_buf = render::get_texture_id_buf();
 
   material_white();
   glBindTexture(GL_TEXTURE_2D, texture_id_buf[render::MOON_TEXTURE]);
-  if (moon_ts.current_mode == MOON_SURFACE && ship_position != nullptr) {
-    draw_moon_surface_patch(planet, *ship_position);
-  } else {
+
+  if (current_scene == MOON_SCENE_ORBIT) {
     draw_planet_sphere(planet.radius);
   }
 }
@@ -36,88 +46,55 @@ float get_lunar_height(float x, float z) {
   return height;
 }
 
-void draw_moon_surface_patch(const world::Planet &planet,
-                             const Vec3 &ship_position) {
-  float dist = std::sqrt(ship_position.x * ship_position.x +
-                         ship_position.y * ship_position.y +
-                         ship_position.z * ship_position.z);
-
-  if (dist < 0.0001f)
-    dist = 1.0f;
-
-  float nx = ship_position.x / dist;
-  float ny = ship_position.y / dist;
-  float nz = ship_position.z / dist;
-
-  float surface_x = nx * planet.radius;
-  float surface_y = ny * planet.radius;
-  float surface_z = nz * planet.radius;
-
-  float axis_x = nz;
-  float axis_y = 0.0f;
-  float axis_z = -nx;
-
-  float dot = ny;
-  if (dot > 1.0f)
-    dot = 1.0f;
-  if (dot < -1.0f)
-    dot = -1.0f;
-  float angle_deg = std::acos(dot) * 180.0f / 3.14159265359f;
+void draw_moon_surface(Vec3 *ship_position) {
+  if (!ship_position)
+    return;
+  const float PATCH_SIZE = 2000.0f;
+  const int GRID_STEPS = 128;
+  const float step = PATCH_SIZE / GRID_STEPS;
+  const float half = PATCH_SIZE / 2.0f;
 
   glPushMatrix();
 
-  glTranslatef(surface_x, surface_y, surface_z);
-
-  if (dot < 0.999f && dot > -0.999f) {
-    glRotatef(angle_deg, axis_x, axis_y, axis_z);
-  } else if (dot <= -0.999f) {
-    glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
-  }
-
-  const float PATCH_SIZE = 2000.0f;
-  const int GRID_STEPS = 64;
-  const float step_size = PATCH_SIZE / GRID_STEPS;
-  const float uv_scale = 15.0f;
-  const float half_size = PATCH_SIZE / 2.0f;
+  glTranslatef(ship_position->x, 0.0f, ship_position->z);
 
   glBegin(GL_QUADS);
   for (int i = 0; i < GRID_STEPS; ++i) {
     for (int j = 0; j < GRID_STEPS; ++j) {
-      float local_x0 = (i * step_size) - half_size;
-      float local_z0 = (j * step_size) - half_size;
-      float local_x1 = local_x0 + step_size;
-      float local_z1 = local_z0 + step_size;
+      float x0 = i * step - half;
+      float z0 = j * step - half;
+      float x1 = x0 + step;
+      float z1 = z0 + step;
 
-      float global_x0 = local_x0 + surface_x;
-      float global_z0 = local_z0 + surface_z;
-      float global_x1 = local_x1 + surface_x;
-      float global_z1 = local_z1 + surface_z;
+      float world_x0 = x0 + ship_position->x;
+      float world_z0 = z0 + ship_position->z;
 
-      float y00 = get_lunar_height(global_x0, global_z0);
-      float y10 = get_lunar_height(global_x1, global_z0);
-      float y01 = get_lunar_height(global_x0, global_z1);
-      float y11 = get_lunar_height(global_x1, global_z1);
+      float world_x1 = x1 + ship_position->x;
+      float world_z1 = z1 + ship_position->z;
 
-      float nx_norm = -step_size * (y10 - y00);
-      float ny_norm = step_size * step_size;
-      float nz_norm = -step_size * (y01 - y00);
-      float length =
-          std::sqrt(nx_norm * nx_norm + ny_norm * ny_norm + nz_norm * nz_norm);
-      glNormal3f(nx_norm / length, ny_norm / length, nz_norm / length);
+      float y00 = get_lunar_height(world_x0, world_z0);
+      float y10 = get_lunar_height(world_x1, world_z0);
+      float y01 = get_lunar_height(world_x0, world_z1);
+      float y11 = get_lunar_height(world_x1, world_z1);
 
-      float u0 = (global_x0 / PATCH_SIZE) * uv_scale;
-      float v0 = (global_z0 / PATCH_SIZE) * uv_scale;
-      float u1 = (global_x1 / PATCH_SIZE) * uv_scale;
-      float v1 = (global_z1 / PATCH_SIZE) * uv_scale;
+      // Normals
+      float sx = step;
+      float sz = step;
+      float nx = (y00 - y10);
+      float nz = (y00 - y01);
+      float ny = 2.0f;
+      float length = std::sqrt(nx * nx + ny * ny + nz * nz);
+      if (length == 0.0f)
+        length = 1.0f;
+      nx /= length;
+      ny /= length;
+      nz /= length;
+      glNormal3f(nx, ny, nz);
 
-      glTexCoord2f(u0, v0);
-      glVertex3f(local_x0, y00, local_z0);
-      glTexCoord2f(u1, v0);
-      glVertex3f(local_x1, y10, local_z0);
-      glTexCoord2f(u1, v1);
-      glVertex3f(local_x1, y11, local_z1);
-      glTexCoord2f(u0, v1);
-      glVertex3f(local_x0, y01, local_z1);
+      glVertex3f(x0, y00, z0);
+      glVertex3f(x1, y10, z0);
+      glVertex3f(x1, y11, z1);
+      glVertex3f(x0, y01, z1);
     }
   }
   glEnd();
@@ -125,51 +102,69 @@ void draw_moon_surface_patch(const world::Planet &planet,
   glPopMatrix();
 }
 
-void update_moon_transition(float moon_distance) {
-  const int now_ms = glutGet(GLUT_ELAPSED_TIME);
-  if (!moon_ts.initialized) {
-    moon_ts.current_mode =
-        (moon_distance <= TERRAIN_SWAP_DISTANCE) ? MOON_SURFACE : MOON_SPHERE;
-    moon_ts.pending_mode = moon_ts.current_mode;
-    moon_ts.phase = PHASE_NONE;
-    moon_ts.fade_alpha = 0.0f;
-    moon_ts.last_update_ms = now_ms;
-    moon_ts.initialized = true;
-    return;
-  }
+void teleport_player_to_surface(Vec3 *ship_position) {
+  float x = 0.0f;
+  float z = 0.0f;
+  float y = get_lunar_height(x, z) + 5.0f;
 
-  const moon_render_mode wanted_mode =
-      (moon_distance <= TERRAIN_SWAP_DISTANCE) ? MOON_SURFACE : MOON_SPHERE;
-  if (moon_ts.phase == PHASE_NONE && wanted_mode != moon_ts.current_mode) {
-    moon_ts.pending_mode = wanted_mode;
-    moon_ts.phase = PHASE_FADE_OUT;
-  }
+  *ship_position = Vec3{x, y, z};
+}
 
-  float dt = (now_ms - moon_ts.last_update_ms) / 1000.0f;
-  if (dt < 0.0f)
-    dt = 0.0f;
+void update_moon_transition(float moon_distance, Vec3 *ship_position) {
+  const int now = glutGet(GLUT_ELAPSED_TIME);
+  float dt = (now - transition.last_time) / 1000.0f;
+  transition.last_time = now;
+
   if (dt > 0.1f)
     dt = 0.1f;
-  moon_ts.last_update_ms = now_ms;
+  if (dt < 0.0f)
+    dt = 0.0f;
 
-  if (moon_ts.phase == PHASE_FADE_OUT) {
-    moon_ts.fade_alpha += TERRAIN_TRANSITION_SPEED * dt;
-    if (moon_ts.fade_alpha >= 1.0f) {
-      moon_ts.fade_alpha = 1.0f;
-      moon_ts.current_mode = moon_ts.pending_mode;
-      moon_ts.phase = PHASE_FADE_IN;
+  if (!transition.active && current_scene == MOON_SCENE_ORBIT &&
+      moon_distance <= ENTER_SURFACE_DISTANCE) {
+
+    transition.active = true;
+    transition.fading_out = true;
+  }
+
+  if (!transition.active && current_scene == MOON_SCENE_SURFACE &&
+      moon_distance >= EXIT_SURFACE_DISTANCE) {
+
+    transition.active = true;
+    transition.fading_out = true;
+  }
+
+  if (!transition.active)
+    return;
+
+  if (transition.fading_out) {
+    transition.alpha += TERRAIN_TRANSITION_SPEED * dt;
+
+    if (transition.alpha >= 1.0f) {
+      transition.alpha = 1.0f;
+
+      if (current_scene == MOON_SCENE_ORBIT) {
+        current_scene = MOON_SCENE_SURFACE;
+        teleport_player_to_surface(ship_position);
+      } else {
+        current_scene = MOON_SCENE_ORBIT;
+        // TODO Teleport player back
+      }
+
+      transition.fading_out = false;
     }
-  } else if (moon_ts.phase == PHASE_FADE_IN) {
-    moon_ts.fade_alpha -= TERRAIN_TRANSITION_SPEED * dt;
-    if (moon_ts.fade_alpha <= 0.0f) {
-      moon_ts.fade_alpha = 0.0f;
-      moon_ts.phase = PHASE_NONE;
+  } else {
+    transition.alpha -= TERRAIN_TRANSITION_SPEED * dt;
+
+    if (transition.alpha <= 0.0f) {
+      transition.alpha = 0.0f;
+      transition.active = false;
     }
   }
 }
 
 void draw_moon_transition_overlay() {
-  if (!moon_ts.initialized || moon_ts.fade_alpha <= 0.0f) {
+  if (transition.alpha <= 0.0f) {
     return;
   }
 
@@ -192,7 +187,7 @@ void draw_moon_transition_overlay() {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  glColor4f(0.0f, 0.0f, 0.0f, moon_ts.fade_alpha);
+  glColor4f(0.0f, 0.0f, 0.0f, transition.alpha);
   glBegin(GL_QUADS);
   glVertex2f(0.0f, 0.0f);
   glVertex2f(static_cast<float>(width), 0.0f);
