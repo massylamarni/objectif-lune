@@ -58,12 +58,8 @@ void game_update_hook() {
 
   physics::rb_integrate(body, dt);
 
-  if (physics::check_planet_collision(body, gst.earth)) {
-    physics::resolve_planet_collision(body, gst.earth);
-  }
-
-  if (physics::check_planet_collision(body, gst.moon)) {
-    physics::resolve_planet_collision(body, gst.moon);
+  if (physics::check_surface_collision(body)) {
+    physics::resolve_surface_collision(body);
   }
 
   gst.ship.position = body.position;
@@ -80,8 +76,7 @@ void game_update_hook() {
     gst.pause = !gst.pause;
     input::stop_mouse_input(gst.pause);
   }
-  physics::update_ship_collision_state(gst.ship, gst.earth);
-  physics::update_ship_collision_state(gst.ship, gst.moon);
+  // physics::update_ship_collision_state(gst.ship);
   if (gst.ship.state == world::SHIP_DESTORYED &&
       previous_ship_state != world::SHIP_DESTORYED) {
     start_explosion_animation();

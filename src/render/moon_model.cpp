@@ -5,7 +5,8 @@
 moon_scene current_scene = MOON_SCENE_ORBIT;
 moon_transition_state transition = {false, false, 0.0f, 0};
 
-const int GRID_STEPS = 128;
+moon_scene &get_moon_scene() { return current_scene; };
+
 static float heightmap[GRID_STEPS + 1][GRID_STEPS + 1];
 static Vec3 normalmap[GRID_STEPS + 1][GRID_STEPS + 1];
 
@@ -105,7 +106,6 @@ void draw_moon_surface(Vec3 *ship_position) {
   if (!ship_position)
     return;
 
-  const float PATCH_SIZE = 2000.0f;
   const float step = PATCH_SIZE / GRID_STEPS;
   const float half = PATCH_SIZE / 2.0f;
   const float TEXTURE_SCALE = 0.01f;
