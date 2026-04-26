@@ -3,6 +3,7 @@
 
 static GameState gst;
 static GameFps gfps = {0};
+static render::screen_settings ss = render::get_screen_settings();
 
 void update_fov() {
   const float FOV_CONST = 500.0f;
@@ -18,7 +19,7 @@ void update_fov() {
   render::set_perspective(smooth_fov);
 }
 
-void game_init(int width, int height) {
+void game_init() {
   gst.earth =
       world::create_planet(EARTH_ID, EARTH_POSITION, EARTH_RADIUS, EARTH_MASS);
   gst.moon =
@@ -134,18 +135,18 @@ void game_display_hook() {
   }
   if (gst.ship.state == world::SHIP_LANDED) {
     render::draw_text("Landing successful - You win!", 20,
-                      render::SCREEN_HEIGHT - 70);
+                      ss.height - 70);
     render::draw_text("Press r to Restart", 20,
-                      render::SCREEN_HEIGHT - 90);
+                      ss.height - 90);
   } else if (gst.ship.state == world::SHIP_DESTORYED) {
     render::draw_text("Crash detected - Ship destroyed!", 20,
-                      render::SCREEN_HEIGHT - 70);
+                      ss.height - 70);
     render::draw_text("Press r to Restart", 20,
-                      render::SCREEN_HEIGHT - 90);
+                      ss.height - 90);
   }
   if (gst.pause) {
-    render::draw_text_pause("PAUSE", render::SCREEN_WIDTH/2-110.0F,
-                      render::SCREEN_HEIGHT/2.0F);
+    render::draw_text_pause("PAUSE", (double)ss.width/2-110.0F,
+                      ss.height/2.0F);
   }
 
   ui::draw_minimaps(gst.ship, gst.earth, gst.moon, gst.sun, gst.camera);

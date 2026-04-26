@@ -1,6 +1,7 @@
 #include "keyboard.h"
 #include "input.h"
 #include <GL/gl.h>
+#include <cstddef>
 
 namespace input {
 void set_global_keyboard_listeners(unsigned char key, int x, int y,
@@ -18,9 +19,6 @@ void set_global_keyboard_listeners(unsigned char key, int x, int y,
   key_to_macros_map ktoms_2p[] = {
       {'p', '\0', {GL_FILL, GL_LINE, GL_POINT}},
   };
-
-  struct Vec2 alpha = {0, 0};
-  struct Vec2 mouse = {0, 0};
 
   key_to_float_map ktof[] = {
       {'B', 'b', &mp.ds.fov, 0, 4.4, 0.1, 1, false},
@@ -41,24 +39,24 @@ void set_global_keyboard_listeners(unsigned char key, int x, int y,
 
   /* --- */
 
-  for (int i = 0; i < ktom_len; i++) {
+  for (size_t i = 0; i < ktom_len; i++) {
     gltoggle_on_key_press(ktom[i].macro, key, ktom[i].key);
   }
-  for (int i = 0; i < ktoms_len; i++) {
+  for (size_t i = 0; i < ktoms_len; i++) {
     glswitch_macros(ktoms[i].macros, ktoms_len, glClear, key, ktoms[i].key[0],
                     ktoms[i].key[1]);
   }
-  for (int i = 0; i < ktoms_2p_len; i++) {
+  for (size_t i = 0; i < ktoms_2p_len; i++) {
     glswitch_macros_2p(GL_FRONT_AND_BACK, ktoms_2p[i].macros, ktoms_2p_len,
                        glPolygonMode, key, ktoms_2p[i].key[0],
                        ktoms_2p[i].key[1]);
   }
-  for (int i = 0; i < ktof_len; i++) {
+  for (size_t i = 0; i < ktof_len; i++) {
     update_on_key_press(ktof[i].fptr, key, ktof[i].key[0], ktof[i].key[1],
                         ktof[i].min_value, ktof[i].max_value, ktof[i].step,
                         ktof[i].is_wrapped);
   }
-  for (int i = 0; i < ktof_proportional_len; i++) {
+  for (size_t i = 0; i < ktof_proportional_len; i++) {
     update_on_key_press_proportional(
         ktof_proportional[i].fptr, key, ktof_proportional[i].key[0],
         ktof_proportional[i].key[1], ktof_proportional[i].min_value,
@@ -94,7 +92,7 @@ void set_global_keyboard_listeners_s(unsigned char key, int x, int y,
 
   /* --- */
 
-  for (int i = 0; i < ktof_proportional_s_len; i++) {
+  for (size_t i = 0; i < ktof_proportional_s_len; i++) {
     update_on_key_press_proportional(
         ktof_proportional_s[i].fptr, key, ktof_proportional_s[i].key[0],
         ktof_proportional_s[i].key[1], ktof_proportional_s[i].min_value,

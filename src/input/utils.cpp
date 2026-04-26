@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <cstddef>
 
 bool toggle_on_key_press(bool *var, char key, char expected_key) {
   if (key == expected_key)
@@ -47,7 +48,7 @@ void gltoggle_on_key_press(uint macro, char key, char expected_key) {
 }
 
 void gltoggle_macros(uint macros[], size_t macros_len) {
-  for (int i = 0; i < macros_len; i++) {
+  for (size_t i = 0; i < macros_len; i++) {
     glIsEnabled(macros[i]) ? glDisable(macros[i]) : glEnable(macros[i]);
   }
 }

@@ -5,9 +5,10 @@ namespace input {
 static int last_mouse_x = 0;
 static int last_mouse_y = 0;
 static bool ignore_warp_event = false;
+static render::screen_settings ss = render::get_screen_settings();
 
 Vec2 window_center() {
-  return Vec2(render::SCREEN_WIDTH * 0.5f, render::SCREEN_HEIGHT * 0.5f);
+  return Vec2(ss.width * 0.5f, ss.height * 0.5f);
 }
 
 void warp_mouse_to_center() {

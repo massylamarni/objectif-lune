@@ -2,6 +2,11 @@
 #include "../input/utils.h"
 
 namespace render {
+// static render_settings rs = {0};
+static screen_settings ss = {SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_POSITION_X,
+                             SCREEN_POSITION_Y};
+screen_settings &get_screen_settings() { return ss; }
+
 model_proprty init_model_property() {
   display_settings ds = {0.5, 16, 0, 16, 0, false, false, 3};
   scene_property sp = {0};
