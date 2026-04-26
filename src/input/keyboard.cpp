@@ -92,6 +92,11 @@ void set_global_keyboard_listeners_s(unsigned char key, int x, int y,
 
   /* --- */
 
+  for (size_t i = 0; i < ktof_s_len; i++) {
+    update_on_key_press(ktofs[i].fptr, key, ktofs[i].key[0], ktofs[i].key[1],
+                        ktofs[i].min_value, ktofs[i].max_value, ktofs[i].step,
+                        ktofs[i].is_wrapped);
+  }
   for (size_t i = 0; i < ktof_proportional_s_len; i++) {
     update_on_key_press_proportional(
         ktof_proportional_s[i].fptr, key, ktof_proportional_s[i].key[0],
