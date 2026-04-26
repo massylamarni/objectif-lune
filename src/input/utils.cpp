@@ -58,10 +58,10 @@ void glswitch_macros(uint macros[], size_t macros_len,
                      char dec_key) {
   static uint macro_id = 0;
   if (key == inc_key)
-    macro_id += macro_id % macros_len;
+    macro_id = (macro_id + 1) % macros_len;
   else if (key == dec_key)
-    macro_id -= macro_id % macros_len;
-  func(macro_id);
+    macro_id = (macro_id == 0) ? macros_len - 1 : macro_id - 1;
+  func(macros[macro_id]);
 };
 
 void glswitch_macros_2p(uint const_macro, uint macros[], size_t macros_len,
@@ -69,8 +69,8 @@ void glswitch_macros_2p(uint const_macro, uint macros[], size_t macros_len,
                         char inc_key, char dec_key) {
   static uint macro_id = 0;
   if (key == inc_key)
-    macro_id += macro_id % macros_len;
+    macro_id = (macro_id + 1) % macros_len;
   else if (key == dec_key)
-    macro_id -= macro_id % macros_len;
-  func(const_macro, macro_id);
+    macro_id = (macro_id == 0) ? macros_len - 1 : macro_id - 1;
+  func(const_macro, macros[macro_id]);
 };

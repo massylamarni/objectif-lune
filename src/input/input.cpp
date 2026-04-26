@@ -52,6 +52,7 @@ void set_key_state(unsigned char key, int x, int y, int isDown) {
 void keyboard_callback(unsigned char key, int x, int y) {
   // printf("K  %4d %4d %4d\n",specialKey,x,y);
   set_key_state(key, x, y, true);
+  set_global_keyboard_listeners(key, x, y, render::model_proprty());
 }
 
 void keyboard_up_callback(unsigned char key, int x, int y) {
@@ -61,6 +62,7 @@ void keyboard_up_callback(unsigned char key, int x, int y) {
 
 void special_callback(int specialKey, int x, int y) {
   // printf("S  %4d %4d %4d\n",specialKey,x,y);
+  set_global_keyboard_listeners_s(specialKey, x, y, render::model_proprty());
 }
 
 void mouse_callback(int button, int state, int x, int y) {
