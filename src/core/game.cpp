@@ -77,6 +77,10 @@ void game_update_hook() {
     gst.pause = !gst.pause;
     input::stop_mouse_input(gst.pause);
   }
+  if (iState.debug){
+    input::stop_debug();
+    gst.debug = !gst.debug;
+  }
   // physics::update_ship_collision_state(gst.ship);
   if (gst.ship.state == world::SHIP_DESTORYED &&
       previous_ship_state != world::SHIP_DESTORYED) {
@@ -103,6 +107,10 @@ void game_update_pause() {
     input::stop_pause();
     gst.pause = !gst.pause;
     input::stop_mouse_input(gst.pause);
+  }
+  if (iState.debug){
+    input::stop_debug();
+    gst.debug = !gst.debug;
   }
   render::camera_follow_ship(gst.camera, gst.ship);
   
@@ -150,9 +158,11 @@ void game_display_hook() {
   }
 
   ui::draw_minimaps(gst.ship, gst.earth, gst.moon, gst.sun, gst.camera);
-  output::debug_camera(gst.camera.position.x, gst.camera.position.y,
-                       gst.camera.position.z);
-  output::debug_fps(gfps.fps);
+  if (gst.debug) {
+    output::debug_camera(gst.camera.position.x, gst.camera.position.y,
+                         gst.camera.position.z);
+    output::debug_fps(gfps.fps);
+  }
   draw_moon_transition_overlay();
 }
 

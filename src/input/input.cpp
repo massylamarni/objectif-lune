@@ -36,8 +36,13 @@ void set_key_state(unsigned char key, int x, int y, int isDown) {
   case 'r':
     state.r_down = isDown;
     break;
+  case 'f':
+    if (!state.f_down && isDown)
+      state.debug = true;
+    state.p_down = isDown;
+    break;
   case 'p':
-    if (!state.p_down)
+    if (!state.p_down && isDown)
       state.pause = true;
     state.p_down = isDown;
     break;
@@ -152,6 +157,8 @@ Vec3 rotate_pitch(const Vec3 &v, float pitch) {
 InputState &get_input_state() { return state; }
 
 void stop_pause() { state.pause = false; }
+
+void stop_debug() { state.debug = false; }
 
 void stop_mouse_input(bool stop) {
   if (stop) {

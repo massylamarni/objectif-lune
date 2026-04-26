@@ -23,6 +23,7 @@ struct GameState {
   render::Camera camera;
   bool player_won;
   bool pause;
+  bool debug;
 };
 
 struct GameFps {

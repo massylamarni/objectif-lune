@@ -25,6 +25,8 @@ struct InputState {
   bool d_down;
   bool u_down;
   bool r_down;
+  bool f_down;
+  bool debug;
   bool p_down;
   bool pause;
 };
@@ -35,6 +37,7 @@ Vec3 rotate_yaw(const Vec3 &v, float yaw);
 Vec3 rotate_pitch(const Vec3 &v, float pitch);
 InputState &get_input_state();
 void stop_pause();
+void stop_debug();
 void stop_mouse_input(bool stop);
 
 } // namespace input
