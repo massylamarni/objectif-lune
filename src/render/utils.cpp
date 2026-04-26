@@ -40,6 +40,31 @@ void draw_text(const char *text, int x, int y) {
   glMatrixMode(GL_MODELVIEW);
 }
 
+void draw_title(const char *text, int x, int y) {
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+  glLoadIdentity();
+  gluOrtho2D(0, ss.width, 0, ss.height);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  float blanc[]={1.0F,1.0F,1.0F,1.0F};
+  glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,blanc);
+
+  glRasterPos2i(x, y);
+  for (const char *c = text; *c; ++c) {
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+  }
+
+  glPopMatrix();
+
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+
+  glMatrixMode(GL_MODELVIEW);
+}
+
 void draw_text_pause(const char *text, float x, float y) {
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();

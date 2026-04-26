@@ -29,6 +29,7 @@ void game_init() {
   gst.camera = render::create_camera(CAMERA_POSITION, CAMERA_TARGET, CAMERA_UP);
   gst.player_won = false;
   gst.pause = false;
+  gst.debug = false;
 
   game_display();
   game_update();
