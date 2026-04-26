@@ -1,14 +1,12 @@
 #include "renderer.h"
-#include "renderer_settings.h"
 #include <GL/freeglut_std.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include "../../assets/models/color_palette.h"
 #include "textures.h"
 
-
 namespace render {
-static render_settings rs = {0};
+static screen_settings ss = get_screen_settings();
 
 void init_lighting() {
   glEnable(GL_LIGHTING);
@@ -23,8 +21,8 @@ void init(int *argc, char **argv) {
   atexit(clean);
   glutInit(argc, argv);
   glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
-  glutInitWindowSize(render::SCREEN_WIDTH, render::SCREEN_HEIGHT);
-  glutInitWindowPosition(render::SCREEN_POSITION_X, render::SCREEN_POSITION_Y);
+  glutInitWindowSize(ss.width, ss.height);
+  glutInitWindowPosition(ss.pos_x, ss.pos_y);
   glutCreateWindow("Gestion événementielle de GLUt");
 
   glDepthFunc(GL_LESS);
@@ -52,19 +50,17 @@ void set_perspective(float fov) {
     if (ratio < 1.0) gluPerspective(12.0/ratio, ratio, 90, 110);
     else gluPerspective(12.0, ratio, 90, 110);
   */
-  gluPerspective(fov,
-                 (double)render::SCREEN_WIDTH / (double)render::SCREEN_HEIGHT,
-                 0.1, 1000.0);
+  gluPerspective(fov, (double)ss.width / (double)ss.height, 0.1, 1000.0);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 }
 
-static void display_start_frame() {
+void display_start_frame() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-static void display_end_frame() {
+void display_end_frame() {
   glFlush();
   glutSwapBuffers();
   int error = glGetError();
@@ -89,17 +85,16 @@ void idle(void render_hook(void)) {
   glutPostRedisplay();
 }
 
-static void clean(void) {
+void clean(void) {
   // printf("Bye\n");
   free_textures();
 }
 
-static void reshape(int wx, int wy) {
+void reshape(int wx, int wy) {
   // printf("R\n");
-  render::SCREEN_WIDTH = wx;
-  render::SCREEN_HEIGHT = wy;
+  ss.width = wx;
+  ss.height = wy;
   glViewport(0, 0, wx, wy);
   set_perspective(NATURAL_PERSPECTIVE);
 }
 } // namespace render
-

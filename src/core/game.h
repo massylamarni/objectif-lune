@@ -31,7 +31,7 @@ struct GameFps {
   float fps;
 };
 
-void game_init(int width, int height);
+void game_init();
 void game_update();
 void game_update_callback();
 void game_update_hook();

@@ -17,6 +17,7 @@ struct Ship {
   Vec3 velocity;
 
   Vec3 rotation;
+  Vec3 angular_velocity;
 
   float thrust_power;
   float mass;

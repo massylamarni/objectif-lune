@@ -1,11 +1,13 @@
 #include "utils.h"
 
 namespace render {
+static render::screen_settings ss = render::get_screen_settings();
+
 void draw_text(const char *text, int x, int y) {
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
   glLoadIdentity();
-  gluOrtho2D(0, render::SCREEN_WIDTH, 0, render::SCREEN_HEIGHT);
+  gluOrtho2D(0, ss.width, 0, ss.height);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -42,7 +44,7 @@ void draw_text_pause(const char *text, float x, float y) {
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
   glLoadIdentity();
-  gluOrtho2D(0, render::SCREEN_WIDTH, 0, render::SCREEN_HEIGHT);
+  gluOrtho2D(0, ss.width, 0, ss.height);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();

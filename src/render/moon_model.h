@@ -26,7 +26,6 @@ void compute_normal(float x, float z, float step, float &nx, float &ny,
                     float &nz);
 float get_lunar_height(float wx, float wz);
 void draw_moon_container(const world::Planet &planet, Vec3 *ship_position);
-void draw_moon(const world::Planet &planet, const Vec3 *ship_position);
 void draw_planet_sphere(float radius);
 void draw_moon_surface(Vec3 *ship_position);
 void update_moon_transition(float moon_distance, Vec3 *ship_position);

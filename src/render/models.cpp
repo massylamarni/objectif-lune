@@ -13,7 +13,6 @@ float rotation_power = 0.0F;
 float rotation_direction = 0.0F;
 
 void draw_planet(const world::Planet &planet, Vec3 *ship_position) {
-  const uint *texture_id_buf = get_texture_id_buf();
   glPushMatrix();
 
   glTranslatef(planet.position.x, planet.position.y, planet.position.z);
@@ -33,6 +32,11 @@ void draw_ship(const world::Ship &ship) {
   glPushMatrix();
 
   glTranslatef(ship.position.x, ship.position.y, ship.position.z);
+  const float RAD2DEG = 180.0f / M_PI;
+  glRotatef(ship.rotation.x * RAD2DEG, 1.0f, 0.0f, 0.0f);
+  glRotatef(ship.rotation.y * RAD2DEG, 0.0f, 1.0f, 0.0f);
+  glRotatef(ship.rotation.z * RAD2DEG, 0.0f, 0.0f, 1.0f);
+
   glutWireCube(1);
   glScalef (0.28F, 0.28F, 0.28F);
   glTranslatef(0.0F, -1.4F, 0.0F);

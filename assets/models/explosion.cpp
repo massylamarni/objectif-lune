@@ -3,8 +3,8 @@
 
 /* Variables globales                           */
 
-static int n_lat=40;
-static int n_long=20;
+// static int n_lat=40;
+// static int n_long=20;
 static int animation_phase=0;
 static float tremblement=0.0F;
 static float explosion_size=0.0F;

@@ -1,9 +1,20 @@
 #ifndef RENDERER_RENDER_SETTINGS
 #define RENDERER_RENDER_SETTINGS
 
-#include "renderer.h"
+#define SCREEN_WIDTH 500
+#define SCREEN_HEIGHT 500
+#define SCREEN_POSITION_X 50
+#define SCREEN_POSITION_Y 50
+#define NATURAL_PERSPECTIVE 60.0f
 
 namespace render {
+typedef struct {
+  int width;
+  int height;
+  int pos_x;
+  int pos_y;
+} screen_settings;
+
 typedef struct {
   bool gl_depth_test_toggle;
   bool gl_lighting_toggle;
@@ -38,6 +49,7 @@ typedef struct {
 
 model_proprty init_model_property();
 void apply_render_settings(const render_settings *rs);
+screen_settings &get_screen_settings();
 } // namespace render
 
 #endif
