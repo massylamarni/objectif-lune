@@ -27,6 +27,7 @@
 #define SHIP_THRUST_POWER 20.0f
 #define SHIP_MASS 1.0f
 #define SHIP_RADIUS 0.5f
+#define SHIP_MAX_SPEED 50.0f
 
 #define CAMERA_POSITION Vec3(0, 0, 30)
 #define CAMERA_TARGET Vec3(0, 0, 0)

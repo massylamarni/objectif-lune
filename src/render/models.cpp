@@ -27,6 +27,11 @@ void draw_ship(const world::Ship &ship) {
   glPushMatrix();
 
   glTranslatef(ship.position.x, ship.position.y, ship.position.z);
+  const float RAD2DEG = 180.0f / M_PI;
+  glRotatef(ship.rotation.x * RAD2DEG, 1.0f, 0.0f, 0.0f);
+  glRotatef(ship.rotation.y * RAD2DEG, 0.0f, 1.0f, 0.0f);
+  glRotatef(ship.rotation.z * RAD2DEG, 0.0f, 0.0f, 1.0f);
+  
   glutWireCube(1);
   init_lem (2); // TODO find the texture index after loading the LEM texture
   glScalef (0.28F, 0.28F, 0.28F);

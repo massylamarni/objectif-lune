@@ -65,7 +65,7 @@ void game_update_hook() {
   gst.ship.position = body.position;
   gst.ship.velocity = body.velocity;
   world::ship_update(gst.ship, dt);
-  input::input_update(gst.ship.velocity, gst.ship.rotation);
+  input::input_update(gst.ship, dt);
   input::InputState iState= input::get_input_state();
   if (iState.r_down){
     gst.ship = world::create_ship(SHIP_POSITION);

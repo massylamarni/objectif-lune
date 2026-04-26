@@ -1,24 +1,46 @@
 #include "input.h"
-#include "keyboard.h"
-#include "mouse.h"
 #include "../ui/minimap.h"
 #include "../world/world.h"
+#include "keyboard.h"
+#include "mouse.h"
 
 namespace input {
 static InputState state;
 
 void set_key_state(unsigned char key, int x, int y, int isDown) {
   switch (key) {
-    case ' ': state.space_down = isDown; break;
-    case 'a': state.a_down = isDown; break;
-    case 'z': state.z_down = isDown; break;
-    case 'e': state.e_down = isDown; break;
-    case 'q': state.q_down = isDown; break;
-    case 's': state.s_down = isDown; break;
-    case 'd': state.d_down = isDown; break;
-    case 'u': state.u_down = isDown; break;
-    case 'r': state.r_down = isDown; break;
-    case 'p': if (!state.p_down) state.pause = true; state.p_down = isDown; break;
+  case ' ':
+    state.space_down = isDown;
+    break;
+  case 'a':
+    state.a_down = isDown;
+    break;
+  case 'z':
+    state.z_down = isDown;
+    break;
+  case 'e':
+    state.e_down = isDown;
+    break;
+  case 'q':
+    state.q_down = isDown;
+    break;
+  case 's':
+    state.s_down = isDown;
+    break;
+  case 'd':
+    state.d_down = isDown;
+    break;
+  case 'u':
+    state.u_down = isDown;
+    break;
+  case 'r':
+    state.r_down = isDown;
+    break;
+  case 'p':
+    if (!state.p_down)
+      state.pause = true;
+    state.p_down = isDown;
+    break;
   }
 }
 
@@ -38,6 +60,23 @@ void special_callback(int specialKey, int x, int y) {
 
 void mouse_callback(int button, int state, int x, int y) {
   // printf("M  %4d %4d %4d %4d\n",button,state,x,y);
+  InputState &s = get_input_state();
+  if (button == GLUT_LEFT_BUTTON) {
+    if (state == GLUT_DOWN) {
+      s.lmb_down = true;
+      glutSetCursor(GLUT_CURSOR_NONE);
+      warp_mouse_to_center();
+    } else {
+      s.lmb_down = false;
+      glutSetCursor(GLUT_CURSOR_LEFT_ARROW);
+    }
+  } else if (button == GLUT_RIGHT_BUTTON) {
+    if (s.lmb_down) {
+      s.rmb_down = false;
+    } else {
+      s.rmb_down = (state == GLUT_DOWN);
+    }
+  }
 }
 
 void mouse_motion_callback(int x, int y) {
@@ -62,16 +101,40 @@ void input_init() {
   glutPassiveMotionFunc(mouse_passive_motion_callback);
 }
 
-void input_update(Vec3 &vec3, Vec3 &rotation) {
-  if (state.q_down) vec3 += rotate_yaw(Vec3(-INPUT_VEC3_UPDATE_VALUE, 0, 0), state.mouse_rotation_delta.x);
-  if (state.d_down) vec3 += rotate_yaw(Vec3(INPUT_VEC3_UPDATE_VALUE, 0, 0), state.mouse_rotation_delta.x);
-  if (state.a_down) vec3.y -= INPUT_VEC3_UPDATE_VALUE;
-  if (state.e_down) vec3.y += INPUT_VEC3_UPDATE_VALUE;
-  if (state.z_down) vec3 += rotate_yaw(Vec3(0, 0, -INPUT_VEC3_UPDATE_VALUE), state.mouse_rotation_delta.x);
-  if (state.s_down) vec3 += rotate_yaw(Vec3(0, 0, INPUT_VEC3_UPDATE_VALUE), state.mouse_rotation_delta.x);
+void input_update(world::Ship &ship, float dt) {
+  if (state.q_down)
+    ship.velocity += rotate_yaw(Vec3(-INPUT_VEC3_UPDATE_VALUE, 0, 0),
+                                state.mouse_rotation_delta.x);
+  if (state.d_down)
+    ship.velocity += rotate_yaw(Vec3(INPUT_VEC3_UPDATE_VALUE, 0, 0),
+                                state.mouse_rotation_delta.x);
+  if (state.a_down)
+    ship.velocity.y -= INPUT_VEC3_UPDATE_VALUE;
+  if (state.e_down)
+    ship.velocity.y += INPUT_VEC3_UPDATE_VALUE;
+  if (state.z_down)
+    ship.velocity += rotate_yaw(Vec3(0, 0, -INPUT_VEC3_UPDATE_VALUE),
+                                state.mouse_rotation_delta.x);
+  if (state.s_down)
+    ship.velocity += rotate_yaw(Vec3(0, 0, INPUT_VEC3_UPDATE_VALUE),
+                                state.mouse_rotation_delta.x);
   ui::toggle_orbit_main_view(state.u_down);
-  rotation.x = state.mouse_rotation_delta.y;
-  rotation.y = state.mouse_rotation_delta.x;
+
+  ship.thrusting = (state.rmb_down && !state.lmb_down);
+  if (state.rmb_down && !state.lmb_down) {
+    Vec2 p = state.mouse_abs;
+    float dist = sqrtf(p.x * p.x + p.y * p.y);
+    const float r_max = 300.0f;
+    if (dist > r_max)
+      dist = r_max;
+    const float ROT_GAIN = 0.00005f;
+    float ang = ROT_GAIN * dist * dist;
+    float dirx = (dist > 0.0f) ? (p.x / dist) : 0.0f;
+    float diry = (dist > 0.0f) ? (p.y / dist) : 0.0f;
+    ship.angular_velocity.y = dirx * ang;
+    ship.angular_velocity.x = -diry * ang;
+    // ship.angular_velocity.z
+  }
 }
 
 Vec3 rotate_yaw(const Vec3 &v, float yaw) {
@@ -88,19 +151,18 @@ Vec3 rotate_pitch(const Vec3 &v, float pitch) {
 
 InputState &get_input_state() { return state; }
 
-void stop_pause() { state.pause=false; }
+void stop_pause() { state.pause = false; }
 
 void stop_mouse_input(bool stop) {
-  if (stop){
+  if (stop) {
     glutMouseFunc(NULL);
     glutMotionFunc(NULL);
     glutPassiveMotionFunc(NULL);
-  }else{
+  } else {
     glutMouseFunc(mouse_callback);
     glutMotionFunc(mouse_motion_callback);
     glutPassiveMotionFunc(mouse_passive_motion_callback);
   }
-    
 }
 
 } // namespace input
