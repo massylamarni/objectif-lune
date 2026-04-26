@@ -1,9 +1,16 @@
 #include "models.h"
+#include "renderer.h"
 #include "../world/world.h"
 #include "../../assets/models/color_palette.h"
 #include <cmath>
 
 namespace render {
+
+float anim_win_offset = 0.0F;
+bool win_value = false;
+bool reactor_activity = false;
+float rotation_power = 0.0F;
+float rotation_direction = 0.0F;
 
 void draw_planet(const world::Planet &planet, Vec3 *ship_position) {
   const uint *texture_id_buf = get_texture_id_buf();
@@ -22,16 +29,23 @@ void draw_planet(const world::Planet &planet, Vec3 *ship_position) {
 }
 
 void draw_ship(const world::Ship &ship) {
-  float anim_reactor_offset [] = { 0.0F, 10.0F, 20.0F, 30.0F, 40.0F, 50.0F, 60.0F, 70.0F, 80.0F, 90.0F };
 
   glPushMatrix();
 
   glTranslatef(ship.position.x, ship.position.y, ship.position.z);
   glutWireCube(1);
-  init_lem (2); // TODO find the texture index after loading the LEM texture
   glScalef (0.28F, 0.28F, 0.28F);
   glTranslatef(0.0F, -1.4F, 0.0F);
-  lem (true, 0.0F, 0.0F, 0.0F, anim_reactor_offset, false, 0.0F, 16);
+  /* Transfer to IDLE
+  // à l'init -> reactor_init (true, animation); reactor_init (false, animation); (Optionnel si le cpt commence bien entre [0.0, 10.0[ )
+  // à l'activation du réacteur ventral -> reactor_init (true, animation);
+  reactor_activity -> booléen à modifier quand le réacteur ventral s'active ou se désactive
+  if (reactor_activity) reactor_idle (true, animation);
+  reactor_idle (false, animation);
+  rotation_update (x, y, render::SCREEN_WIDTH, render::SCREEN_HEIGHT, &rotation_direction, &rotation_power); // 
+  */
+  lem (reactor_activity, rotation_direction, rotation_power, anim_win_offset, win_value, 0.0F , 16);
+  // (TO CONNECT reactor_activity, TO CONNECT rotation_direction, TO CONNECT rotation_power, anim_win_offset, TO CONNECT anim_reactor_offset, TO CONNECT win_value, KO general_animation, OK)
   glBindTexture(GL_TEXTURE_2D, 0);
   glPopMatrix();
 }

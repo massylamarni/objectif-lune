@@ -20,7 +20,6 @@
 float pos_directionnal[] = { 1.0F, 0.0F, 0.0F, 0.0F };
 
 float anim_win_offset_me = 0.0F; // me -> model editor // doivent être gérées par le jeu
-float anim_reactor_offset_me [] = { 0.0F, 10.0F, 20.0F, 30.0F, 40.0F, 50.0F, 60.0F, 70.0F, 80.0F, 90.0F };
 bool win_value_me = false;
 bool reactor_activity_me = false;
 float rotation_power_me = 0.0F;
@@ -91,6 +90,8 @@ void init (void) {
   glEnable (GL_DEPTH_TEST);
   glEnable (GL_NORMALIZE);
   glClearColor (0.1F, 0.3F, 0.2F, 1.0F);
+  
+  reactor_init (false, prst_animation); // LEM.H
 }
 
  /* Dessin de la Scène                           */
@@ -126,13 +127,13 @@ void scene (void) {
   glPopMatrix ();
 
   printf ("LEM Parameters : Direction %f ; Power %f\n", rotation_direction_me, rotation_power_me);
-  lem (reactor_activity_me, rotation_direction_me, rotation_power_me, anim_win_offset_me, anim_reactor_offset_me, win_value_me, prst_animation, prst_nbPolygon);
+  lem (reactor_activity_me, rotation_direction_me, rotation_power_me, anim_win_offset_me, win_value_me, prst_animation, prst_nbPolygon);
   
   glPushMatrix ();
   
   glTranslatef (0.0F,-0.4F, 0.0F);
   
-  glBegin (GL_POLYGON);
+  glBegin (GL_LINE_LOOP);
   glVertex3f(-2.0F, 0.0F, -2.0F);
   glVertex3f(-2.0F, 0.0F, 2.0F);
   glVertex3f(2.0F, 0.0F, 2.0F);
@@ -217,8 +218,9 @@ void idle (void) {
   }
   
   if (reactor_activity_me) {
-    reactor_idle (anim_reactor_offset_me, prst_animation); // LEM.H
+    reactor_idle (true, prst_animation); // LEM.H
   }
+  reactor_idle (false, prst_animation); // LEM.H
 }
 
  /* Fonction exécutée lors de l'appui            */ 
@@ -231,18 +233,14 @@ void keyboard (unsigned char key, int x, int y) {
     reshape (prst_wTx, prst_wTy);
   }
   
-  if (keyboardAssistToggle (GL_LIGHT2, key, ' ')) {
+  if (key == ' ') {
     if (!reactor_activity_me) {
       reactor_activity_me = true;
-      reactor_init (anim_reactor_offset_me, prst_animation); // LEM.H
+      reactor_init (true, prst_animation); // LEM.H
     }
-    glEnable (GL_LIGHT3);// TODO FIX
-    glEnable (GL_LIGHT4);// TODO FIX
   }
   else {
     reactor_activity_me = false;
-    glDisable (GL_LIGHT3);// TODO FIX
-    glDisable (GL_LIGHT4);// TODO FIX
   }
   
   keyboardAssistIntLoop (&prst_sceneId, key, 'M', 'm', 0, 3);
@@ -334,18 +332,10 @@ void mouse (int button, int state, int x, int y) {
   else if (button == 2) {
     if (state == 0) {
       reactor_activity_me = true;
-      for (int i = 0 ; i < 10 ; i++) {
-        anim_reactor_offset_me [i] = prst_animation + (i * 10.0F);
-      }
-      glEnable (GL_LIGHT2);
-      glEnable (GL_LIGHT3);
-      glEnable (GL_LIGHT4);
+      reactor_init (true, prst_animation);
     }
     else {
       reactor_activity_me = false;
-      glDisable (GL_LIGHT2);
-      glDisable (GL_LIGHT3);
-      glDisable (GL_LIGHT4);
     }
   }
   

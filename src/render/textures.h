@@ -17,7 +17,8 @@
 
 namespace render {
 typedef enum {
-  MOON_TEXTURE
+  MOON_TEXTURE,
+  LEM_TEXTURE
 } texture_id;
 
 const uint *get_texture_id_buf();

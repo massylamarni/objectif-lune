@@ -6,6 +6,7 @@
 #include "../../assets/models/color_palette.h"
 #include "textures.h"
 
+
 namespace render {
 static render_settings rs = {0};
 
@@ -40,6 +41,7 @@ void init(int *argc, char **argv) {
   // glutMainLoop();
   init_lighting();
   load_textures();
+  init_lem (get_texture_id_buf () [1]);
 }
 
 void set_perspective(float fov) {
@@ -82,6 +84,8 @@ void display(void display_hook(void)) {
 
 void idle(void render_hook(void)) {
   render_hook();
+  if (false/*TODO Reacteur ventral actif*/) reactor_idle (true, 0.0F/*TODO cpt temporel*/);
+  reactor_idle (false, 0.0F/*TODO cpt temporel*/);
   glutPostRedisplay();
 }
 

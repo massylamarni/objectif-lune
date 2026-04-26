@@ -10,6 +10,7 @@
 #include <GL/glu.h>
 
 #include <math.h>
+#include "../../assets/models/lem.h"
 
 namespace render {
 static int SCREEN_WIDTH = 500;

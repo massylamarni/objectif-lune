@@ -16,11 +16,15 @@
 
 #include "lem.h"
 
- /* Variables globales                           */
- 
-unsigned int texture_lem_id;
+ /* Variables globales */
 
-void init_lem (unsigned int texture_id) {
+float anim_reactor_offset [] = { -80.0F, -80.0F, -80.0F, -80.0F, -80.0F, -80.0F, -80.0F, -80.0F, -80.0F, -80.0F }; // Offset des blobs de fumée - réacteur ventral
+float anim_rotation_offset [] = { 0.0F, 10.0F, 20.0F, 30.0F, 40.0F, 50.0F, 60.0F, 70.0F, 80.0F, 90.0F }; // Offset des blobs de fumée - réacteur de rotation
+
+unsigned int texture_lem_id; // Index de la texture à appliquer
+float reactor_light_inertia = 0.0F; // Coefficient d'inertie de la puissance de la lumière ventrale
+
+void init_lem (unsigned int texture_id) { // Réglage des lumière 2, 3 et 4, et sauvegarde de l'index de la texture
   texture_lem_id = texture_id;
   
   glLightf  (GL_LIGHT2, GL_CONSTANT_ATTENUATION, 0.0F);
@@ -34,6 +38,10 @@ void init_lem (unsigned int texture_id) {
   glLightf  (GL_LIGHT4, GL_CONSTANT_ATTENUATION, 0.0F);
   glLightf  (GL_LIGHT4, GL_LINEAR_ATTENUATION, 1.0F);
   glLightf  (GL_LIGHT4, GL_QUADRATIC_ATTENUATION, 1.0F);
+  
+  glEnable (GL_LIGHT2);
+  glEnable (GL_LIGHT3);
+  glEnable (GL_LIGHT4);
 }
 
  /* Dessin de la Scène                           */
@@ -56,17 +64,33 @@ void init_lem (unsigned int texture_id) {
   glutSolidSphere (0.5, 16, 16);
 */
 
-void reactor_init (float anim_reactor_offset [], float general_animation) {
-  for (int i = 0 ; i < 10 ; i++) {
-    anim_reactor_offset [i] = general_animation + (i * 10.0F);
+void reactor_init (bool primary_reactor, float general_animation) { // Repositionnement des blobs de fumée
+  if (primary_reactor) {
+    for (int i = 0 ; i < 10 ; i++) {
+      anim_reactor_offset [i] = general_animation + (i * 10.0F);
+    }
+  }
+  else {
+    for (int i = 0 ; i < 10 ; i++) {
+      anim_rotation_offset [i] = general_animation + (i * 10.0F);
+    }
   }
 }
 
 
-void reactor_idle (float anim_reactor_offset [], float general_animation) {
-  for (int i = 0 ; i < 10 ; i++) {
-    if (general_animation - anim_reactor_offset [i] > 75) {
-      anim_reactor_offset [i] = general_animation;
+void reactor_idle (bool primary_reactor, float general_animation) { // Mise à jour des blobs de fumée
+  if (primary_reactor) {
+    for (int i = 0 ; i < 10 ; i++) {
+      if (general_animation - anim_reactor_offset [i] > 75) {
+        anim_reactor_offset [i] = general_animation;
+      }
+    }
+  }
+  else {
+    for (int i = 0 ; i < 10 ; i++) {
+      if (general_animation - anim_rotation_offset [i] > 75) {
+        anim_rotation_offset [i] = general_animation;
+      }
     }
   }
 }
@@ -83,19 +107,23 @@ float lem_anim (bool win_value, float general_animation, float anim_win_offset) 
   }
 }
 
-void reactor_anim (float power, float anim_reactor_offset [], float general_animation) { /* [0.0F - 1.0F]*/
+void reactor_anim (float power, bool primary_reactor, float general_animation) { /* [0.0F - 1.0F]*/
   material_flame ();
+  float (* anim_offset) [] = &anim_reactor_offset;
+  if (!primary_reactor) anim_offset = &anim_rotation_offset;
+  
   if (0.15F < power) {
     glPushMatrix ();
     if (power > 1.0F) power = 1.0F;
     glScalef (power, power, power);
     for (int i = 0 ; i < 10 ; i++) {
-      if (general_animation - anim_reactor_offset [i] < power * 75 && general_animation - anim_reactor_offset [i] >= 0) {
+      if (general_animation - (*anim_offset) [i] < power * 75 && general_animation - (*anim_offset) [i] >= 0) {
+        
         glPushMatrix ();
          
         glRotatef ((i * 108.0F), 0.0F, 1.0F, 0.0F);
-        glTranslatef (0.005F * (general_animation - anim_reactor_offset [i]), -0.01F * (general_animation - anim_reactor_offset [i]), (float) i * 0.01F);
-        glutSolidSphere (0.0025F * (anim_reactor_offset [i] - general_animation + 75), 3 + i, 13 - i);
+        glTranslatef (0.005F * (general_animation - (*anim_offset) [i]), -0.01F * (general_animation - (*anim_offset) [i]), (float) i * 0.01F);
+        glutSolidSphere (0.0025F * ((*anim_offset) [i] - general_animation + 75), 3 + i, 13 - i);
         
         glPopMatrix ();
       }
@@ -104,7 +132,7 @@ void reactor_anim (float power, float anim_reactor_offset [], float general_anim
   }
 }
 
-void rotation_module (float rotation_direction, float rotation_power, float anim_reactor_offset [], float general_animation, int nbPolygon) {
+void rotation_module (float rotation_direction, float rotation_power, float general_animation, int nbPolygon) {
   glPushMatrix ();
   
   for (int i = 0 ; i < 4 ; i++) {
@@ -119,7 +147,7 @@ void rotation_module (float rotation_direction, float rotation_power, float anim
     glTranslatef (0.0F, -0.05F, 0.0F);
     PolyFaceConeCut (-0.05F, -0.1F, -0.125F, nbPolygon, 3);
     glScalef (0.2F, 0.35F, 0.2F);
-    reactor_anim (4.0F * rotation_power * cos ((90.0F + 90.0F * i + rotation_direction) / 180.0 * M_PI), anim_reactor_offset, general_animation); // Flamme
+    reactor_anim (4.0F * rotation_power * cos ((90.0F + 90.0F * i + rotation_direction) / 180.0 * M_PI), false, general_animation); // Flamme
     glPopMatrix ();
   }
   
@@ -133,28 +161,23 @@ void rotation_module (float rotation_direction, float rotation_power, float anim
   glPopMatrix ();
 }
 
-void lem (bool reactor_activity, float rotation_direction, float rotation_power, float anim_win_offset, float anim_reactor_offset [], bool win_value, float general_animation, int nbPolygon) {
+void lem (bool reactor_activity, float rotation_direction, float rotation_power, float anim_win_offset, bool win_value, float general_animation, int nbPolygon) {
   glBindTexture(GL_TEXTURE_2D, texture_lem_id);
   glPushMatrix ();
-  if (reactor_activity) {
-    glEnable (GL_LIGHT2);
-  }
-  else {
-    glDisable (GL_LIGHT2);
-  }
-  if (reactor_activity) {
-    glEnable (GL_LIGHT3);
-    glEnable (GL_LIGHT4);
-  }
-  else {
-    glDisable (GL_LIGHT3);
-    glDisable (GL_LIGHT4);
-  }
   
   glPushMatrix (); // Lumière Ventrale
   glTranslatef (0.0F, -0.5F, 0.0F);
   glLightfv (GL_LIGHT2, GL_POSITION, black);
-  float coeff_ventral = 0.9F + 0.1F * cos (general_animation / 5);
+  float coeff_ventral = (0.9F + 0.1F * cos (general_animation / 5)) * reactor_light_inertia;
+  if (reactor_activity) {
+    reactor_light_inertia += 0.05F;
+    if (reactor_light_inertia >= 1.0F) reactor_light_inertia = 1.0F;
+  }
+  else {
+    reactor_light_inertia -= 0.025F;
+    if (reactor_light_inertia <= 0.0F) reactor_light_inertia = 0.0F;
+  }
+  coeff_ventral *= reactor_light_inertia;
   colorCoeff (red_boost, coeff_ventral);
   glLightfv (GL_LIGHT2, GL_DIFFUSE,  tmp_color);
   colorCoeff (gold, coeff_ventral);
@@ -259,13 +282,13 @@ void lem (bool reactor_activity, float rotation_direction, float rotation_power,
     glPushMatrix ();
     glRotatef (-10.0F, 0.0F, 1.0F, 0.0F);
     glTranslatef (1.125F, 0.25F, 0.0F);
-    rotation_module (rotation_direction, rotation_power, anim_reactor_offset, general_animation, nbPolygon);
+    rotation_module (rotation_direction, rotation_power, general_animation, nbPolygon);
     glPopMatrix ();
     glPushMatrix ();
     glRotatef (-170.0F, 0.0F, 1.0F, 0.0F);
     glTranslatef (1.125F, 0.25F, 0.0F);
     glRotatef (180.0F, 0.0F, 0.0F, 1.0F);
-    rotation_module (rotation_direction, rotation_power, anim_reactor_offset, general_animation, nbPolygon);
+    rotation_module (rotation_direction, rotation_power, general_animation, nbPolygon);
     glPopMatrix ();
   }
   glTranslatef (0.0F, 0.5F, 0.0F);
@@ -338,7 +361,7 @@ void lem (bool reactor_activity, float rotation_direction, float rotation_power,
   glTranslatef (0.0F, -0.1F, 0.0F);
   PolyFaceConeCut (-0.2F, -0.2F, -0.4F, nbPolygon, 3);
   glScalef (1.0F, 1.5F, 1.0F);
-  reactor_anim (1.0F, anim_reactor_offset, general_animation); // Flamme
+  reactor_anim (1.0F, true, general_animation); // Flamme
   glPopMatrix ();
 
   glPushMatrix ();
@@ -380,7 +403,7 @@ void lem (bool reactor_activity, float rotation_direction, float rotation_power,
   glPopMatrix ();
 }
 
-void rotation_update (int x, int y, int prst_wTx, int prst_wTy, float* rotation_direction, float* rotation_power) {
-  *rotation_direction = 90.0F - 180.0F * atanf (-(y - prst_wTy / 2) / (abs (x - prst_wTx / 2) > 0.02 ? (x - prst_wTx / 2) : 0.02)) / M_PI + (x >= prst_wTx / 2 ? 180.0 : 0.0);
-  *rotation_power = sqrt ((float) (x - prst_wTx / 2) * (x - prst_wTx / 2) + (y - prst_wTy / 2) * (y - prst_wTy / 2)) / ((prst_wTx + prst_wTy) / 2.0);
+void rotation_update (int x, int y, int wTx, int wTy, float* rotation_direction, float* rotation_power) {
+  *rotation_direction = 90.0F - 180.0F * atanf (-(y - wTy / 2) / (abs (x - wTx / 2) > 0.02 ? (x - wTx / 2) : 0.02)) / M_PI + (x >= wTx / 2 ? 180.0 : 0.0);
+  *rotation_power = sqrt ((float) (x - wTx / 2) * (x - wTx / 2) + (y - wTy / 2) * (y - wTy / 2)) / ((wTx + wTy) / 2.0);
 }
