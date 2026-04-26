@@ -7,6 +7,7 @@
 
 namespace render {
 void draw_text(const char *text, int x, int y);
+void draw_text_transparence(const char *text, int x, int y, float transparence);
 void draw_title(const char *text, int x, int y);
 void draw_text_pause(const char *text, float x, float y);
 } // namespace render

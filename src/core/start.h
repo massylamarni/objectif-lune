@@ -7,3 +7,6 @@ void start_update();
 void start_display();
 void start_display_hook();
 void start_keyboard(unsigned char key, int x, int y);
+void phaseTransparence1();
+void phaseTransparence2();
+void phaseTransparence3();
