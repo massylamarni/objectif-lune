@@ -144,19 +144,20 @@ void game_display_hook() {
     render::draw_explosion(gst.ship);
   }
   if (gst.ship.state == world::SHIP_LANDED) {
-    render::draw_text("Landing successful - You win!", 20,
+    render::draw_text("Landing successful", 20,
                       ss.height - 70);
     render::draw_text("Press r to Restart", 20,
                       ss.height - 90);
+    render::draw_important_text("YOU WIN !");
   } else if (gst.ship.state == world::SHIP_DESTORYED) {
     render::draw_text("Crash detected - Ship destroyed!", 20,
                       ss.height - 70);
     render::draw_text("Press r to Restart", 20,
                       ss.height - 90);
+    render::draw_important_text("YOU LOSE !");
   }
   if (gst.pause) {
-    render::draw_text_pause("PAUSE", (double)ss.width/2-110.0F,
-                      ss.height/2.0F);
+    render::draw_important_text("PAUSE");
   }
 
   ui::draw_minimaps(gst.ship, gst.earth, gst.moon, gst.sun, gst.camera);

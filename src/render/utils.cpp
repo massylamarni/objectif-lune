@@ -91,7 +91,7 @@ void draw_title(const char *text, int x, int y) {
   glMatrixMode(GL_MODELVIEW);
 }
 
-void draw_text_pause(const char *text, float x, float y) {
+void draw_important_text(const char *text) {
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
   glLoadIdentity();
@@ -101,12 +101,34 @@ void draw_text_pause(const char *text, float x, float y) {
   glPushMatrix();
   glLoadIdentity();
   float blanc[]={1.0F,1.0F,1.0F,1.0F};
+  float noir[]={0.0F,0.0F,0.0F,1.0F};
   glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,blanc);
+  float text_width=0.0F;
+  
+  for (const char *c = text; *c; ++c) {
+    text_width += glutBitmapWidth(GLUT_BITMAP_TIMES_ROMAN_24, *c);
+  }
+  
 
-  glRasterPos2i(x, y);
+  glRasterPos2i(ss.width/2-text_width/2, ss.height/2-8);
   for (const char *c = text; *c; ++c) {
     glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
   }
+  
+  float xMax =ss.width/2+text_width/2+4;
+  float xMin =ss.width/2-text_width/2-4;
+  float yMax =ss.height/2+12;
+  float yMin =ss.height/2-12;
+  
+  
+  glMaterialfv(GL_FRONT,GL_EMISSION,noir);
+  glMaterialfv(GL_FRONT,GL_DIFFUSE,noir);
+  glBegin(GL_QUADS);
+  glVertex3f(xMin, yMin, -0.5F);
+  glVertex3f(xMax, yMin, -0.5F);
+  glVertex3f(xMax, yMax, -0.5F);
+  glVertex3f(xMin, yMax, -0.5F);
+  glEnd();
 
   glPopMatrix();
 
