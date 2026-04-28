@@ -174,4 +174,12 @@ void stop_mouse_input(bool stop) {
   }
 }
 
+void simulate_camera_swipe(float pixels, Vec2 axis) {
+  InputState &state = get_input_state();
+  state.lmb_down = true;
+  if (axis.x) state.mouse_rotation_delta.x += pixels * MOUSE_SENSITIVITY;
+  if (axis.y) state.mouse_rotation_delta.y += pixels * MOUSE_SENSITIVITY;
+  state.lmb_down = false;
+}
+
 } // namespace input
