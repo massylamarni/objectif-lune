@@ -21,3 +21,9 @@ p: pause
 r: redemarrer
 f: affichage debug (coordonnées & fps)
 l: activer/desactiver la lumiere
+h: toggle GL_DEPTH_TEST
+H: toggle GL_CULL_FACE
+l: toggle GL_LIGHTING
+L: toggle GL_COLOR_MATERIAL
+o: changer entre GL_FILL, GL_LINE, GL_POINT
+O: changer entre (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT), GL_DEPTH_BUFFER_BIT, GL_COLOR_BUFFER_BIT
