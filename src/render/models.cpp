@@ -53,7 +53,7 @@ void draw_ship(const world::Ship &ship) {
   glRotatef(ship.rotation.y * RAD2DEG, 0.0f, 1.0f, 0.0f);
   glRotatef(ship.rotation.z * RAD2DEG, 0.0f, 0.0f, 1.0f);
 
-  glutWireCube(1);
+  // glutWireCube(1);
   glScalef (0.28F, 0.28F, 0.28F);
   glTranslatef(0.0F, -1.4F, 0.0F);
   /* Transfer to IDLE
@@ -64,7 +64,7 @@ void draw_ship(const world::Ship &ship) {
   reactor_idle (false, animation);
   rotation_update (x, y, render::SCREEN_WIDTH, render::SCREEN_HEIGHT, &rotation_direction, &rotation_power); // 
   */
-  lem (reactor_activity, rotation_direction, rotation_power, anim_win_offset, win_value, animation_counter, 16);
+  lem (reactor_activity, rotation_direction, rotation_power, anim_win_offset, win_value, animation_counter, 8);
   // (TO CONNECT reactor_activity, TO CONNECT rotation_direction, TO CONNECT rotation_power, anim_win_offset, TO CONNECT anim_reactor_offset, TO CONNECT win_value, KO general_animation, OK)
   glBindTexture(GL_TEXTURE_2D, 0);
   glPopMatrix();

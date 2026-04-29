@@ -139,6 +139,13 @@ void game_display_hook() {
   }
   if (gst.ship.state == world::SHIP_DESTORYED && getExplosionPhase() != 0) {
     render::draw_explosion(gst.ship);
+    gst.ship.velocity.x = 0;
+    gst.ship.velocity.y = 0;
+    gst.ship.velocity.z = 0;
+    gst.ship.angular_velocity.x = 0;
+    gst.ship.angular_velocity.y = 0;
+    gst.ship.angular_velocity.z = 0;
+    gst.ship.thrust_power = 0;
   }
   if (gst.ship.state == world::SHIP_LANDED) {
     render::draw_text("Landing successful", 20,

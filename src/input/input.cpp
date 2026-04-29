@@ -127,7 +127,8 @@ void input_update(world::Ship &ship, float dt) {
                                 state.mouse_rotation_delta.x);
   ui::toggle_orbit_main_view(state.u_down);
 
-  ship.thrusting = (state.rmb_down && !state.lmb_down);
+  // ship.thrusting = (state.rmb_down && !state.lmb_down);
+  ship.thrusting = state.space_down;
   if (state.rmb_down && !state.lmb_down) {
     Vec2 p = state.mouse_abs;
     float dist = sqrtf(p.x * p.x + p.y * p.y);
