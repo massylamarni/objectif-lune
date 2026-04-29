@@ -45,38 +45,33 @@ void game_update_hook() {
   core::time_update();
   float dt = core::time_delta();
   update_fov();
+
   physics::RigidBody body;
-  if (gst.ship.state == world::SHIP_ROAMING) {
-    
 
-    body.id = RIGID_BODY_ID;
-    body.position = gst.ship.position;
-    body.velocity = gst.ship.velocity;
-    body.mass = gst.ship.mass;
-    body.radius = gst.ship.radius;
+  body.id = RIGID_BODY_ID;
+  body.position = gst.ship.position;
+  body.velocity = gst.ship.velocity;
+  body.mass = gst.ship.mass;
+  body.radius = gst.ship.radius;
 
-    physics::apply_planet_gravity(body, gst.earth);
-    physics::apply_planet_gravity(body, gst.moon);
-    physics::apply_planet_gravity(body, gst.sun);
+  physics::apply_planet_gravity(body, gst.earth);
+  physics::apply_planet_gravity(body, gst.moon);
+  physics::apply_planet_gravity(body, gst.sun);
 
-    physics::rb_integrate(body, dt);
+  physics::rb_integrate(body, dt);
 
-    /*if (physics::check_surface_collision(body)) {
-      physics::resolve_surface_collision(body);
-    }*/
-
-    gst.ship.position = body.position;
-    gst.ship.velocity = body.velocity;
-    world::ship_update(gst.ship, dt);
-    input::input_update(gst.ship, dt);
-    physics::update_ship_collision_state(gst.ship);
+  if (physics::check_surface_collision(body)) {
+    physics::resolve_surface_collision(body);
   }
+
+  gst.ship.position = body.position;
+  gst.ship.velocity = body.velocity;
+  world::ship_update(gst.ship, dt);
+  input::input_update(gst.ship, dt);
   input::InputState iState= input::get_input_state();
   if (iState.r_down){
     gst.ship = world::create_ship(SHIP_POSITION);
     gst.player_won = false;
-    update_moon_transition(1000.0f, &gst.ship.position);
-    glDisable(GL_LIGHT7);
   }
   if (iState.pause){
     input::stop_pause();
@@ -150,19 +145,19 @@ void game_display_hook() {
                       ss.height - 70);
     render::draw_text("Press r to Restart", 20,
                       ss.height - 90);
+    render::draw_important_text("YOU WIN !");
   } else if (gst.ship.state == world::SHIP_DESTORYED) {
     render::draw_text("Crash detected - Ship destroyed!", 20,
                       ss.height - 70);
     render::draw_text("Press r to Restart", 20,
                       ss.height - 90);
+    render::draw_important_text("YOU LOSE !");
   }
   if (gst.pause) {
     render::draw_important_text("PAUSE");
   }
 
-  if (get_moon_scene()==MOON_SCENE_ORBIT){
-    ui::draw_minimaps(gst.ship, gst.earth, gst.moon, gst.sun, gst.camera);
-  }
+  ui::draw_minimaps(gst.ship, gst.earth, gst.moon, gst.sun, gst.camera);
   if (gst.debug) {
     output::debug_camera(gst.camera.position.x, gst.camera.position.y,
                          gst.camera.position.z);

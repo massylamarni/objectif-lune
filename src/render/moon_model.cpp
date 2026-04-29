@@ -72,7 +72,7 @@ void draw_planet_sphere(float radius) {
   gluDeleteQuadric(quad);
 }
 
-float get_lunar_height(float x, float z) { return fbm(x, z) * 1.0f; }
+float get_lunar_height(float x, float z) { return fbm(x, z) * 8.0f; }
 
 void compute_normal(float x, float z, float step, float &nx, float &ny,
                     float &nz) {

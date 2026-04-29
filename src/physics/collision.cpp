@@ -33,7 +33,6 @@ void resolve_surface_collision(RigidBody &body) {
   if (vdot < 0.0f) {
     body.velocity -= normal * vdot;
   }
-  
 }
 
 Vec3 ship_down_direction(const world::Ship &ship) {
@@ -81,7 +80,6 @@ void update_ship_collision_state(world::Ship &ship) {
 
   if (speed > CRASH_SPEED_THRESHOLD) {
     ship.state = world::SHIP_DESTORYED;
-    ship.velocity = Vec3(0.0f, 0.0f, 0.0f);
     return;
   }
 
