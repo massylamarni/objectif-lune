@@ -80,8 +80,7 @@ void display(void display_hook(void)) {
 
 void idle(void render_hook(void)) {
   render_hook();
-  if (false/*TODO Reacteur ventral actif*/) reactor_idle (true, 0.0F/*TODO cpt temporel*/);
-  reactor_idle (false, 0.0F/*TODO cpt temporel*/);
+  
   glutPostRedisplay();
 }
 

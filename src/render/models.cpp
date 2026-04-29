@@ -6,9 +6,11 @@
 
 namespace render {
 
+float animation_counter = 0.0F;
+
 float anim_win_offset = 0.0F;
 bool win_value = false;
-bool reactor_activity = false;
+bool reactor_activity = true;
 float rotation_power = 0.0F;
 float rotation_direction = 0.0F;
 
@@ -25,6 +27,20 @@ void draw_planet(const world::Planet &planet, Vec3 *ship_position) {
   }
 
   glPopMatrix();
+}
+
+void idle_ship (float dt, float win_v, bool thrusting, float rotation_power_v) {
+  animation_counter += dt * 200;
+  win_value = win_v;
+  rotation_power = rotation_power_v;
+  
+  if (thrusting && !reactor_activity) {
+    reactor_init (true, animation_counter);
+  }
+  reactor_activity = thrusting;
+  
+  if (reactor_activity) reactor_idle (true, animation_counter);
+  reactor_idle (false, animation_counter);
 }
 
 void draw_ship(const world::Ship &ship) {
@@ -48,7 +64,7 @@ void draw_ship(const world::Ship &ship) {
   reactor_idle (false, animation);
   rotation_update (x, y, render::SCREEN_WIDTH, render::SCREEN_HEIGHT, &rotation_direction, &rotation_power); // 
   */
-  lem (reactor_activity, rotation_direction, rotation_power, anim_win_offset, win_value, 0.0F , 16);
+  lem (reactor_activity, rotation_direction, rotation_power, anim_win_offset, win_value, animation_counter, 16);
   // (TO CONNECT reactor_activity, TO CONNECT rotation_direction, TO CONNECT rotation_power, anim_win_offset, TO CONNECT anim_reactor_offset, TO CONNECT win_value, KO general_animation, OK)
   glBindTexture(GL_TEXTURE_2D, 0);
   glPopMatrix();
@@ -57,7 +73,8 @@ void draw_ship(const world::Ship &ship) {
 void draw_mini_ship(const world::Ship &ship) {
   glPushMatrix();
 
-  glutSolidCube(1);
+  glScalef (0.8F, 0.8F, 0.8F);
+  draw_ship (ship);
 
   glPopMatrix();
 }

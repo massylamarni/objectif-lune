@@ -96,6 +96,7 @@ void game_update_hook() {
 
   render::camera_follow_ship(gst.camera, gst.ship);
   explosion_idle(dt);
+  render::idle_ship (dt, gst.player_won, gst.ship.thrusting, length (gst.ship.rotation));
 
   update_fps_counter(dt);
 }

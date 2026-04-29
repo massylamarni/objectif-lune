@@ -134,7 +134,7 @@ void input_update(world::Ship &ship, float dt) {
     const float r_max = 300.0f;
     if (dist > r_max)
       dist = r_max;
-    const float ROT_GAIN = 0.00005f;
+    const float ROT_GAIN = 0.000005f;
     float ang = ROT_GAIN * dist * dist;
     float dirx = (dist > 0.0f) ? (p.x / dist) : 0.0f;
     float diry = (dist > 0.0f) ? (p.y / dist) : 0.0f;
