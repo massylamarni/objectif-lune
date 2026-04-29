@@ -89,9 +89,18 @@ void draw_lem() {
 
 void draw_explosion(const world::Ship &ship) {
   glPushMatrix();
+  glTranslatef(ship.position.x, ship.position.y, ship.position.z);
+  float pos_l7[4]={0.0F,0.0F,0.0F,1.0F};
+  float col_l7[4]={1.0F,0.0F,0.0F,1.0F};
+  glLightfv(GL_LIGHT7,GL_POSITION,pos_l7);
+  glLightfv(GL_LIGHT7,GL_DIFFUSE,col_l7);
+  glEnable(GL_LIGHT7);
 
-  glTranslatef(ship.position.x, ship.position.y-3.0F, ship.position.z);
+  glScalef(2.0f, 2.0f, 2.0f);
   explosion_model();
+  if (getExplosionPhase()==4){
+    glDisable(GL_LIGHT7);
+  }
 
   glPopMatrix();
 }

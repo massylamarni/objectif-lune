@@ -39,7 +39,7 @@ InputState &get_input_state();
 void stop_pause();
 void stop_debug();
 void stop_mouse_input(bool stop);
-
+void simulate_camera_swipe(float pixels, Vec2 axis);
 } // namespace input
 
 #endif
