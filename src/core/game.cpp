@@ -82,7 +82,7 @@ void game_update_hook() {
     input::stop_debug();
     gst.debug = !gst.debug;
   }
-  // physics::update_ship_collision_state(gst.ship);
+  physics::update_ship_collision_state(gst.ship);
   if (gst.ship.state == world::SHIP_DESTORYED &&
       getExplosionPhase() == 0) {
     start_explosion_animation();
