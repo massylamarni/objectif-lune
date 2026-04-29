@@ -44,7 +44,6 @@ void game_update_callback() { if(!gst.pause) render::idle(game_update_hook); els
 void game_update_hook() {
   core::time_update();
   float dt = core::time_delta();
-  const world::ship_state previous_ship_state = gst.ship.state;
   update_fov();
   physics::RigidBody body;
   if (gst.ship.state == world::SHIP_ROAMING) {
@@ -77,6 +76,7 @@ void game_update_hook() {
     gst.ship = world::create_ship(SHIP_POSITION);
     gst.player_won = false;
     update_moon_transition(1000.0f, &gst.ship.position);
+    glDisable(GL_LIGHT7);
   }
   if (iState.pause){
     input::stop_pause();
@@ -89,15 +89,12 @@ void game_update_hook() {
   }
   // physics::update_ship_collision_state(gst.ship);
   if (gst.ship.state == world::SHIP_DESTORYED &&
-      previous_ship_state != world::SHIP_DESTORYED) {
+      getExplosionPhase() == 0) {
     start_explosion_animation();
   }
 
   gst.player_won = (gst.ship.state == world::SHIP_LANDED);
-  if (gst.player_won || gst.ship.state == world::SHIP_DESTORYED) {
-    explosion_idle(dt);
-    return;
-  }
+  
 
   render::camera_follow_ship(gst.camera, gst.ship);
   explosion_idle(dt);
