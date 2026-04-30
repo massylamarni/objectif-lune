@@ -47,6 +47,7 @@ void free_textures() {
 void load_textures() {
   char texture_dirs[TEXTURE_ID_BUF_LEN][32] = {
     "moon_2k.png",
+    "moon_1024.png",
     "texture_LEM.png",
   };
   for (int i = 0; i < 3; i++) {
