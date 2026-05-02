@@ -30,6 +30,7 @@ void game_init() {
   gst.player_won = false;
   gst.pause = false;
   gst.debug = false;
+  gst.editor = false;
 
   game_display();
   game_update();
@@ -39,7 +40,11 @@ void game_init() {
 
 void game_update() { glutIdleFunc(game_update_callback); }
 
-void game_update_callback() { if(!gst.pause) render::idle(game_update_hook); else render::idle(game_update_pause);}
+void game_update_callback() { 
+  if(!gst.pause && !gst.editor) { render::idle(game_update_hook);  }
+  else if (!gst.editor) { render::idle(game_update_pause);  }
+  else { render::idle(game_update_editor); }
+}
 
 void game_update_hook() {
   core::time_update();
@@ -81,6 +86,11 @@ void game_update_hook() {
     gst.pause = !gst.pause;
     input::stop_mouse_input(gst.pause);
   }
+  if (iState.editor){
+    input::stop_editor();
+    gst.editor = !gst.editor;
+    render::set_perspective(10.0f);
+  }
   if (iState.debug){
     input::stop_debug();
     gst.debug = !gst.debug;
@@ -118,13 +128,24 @@ void game_update_pause() {
   
 }
 
+void game_update_editor() {
+  core::time_update();
+  input::InputState iState= input::get_input_state();
+  if (iState.editor){
+    input::stop_editor();
+    gst.editor = !gst.editor;
+  }
+  render::camera_follow_ship(gst.camera, gst.ship);
+  
+}
+
 void game_display() { glutDisplayFunc(game_display_callback); }
 
 void game_display_callback() { render::display(game_display_hook); }
 
 void game_display_hook() {
   render::camera_apply(gst.camera);
-
+  
   // Sun
   Vec3 sun_dir = gst.sun.position;
   float len = length(sun_dir);
@@ -133,9 +154,11 @@ void game_display_hook() {
   float light_pos[4] = {sun_dir.x, sun_dir.y, sun_dir.z, 0.0f};
   glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
-  render::draw_planet(gst.earth);
-  render::draw_planet(gst.moon, &gst.ship.position);
-  render::draw_planet(gst.sun);
+  if (!gst.editor){
+    render::draw_planet(gst.earth);
+    render::draw_planet(gst.moon, &gst.ship.position);
+    render::draw_planet(gst.sun);
+  }
 
   if (gst.ship.state != world::SHIP_DESTORYED) {
     render::draw_ship(gst.ship);
@@ -166,14 +189,15 @@ void game_display_hook() {
   if (gst.pause) {
     render::draw_important_text("PAUSE");
   }
-
-  ui::draw_minimaps(gst.ship, gst.earth, gst.moon, gst.sun, gst.camera);
-  if (gst.debug) {
-    output::debug_camera(gst.camera.position.x, gst.camera.position.y,
-                         gst.camera.position.z);
-    output::debug_fps(gfps.fps);
+  if (!gst.editor){
+    ui::draw_minimaps(gst.ship, gst.earth, gst.moon, gst.sun, gst.camera);
+    if (gst.debug) {
+      output::debug_camera(gst.camera.position.x, gst.camera.position.y,
+                           gst.camera.position.z);
+      output::debug_fps(gfps.fps);
+    }
+    draw_moon_transition_overlay();
   }
-  draw_moon_transition_overlay();
 }
 
 void update_fps_counter(float dt) {

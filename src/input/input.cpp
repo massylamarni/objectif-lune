@@ -46,6 +46,11 @@ void set_key_state(unsigned char key, int x, int y, int isDown) {
       state.pause = true;
     state.p_down = isDown;
     break;
+  case 'v':
+    if (!state.v_down && isDown)
+      state.editor = true;
+    state.v_down = isDown;
+    break;
   }
 }
 
@@ -162,6 +167,8 @@ InputState &get_input_state() { return state; }
 void stop_pause() { state.pause = false; }
 
 void stop_debug() { state.debug = false; }
+
+void stop_editor() { state.editor = false; }
 
 void stop_mouse_input(bool stop) {
   if (stop) {

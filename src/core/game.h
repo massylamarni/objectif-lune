@@ -24,6 +24,7 @@ struct GameState {
   bool player_won;
   bool pause;
   bool debug;
+  bool editor;
 };
 
 struct GameFps {
@@ -37,6 +38,7 @@ void game_update();
 void game_update_callback();
 void game_update_hook();
 void game_update_pause();
+void game_update_editor();
 void game_display();
 void game_display_callback();
 void game_display_hook();

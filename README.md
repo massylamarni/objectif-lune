@@ -20,7 +20,7 @@ u: toggle minimap
 p: pause
 r: redemarrer
 f: affichage debug (coordonnées & fps)
-l: activer/desactiver la lumiere
+v: toggle model editor
 h: toggle GL_DEPTH_TEST
 H: toggle GL_CULL_FACE
 l: toggle GL_LIGHTING

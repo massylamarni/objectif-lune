@@ -121,7 +121,9 @@ void input_init_keyboard() {
   state.r_down = false;
   state.f_down = false;
   state.p_down = false;
+  state.v_down = false;
   state.pause = false;
   state.debug = false;
+  state.editor = false;
 }
 } // namespace input

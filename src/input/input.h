@@ -29,6 +29,8 @@ struct InputState {
   bool debug;
   bool p_down;
   bool pause;
+  bool v_down;
+  bool editor;
 };
 
 void input_init();
@@ -38,6 +40,7 @@ Vec3 rotate_pitch(const Vec3 &v, float pitch);
 InputState &get_input_state();
 void stop_pause();
 void stop_debug();
+void stop_editor();
 void stop_mouse_input(bool stop);
 void simulate_camera_swipe(float pixels, Vec2 axis);
 } // namespace input
