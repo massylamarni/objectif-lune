@@ -72,6 +72,9 @@ void game_update_hook() {
   if (iState.r_down){
     gst.ship = world::create_ship(SHIP_POSITION);
     gst.player_won = false;
+    update_moon_transition(1000.0f, &gst.ship.position);
+    glDisable(GL_LIGHT7);
+    reset_explosion();
   }
   if (iState.pause){
     input::stop_pause();

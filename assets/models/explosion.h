@@ -20,6 +20,8 @@ void explosion_model();
 
 void start_explosion_animation ();
 
+void reset_explosion();
+
 int getExplosionPhase ();
 
 void phaseExplosion1 (float animation_time);

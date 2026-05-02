@@ -109,6 +109,17 @@ void start_explosion_animation () {
   anim_fummee=0.0F;
 }
 
+void reset_explosion () {
+  animation_phase=0;
+  tremblement=0.0F;
+  explosion_size=0.0F;
+  fummee_size=0.0F;
+  saturation=0.0F;
+  anim_saturation=0.0F;
+  anim_explosion=0.0F;
+  anim_fummee=0.0F;
+}
+
 int getExplosionPhase (){
   return animation_phase;
 }
