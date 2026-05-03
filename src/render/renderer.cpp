@@ -23,7 +23,7 @@ void init(int *argc, char **argv) {
   glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
   glutInitWindowSize(ss.width, ss.height);
   glutInitWindowPosition(ss.pos_x, ss.pos_y);
-  glutCreateWindow("Gestion événementielle de GLUt");
+  glutCreateWindow("Objectif Lune");
 
   glDepthFunc(GL_LESS);
   glEnable(GL_DEPTH_TEST);
