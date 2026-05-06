@@ -36,7 +36,7 @@ void resolve_surface_collision(RigidBody &body) {
 }
 
 Vec3 ship_down_direction(const world::Ship &ship) {
-  Vec3 local_down(0.0f, -1.0f, 0.0f);
+  Vec3 local_down(0.0f, 1.0f, 0.0f);
   Vec3 oriented = input::rotate_pitch(local_down, ship.rotation.x);
   oriented = input::rotate_yaw(oriented, ship.rotation.y);
   return normalize(oriented);
