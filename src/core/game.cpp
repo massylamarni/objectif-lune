@@ -167,6 +167,7 @@ void game_display_hook() {
   render::draw_planet(gst.earth);
   render::draw_planet(gst.moon, &gst.ship.position);
   render::draw_planet(gst.sun);
+  render::draw_skybox(5000.0F);
 
   if (gst.ship.state != world::SHIP_DESTORYED) {
     render::draw_ship(gst.ship);

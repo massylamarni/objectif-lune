@@ -49,8 +49,9 @@ void load_textures() {
     "moon_2k.png",
     "moon_1024.png",
     "texture_LEM.png",
+    "starsky.png",
   };
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 4; i++) {
     char file_path[TEXTURE_PATH_MAXLEN];
     sprintf(file_path, "%s/%s", TEXTURES_RELATIVE_PATH, texture_dirs[i]);
     preload_texture(file_path);

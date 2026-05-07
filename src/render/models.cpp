@@ -30,6 +30,16 @@ void draw_planet(const world::Planet &planet, Vec3 *ship_position) {
   glPopMatrix();
 }
 
+void draw_skybox(float radius) {
+  const uint *texture_id_buf = render::get_texture_id_buf();
+  glBindTexture(GL_TEXTURE_2D, texture_id_buf[render::SKYBOX_TEXTURE]);
+  GLUquadric *quad = gluNewQuadric();
+  gluQuadricTexture(quad, GL_TRUE);
+  gluQuadricNormals(quad, GLU_SMOOTH);
+  gluSphere(quad, radius, 8, 8);
+  gluDeleteQuadric(quad);
+}
+
 void idle_ship(float dt, float win_v, bool thrusting, float rotation_power_v) {
   animation_counter += dt * 200;
   win_value = win_v;
