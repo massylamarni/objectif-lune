@@ -37,7 +37,7 @@ void idle_ship(float dt, float win_v, bool thrusting, float rotation_power_v) {
   input::InputState iState= input::get_input_state();
   render::screen_settings ss = render::get_screen_settings();
   if (iState.rmb_down)
-    rotation_update (iState.mouse_abs.x, iState.mouse_abs.y, ss.width, ss.height, &rotation_direction, &rotation_power);
+    rotation_update (iState.mouse_abs.x+ss.width/2, iState.mouse_abs.y+ss.height/2, ss.width, ss.height, &rotation_direction, &rotation_power);
   if (thrusting && !reactor_activity) {
     reactor_init(true, animation_counter);
   }
