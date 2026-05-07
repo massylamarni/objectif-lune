@@ -49,7 +49,7 @@ void set_perspective(float fov) {
     if (ratio < 1.0) gluPerspective(12.0/ratio, ratio, 90, 110);
     else gluPerspective(12.0, ratio, 90, 110);
   */
-  gluPerspective(fov, (double)ss.width / (double)ss.height, 0.1, 10000.0);
+  gluPerspective(fov, (double)ss.width / (double)ss.height, 0.1, 20000.0);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
