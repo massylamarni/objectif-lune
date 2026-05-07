@@ -31,6 +31,7 @@ struct InputState {
   bool pause;
   bool v_down;
   bool editor;
+  float scroll;
 };
 
 void input_init();

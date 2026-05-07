@@ -58,6 +58,7 @@ void input_init_mouse() {
   state.mouse_abs = Vec2(0, 0);
   state.lmb_down = false;
   state.rmb_down = false;
+  state.scroll = 1.0f;
 
   Vec2 center = window_center();
   last_mouse_x = (int)center.x;

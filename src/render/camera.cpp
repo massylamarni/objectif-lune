@@ -2,6 +2,7 @@
 #include "../world/world.h"
 #include "../input/input.h"
 #include <cmath>
+#include <cstdio>
 
 namespace render {
 
@@ -28,7 +29,7 @@ void camera_follow_ship(Camera &cam, const world::Ship &ship) {
   Vec3 rotated_offset = input::rotate_pitch(base_offset, pitch);
   rotated_offset = input::rotate_yaw(rotated_offset, yaw);
 
-  cam.position = ship.position + rotated_offset;
+  cam.position = ship.position + rotated_offset * state.scroll;
   cam.target = ship.position;
 
   Vec3 up = Vec3(0, 1, 0);

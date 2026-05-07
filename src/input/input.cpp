@@ -88,6 +88,14 @@ void mouse_callback(int button, int state, int x, int y) {
     } else {
       s.rmb_down = (state == GLUT_DOWN);
     }
+  } else if (button == 3) { // Scrolling up
+    if (state == GLUT_DOWN && s.scroll - 0.01f >= 0.2f) {
+      s.scroll -= 0.01f;
+    }
+  } else if (button == 4) { // Scrolling down
+    if (state == GLUT_DOWN && s.scroll + 0.01f <= 2.0f) {
+      s.scroll += 0.01f;
+    }
   }
 }
 
@@ -111,6 +119,7 @@ void input_init() {
   glutMouseFunc(mouse_callback);
   glutMotionFunc(mouse_motion_callback);
   glutPassiveMotionFunc(mouse_passive_motion_callback);
+  state.scroll = 1.0f;
 }
 
 void input_update(world::Ship &ship, float dt) {

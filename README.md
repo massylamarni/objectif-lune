@@ -16,6 +16,7 @@ click & hold rmb: orientatin du lem par poussées rotatives, ces controles sont 
   click a droite de la fenetre: rotation a gauche (yaw)
   click en haute de la fenetre: rotation en avant (pitch)
   click en bas de la fenetre: rotation en arriere (pitch)
+scroll: zoom
 u: toggle minimap
 p: pause
 r: redemarrer
