@@ -20,7 +20,9 @@ struct GameState {
   world::Planet moon;
   world::Planet sun;
   world::Ship ship;
+  world::Ship editorShip;
   render::Camera camera;
+  render::Camera editorCamera;
   bool player_won;
   bool pause;
   bool debug;
@@ -42,6 +44,7 @@ void game_update_editor();
 void game_display();
 void game_display_callback();
 void game_display_hook();
+void game_display_editor();
 void update_fps_counter(float dt);
 
 #endif

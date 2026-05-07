@@ -72,7 +72,7 @@ void game_update_hook() {
   gst.ship.position = body.position;
   gst.ship.velocity = body.velocity;
   world::ship_update(gst.ship, dt);
-  input::input_update(gst.ship, dt);
+  input::input_update(gst.ship, dt, false);
   input::InputState iState= input::get_input_state();
   if (iState.r_down){
     gst.ship = world::create_ship(SHIP_POSITION);
@@ -90,6 +90,10 @@ void game_update_hook() {
     input::stop_editor();
     gst.editor = !gst.editor;
     render::set_perspective(10.0f);
+    glClearColor (0.1F, 0.3F, 0.2F, 1.0F);
+    gst.editorCamera = render::copy_camera(gst.camera);
+    gst.editorShip = world::create_ship(gst.ship.position);
+    input::save_mouse_rotation_delta();
   }
   if (iState.debug){
     input::stop_debug();
@@ -130,18 +134,24 @@ void game_update_pause() {
 
 void game_update_editor() {
   core::time_update();
+  float dt = core::time_delta();
   input::InputState iState= input::get_input_state();
+  input::input_update(gst.editorShip, dt, true);
   if (iState.editor){
     input::stop_editor();
     gst.editor = !gst.editor;
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    input::load_mouse_rotation_delta();
+    return;
   }
-  render::camera_follow_ship(gst.camera, gst.ship);
+  render::camera_follow_ship(gst.editorCamera, gst.editorShip);
+  render::idle_ship (dt, gst.player_won, gst.editorShip.thrusting, length (gst.editorShip.rotation));
   
 }
 
 void game_display() { glutDisplayFunc(game_display_callback); }
 
-void game_display_callback() { render::display(game_display_hook); }
+void game_display_callback() { if(!gst.editor) render::display(game_display_hook); else render::display(game_display_editor); }
 
 void game_display_hook() {
   render::camera_apply(gst.camera);
@@ -154,11 +164,9 @@ void game_display_hook() {
   float light_pos[4] = {sun_dir.x, sun_dir.y, sun_dir.z, 0.0f};
   glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
-  if (!gst.editor){
-    render::draw_planet(gst.earth);
-    render::draw_planet(gst.moon, &gst.ship.position);
-    render::draw_planet(gst.sun);
-  }
+  render::draw_planet(gst.earth);
+  render::draw_planet(gst.moon, &gst.ship.position);
+  render::draw_planet(gst.sun);
 
   if (gst.ship.state != world::SHIP_DESTORYED) {
     render::draw_ship(gst.ship);
@@ -189,15 +197,29 @@ void game_display_hook() {
   if (gst.pause) {
     render::draw_important_text("PAUSE");
   }
-  if (!gst.editor){
-    ui::draw_minimaps(gst.ship, gst.earth, gst.moon, gst.sun, gst.camera);
-    if (gst.debug) {
-      output::debug_camera(gst.camera.position.x, gst.camera.position.y,
+  ui::draw_minimaps(gst.ship, gst.earth, gst.moon, gst.sun, gst.camera);
+  if (gst.debug) {
+    output::debug_camera(gst.camera.position.x, gst.camera.position.y,
                            gst.camera.position.z);
-      output::debug_fps(gfps.fps);
-    }
-    draw_moon_transition_overlay();
+    output::debug_fps(gfps.fps);
   }
+  draw_moon_transition_overlay();
+}
+
+void game_display_editor() {
+  render::camera_apply(gst.editorCamera);
+  
+  // Sun
+  Vec3 sun_dir = gst.sun.position;
+  float len = length(sun_dir);
+  if (len > 0)
+    sun_dir = sun_dir / len;
+  float light_pos[4] = {sun_dir.x, sun_dir.y, sun_dir.z, 0.0f};
+  glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+
+
+  render::draw_ship(gst.editorShip);
+  render::draw_title("LEM",ss.width/2-20,ss.height-50);
 }
 
 void update_fps_counter(float dt) {

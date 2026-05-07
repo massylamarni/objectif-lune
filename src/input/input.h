@@ -10,6 +10,7 @@
 namespace input {
 struct InputState {
   Vec2 mouse_rotation_delta;
+  Vec2 prev_mouse_rotation_delta;
   Vec2 mouse_delta;
   Vec2 mouse_abs;
 
@@ -34,7 +35,7 @@ struct InputState {
 };
 
 void input_init();
-void input_update(world::Ship &ship, float dt);
+void input_update(world::Ship &ship, float dt, bool editor);
 Vec3 rotate_yaw(const Vec3 &v, float yaw);
 Vec3 rotate_pitch(const Vec3 &v, float pitch);
 InputState &get_input_state();
@@ -43,6 +44,8 @@ void stop_debug();
 void stop_editor();
 void stop_mouse_input(bool stop);
 void simulate_camera_swipe(float pixels, Vec2 axis);
+void save_mouse_rotation_delta();
+void load_mouse_rotation_delta();
 } // namespace input
 
 #endif

@@ -12,6 +12,7 @@ struct Camera {
 };
 
 Camera create_camera(Vec3 position, Vec3 target, Vec3 up);
+Camera copy_camera(const Camera &cam);
 void camera_apply(const Camera &cam);
 void camera_follow_ship(Camera &cam, const world::Ship &ship);
 } // namespace render
