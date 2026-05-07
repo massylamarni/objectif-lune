@@ -122,7 +122,7 @@ void input_init() {
   state.scroll = 1.0f;
 }
 
-void input_update(world::Ship &ship, float dt) {
+void input_update(world::Ship &ship, float dt, bool editor) {
   if (state.q_down)
     ship.velocity += rotate_yaw(Vec3(-INPUT_VEC3_UPDATE_VALUE, 0, 0),
                                 state.mouse_rotation_delta.x);
@@ -139,7 +139,8 @@ void input_update(world::Ship &ship, float dt) {
   if (state.s_down)
     ship.velocity += rotate_yaw(Vec3(0, 0, INPUT_VEC3_UPDATE_VALUE),
                                 state.mouse_rotation_delta.x);
-  ui::toggle_orbit_main_view(state.u_down);
+                                
+  if (!editor) ui::toggle_orbit_main_view(state.u_down);
 
   // ship.thrusting = (state.rmb_down && !state.lmb_down);
   ship.thrusting = state.space_down;
@@ -198,5 +199,16 @@ void simulate_camera_swipe(float pixels, Vec2 axis) {
   if (axis.y) state.mouse_rotation_delta.y += pixels * MOUSE_SENSITIVITY;
   state.lmb_down = false;
 }
+
+void save_mouse_rotation_delta() {
+  state.prev_mouse_rotation_delta.x = state.mouse_rotation_delta.x;
+  state.prev_mouse_rotation_delta.y = state.mouse_rotation_delta.y;
+}
+
+void load_mouse_rotation_delta() {
+  state.mouse_rotation_delta.x = state.prev_mouse_rotation_delta.x;
+  state.mouse_rotation_delta.y = state.prev_mouse_rotation_delta.y;
+}
+
 
 } // namespace input

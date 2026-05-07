@@ -14,6 +14,10 @@ Camera create_camera(Vec3 position, Vec3 target, Vec3 up) {
   return c;
 }
 
+Camera copy_camera(const Camera &cam){
+  return create_camera(cam.position, cam.target, cam.up);
+}
+
 void camera_apply(const Camera &cam) {
   gluLookAt(cam.position.x, cam.position.y, cam.position.z, cam.target.x,
             cam.target.y, cam.target.z, cam.up.x, cam.up.y, cam.up.z);

@@ -8,7 +8,7 @@ static render::screen_settings ss = render::get_screen_settings();
 static float beta;
 static float transparence;
 static int phaseTransparence;
-static int waitTransparence;
+static float waitTransparence;
 
 void start_init() {
   moon = world::create_planet(MOON_ID, Vec3(0, 0, 0), MOON_RADIUS, MOON_MASS);
@@ -20,29 +20,29 @@ void start_init() {
   float light_pos[4] = {0.0F, 0.0F, 1000.0F, 0.0f};
   glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-  waitTransparence=0;
+  waitTransparence=0.0F;
   transparence=1.0F;
   phaseTransparence=1;
 }
 
-void phaseTransparence1(){ 
-  waitTransparence++;
-  if (waitTransparence>=180){
-    waitTransparence=0;
+void phaseTransparence1(float dt){ 
+  waitTransparence+=dt;
+  if (waitTransparence>=10.0F){
+    waitTransparence=0.0F;
     phaseTransparence=2;
   }
 }
 
-void phaseTransparence2(){ 
-  transparence-=0.025F;
+void phaseTransparence2(float dt){ 
+  transparence-=dt;
   if (transparence<0.0F){
     transparence=0.0F;
     phaseTransparence=3;
   }
 }
 
-void phaseTransparence3(){ 
-  transparence+=0.025F;
+void phaseTransparence3(float dt){ 
+  transparence+=dt;
   if (transparence>1.0F){
     transparence=1.0F;
     phaseTransparence=1;
@@ -50,16 +50,18 @@ void phaseTransparence3(){
 }
 
 void start_update() { 
-  beta+=0.1F;
+  core::time_update();
+  float dt = core::time_delta();
+  beta+=2.0F*dt;
   switch(phaseTransparence){
     case 1:
-      phaseTransparence1();
+      phaseTransparence1(dt);
       break;
     case 2:
-      phaseTransparence2();
+      phaseTransparence2(dt);
       break;
     case 3:
-      phaseTransparence3();
+      phaseTransparence3(dt);
       break;
   }
   glutPostRedisplay();
