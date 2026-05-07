@@ -75,6 +75,7 @@ void game_update_hook() {
   input::input_update(gst.ship, dt, false);
   input::InputState iState= input::get_input_state();
   if (iState.r_down){
+    set_moon_scene(MOON_SCENE_ORBIT);
     gst.ship = world::create_ship(SHIP_POSITION);
     gst.player_won = false;
     update_moon_transition(1000.0f, &gst.ship.position);

@@ -7,6 +7,8 @@ moon_transition_state transition = {false, false, 0.0f, 0};
 
 moon_scene &get_moon_scene() { return current_scene; };
 
+void set_moon_scene(moon_scene ms) { current_scene= ms; };
+
 static float heightmap[GRID_STEPS + 1][GRID_STEPS + 1];
 static Vec3 normalmap[GRID_STEPS + 1][GRID_STEPS + 1];
 

@@ -31,3 +31,4 @@ void draw_moon_surface(Vec3 *ship_position);
 void update_moon_transition(float moon_distance, Vec3 *ship_position);
 void draw_moon_transition_overlay();
 moon_scene &get_moon_scene();
+void set_moon_scene(moon_scene ms);
