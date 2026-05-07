@@ -4,6 +4,7 @@
 #include "../world/planet.h"
 #include "../world/ship.h"
 #include "../math/vec3.h"
+#include "../input/input.h"
 #include "../../assets/models/explosion.h"
 //#include "../../assets/models/lem.h"
 #include "moon_model.h"
