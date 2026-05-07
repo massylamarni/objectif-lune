@@ -19,6 +19,7 @@ void draw_planet(const world::Planet &planet, Vec3 *ship_position) {
   glPushMatrix();
 
   glTranslatef(planet.position.x, planet.position.y, planet.position.z);
+  glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
 
   if (planet.id == MOON_ID) {
     draw_moon_container(planet, ship_position);
@@ -64,6 +65,7 @@ void draw_ship(const world::Ship &ship) {
   glPushMatrix();
 
   glTranslatef(ship.position.x, ship.position.y, ship.position.z);
+  
   const float RAD2DEG = 180.0f / M_PI;
   glRotatef(ship.rotation.x * RAD2DEG, 1.0f, 0.0f, 0.0f);
   glRotatef(ship.rotation.y * RAD2DEG, 0.0f, 1.0f, 0.0f);
