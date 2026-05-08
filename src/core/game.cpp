@@ -16,7 +16,7 @@ void update_fov() {
   float fov = MIN_FOV + t * (MAX_FOV - MIN_FOV);
   static float smooth_fov = 60.0f;
   smooth_fov += (fov - smooth_fov) * 0.1f;
-  render::set_perspective(smooth_fov);
+  render::apply_perspective(smooth_fov, (double)ss.width/(double)ss.height);
 }
 
 void game_init() {
@@ -90,7 +90,7 @@ void game_update_hook() {
   if (iState.editor){
     input::stop_editor();
     gst.editor = !gst.editor;
-    render::set_perspective(10.0f);
+    render::apply_perspective(10.0f, (double)ss.width/(double)ss.height);
     glClearColor (0.1F, 0.3F, 0.2F, 1.0F);
     gst.editorCamera = render::copy_camera(gst.camera);
     gst.editorShip = world::create_ship(gst.ship.position);
@@ -165,7 +165,7 @@ void game_display_hook() {
   }
   render::draw_planet(gst.sun);
   render::draw_planet(gst.moon, &gst.ship.position);
-  render::draw_skybox(10000.0F, &(gst.ship.position));
+  render::draw_skybox(10000.0F, &gst.ship.position);
 
   if (gst.ship.state != world::SHIP_DESTORYED) {
     render::draw_ship(gst.ship);

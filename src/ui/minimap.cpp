@@ -1,6 +1,7 @@
 #include "minimap.h"
 #include "../render/camera.h"
 #include "../render/models.h"
+#include "../render/renderer.h"
 #include <GL/freeglut_std.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -10,24 +11,7 @@
 namespace ui {
 std::deque<Vec3> g_orbit_trail_positions;
 bool g_orbit_main_view_enabled = false;
-
-void apply_perspective(float fov_degrees, float aspect, float near_plane,
-                       float far_plane) {
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluPerspective(fov_degrees, aspect, near_plane, far_plane);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-}
-
-void apply_orthographic(float half_extent, float near_plane, float far_plane) {
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(-half_extent, half_extent, -half_extent, half_extent, near_plane,
-          far_plane);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-}
+bool g_landing_main_view_enabled = false;
 
 void setup_viewport(const MinimapViewport &viewport) {
   glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
@@ -39,18 +23,11 @@ void setup_viewport(const MinimapViewport &viewport) {
 
 void draw_world(const world::Ship &ship, const world::Planet &earth,
                 const world::Planet &moon, const world::Planet &sun) {
-  Vec3 sun_dir = sun.position;
-  const float len = length(sun_dir);
-  if (len > 0.0f) {
-    sun_dir = sun_dir / len;
-  }
-  const float light_pos[4] = {sun_dir.x, sun_dir.y, sun_dir.z, 0.0f};
-  glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-
-  render::draw_planet(earth, nullptr);
-  render::draw_planet(moon, nullptr);
-  render::draw_planet(sun, nullptr);
-  render::draw_ship(ship);
+  render::draw_mini_planet(earth, nullptr);
+  render::draw_mini_planet(moon, nullptr);
+  render::draw_mini_planet(sun, nullptr);
+  render::draw_mini_ship(ship);
+  render::draw_skybox(10000.0F, &(ship.position));
 }
 
 void draw_minimap_ship_marker(const world::Ship &ship, float marker_radius) {
@@ -70,7 +47,8 @@ void draw_minimap_ship_marker(const world::Ship &ship, float marker_radius) {
 void update_orbit_trail(const world::Ship &ship) {
   const float speed = length(ship.velocity);
   const int target_points =
-      std::clamp(static_cast<int>(TRAIL_LENGTH + speed * TRAIL_SENSITIVITY), TRAIL_MIN_LEN, TRAIL_MAX_LEN);
+      std::clamp(static_cast<int>(TRAIL_LENGTH + speed * TRAIL_SENSITIVITY),
+                 TRAIL_MIN_LEN, TRAIL_MAX_LEN);
 
   if (g_orbit_trail_positions.empty()) {
     g_orbit_trail_positions.push_back(ship.position);
@@ -193,8 +171,10 @@ orbit_map_camera(const world::Ship &ship, const world::Planet &center_planet,
 
 void toggle_orbit_main_view(bool key_state) {
   static bool key_prev_state = false;
-  if (key_state && !key_prev_state)
+  if (key_state && !key_prev_state) {
     g_orbit_main_view_enabled = !g_orbit_main_view_enabled;
+    g_landing_main_view_enabled = g_orbit_main_view_enabled;
+  }
   key_prev_state = key_state;
 }
 
@@ -211,55 +191,77 @@ void draw_minimaps(const world::Ship &ship, const world::Planet &earth,
       world::distance_to_surface(closest, ship.position);
 
   float orbit_half_extent = 1000.0f;
+  const moon_scene current_scene = get_moon_scene();
+  const bool view_switch_threshold =
+      current_scene == MOON_SCENE_SURFACE
+          ? closest_distance < EXIT_SURFACE_DISTANCE
+          : closest_distance < ENTER_SURFACE_DISTANCE;
   const render::Camera orbit_cam =
       orbit_map_camera(ship, closest, earth, moon, sun, orbit_half_extent);
   update_orbit_trail(ship);
 
-  const MinimapViewport orbit_map = {
-      MINIMAP_MARGINS, MINIMAP_MARGINS, 200, 200};
+  const MinimapViewport orbit_map = {MINIMAP_MARGINS, MINIMAP_MARGINS, 200,
+                                     200};
 
-  const MinimapViewport landing_map = {
-      MINIMAP_MARGINS*2 + orbit_map.width, MINIMAP_MARGINS, 100, 200};
+  const MinimapViewport landing_map = {MINIMAP_MARGINS, MINIMAP_MARGINS, 100,
+                                       200};
 
-  if (g_orbit_main_view_enabled) {
-    const MinimapViewport full_screen = {0, 0, window_width, window_height};
-    setup_viewport(full_screen);
-    apply_orthographic(orbit_half_extent, 0.1f, 1000000.0f);
-    render::camera_apply(orbit_cam);
-    draw_world(ship, earth, moon, sun);
-    draw_orbit_trail();
-    draw_minimap_ship_marker(ship, orbit_half_extent * 0.03f);
+  if (!view_switch_threshold) {
+    if (g_orbit_main_view_enabled) {
+      const MinimapViewport full_screen = {0, 0, window_width, window_height};
+      setup_viewport(full_screen);
 
-    setup_viewport(orbit_map);
-    const float preview_aspect = static_cast<float>(orbit_map.width) /
-                                 static_cast<float>(orbit_map.height);
-    apply_perspective(MAIN_FOV_DEG, preview_aspect, 0.1f, 1000000.0f);
-    render::camera_apply(game_camera);
-    draw_world(ship, earth, moon, sun);
+      render::apply_orthographic(orbit_half_extent);
+      render::camera_apply(orbit_cam);
+      draw_world(ship, earth, moon, sun);
+      draw_orbit_trail();
+      draw_minimap_ship_marker(ship, orbit_half_extent * 0.03f);
+
+      setup_viewport(orbit_map);
+      const float preview_aspect =
+          (double)(orbit_map.width) / (double)(orbit_map.height);
+      render::apply_perspective(NATURAL_PERSPECTIVE, preview_aspect);
+      render::camera_apply(game_camera);
+      draw_world(ship, earth, moon, sun);
+    } else {
+      setup_viewport(orbit_map);
+      render::apply_orthographic(orbit_half_extent);
+      render::camera_apply(orbit_cam);
+      draw_world(ship, earth, moon, sun);
+      draw_orbit_trail();
+      draw_minimap_ship_marker(ship, orbit_half_extent * 0.03f);
+    }
   } else {
-    setup_viewport(orbit_map);
-    apply_orthographic(orbit_half_extent, 0.1f, 1000000.0f);
-    render::camera_apply(orbit_cam);
-    draw_world(ship, earth, moon, sun);
-    draw_orbit_trail();
-    draw_minimap_ship_marker(ship, orbit_half_extent * 0.03f);
-  }
-
-  if (closest_distance < closest.radius * LANDING_TRIGGER_MULTIPLIER) {
-    setup_viewport(landing_map);
-
     const render::Camera landing_cam = landing_assist_camera(ship, closest);
-    const float aspect = static_cast<float>(landing_map.width) /
-                         static_cast<float>(landing_map.height);
-    apply_perspective(MINIMAP_1_FOV_DEG, aspect, 0.1f, 1000000.0f);
-    render::camera_apply(landing_cam);
-    draw_world(ship, earth, moon, sun);
-    draw_minimap_ship_marker(ship, std::max(closest.radius * 0.02f, 2.5f));
+    if (g_landing_main_view_enabled) {
+      const MinimapViewport full_screen = {0, 0, window_width, window_height};
+      setup_viewport(full_screen);
+      const float aspect = (double)window_width / (double)window_height;
+      render::apply_perspective(MINIMAP_1_FOV_DEG, aspect);
+      render::camera_apply(landing_cam);
+      draw_world(ship, earth, moon, sun);
+      draw_minimap_ship_marker(ship, std::max(closest.radius * 0.02f, 2.5f));
+
+      setup_viewport(landing_map);
+      const float preview_aspect =
+          (double)landing_map.width / (double)landing_map.height;
+      render::apply_perspective(NATURAL_PERSPECTIVE, preview_aspect);
+      render::camera_apply(game_camera);
+      draw_world(ship, earth, moon, sun);
+    } else {
+      setup_viewport(landing_map);
+      const float aspect =
+          (double)(landing_map.width) / (double)(landing_map.height);
+      render::apply_perspective(MINIMAP_1_FOV_DEG, aspect);
+      render::camera_apply(landing_cam);
+      draw_world(ship, earth, moon, sun);
+      draw_minimap_ship_marker(ship, std::max(closest.radius * 0.02f, 2.5f));
+    }
   }
 
   glViewport(0, 0, window_width, window_height);
   const float main_aspect =
       static_cast<float>(window_width) / static_cast<float>(window_height);
-  apply_perspective(MAIN_FOV_DEG, main_aspect, 0.1f, 1000000.0f);
+  render::apply_perspective(NATURAL_PERSPECTIVE, main_aspect);
 }
 } // namespace ui

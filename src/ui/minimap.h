@@ -5,7 +5,6 @@
 #include "../world/planet.h"
 #include "../world/ship.h"
 
-#define MAIN_FOV_DEG 60.0f
 #define MINIMAP_1_FOV_DEG 52.0f
 #define LANDING_TRIGGER_MULTIPLIER 1.6f
 #define MINIMAP_MARGINS 15

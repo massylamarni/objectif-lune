@@ -1,9 +1,9 @@
 #include "renderer.h"
+#include "../../assets/models/color_palette.h"
+#include "textures.h"
 #include <GL/freeglut_std.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include "../../assets/models/color_palette.h"
-#include "textures.h"
 
 namespace render {
 static screen_settings ss = get_screen_settings();
@@ -42,16 +42,18 @@ void init(int *argc, char **argv) {
   reactor_init(false, 0.0F);
 }
 
-void set_perspective(float fov) {
+void apply_perspective(float fov_degrees, float aspect) {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  /*
-    double ratio = (double)w/h;
-    if (ratio < 1.0) gluPerspective(12.0/ratio, ratio, 90, 110);
-    else gluPerspective(12.0, ratio, 90, 110);
-  */
-  gluPerspective(fov, (double)ss.width / (double)ss.height, 0.1, 20000.0);
+  gluPerspective(fov_degrees, aspect, 0.1, 20000.0);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+}
 
+void apply_orthographic(float half_extent) {
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(-half_extent, half_extent, -half_extent, half_extent, 0.1, 20000.0);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 }
@@ -80,7 +82,7 @@ void display(void display_hook(void)) {
 
 void idle(void render_hook(void)) {
   render_hook();
-  
+
   glutPostRedisplay();
 }
 
@@ -94,6 +96,6 @@ void reshape(int wx, int wy) {
   ss.width = wx;
   ss.height = wy;
   glViewport(0, 0, wx, wy);
-  set_perspective(NATURAL_PERSPECTIVE);
+  apply_perspective(NATURAL_PERSPECTIVE, (double)ss.width / (double)ss.height);
 }
 } // namespace render

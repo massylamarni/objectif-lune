@@ -13,7 +13,7 @@ static float waitTransparence;
 void start_init() {
   moon = world::create_planet(MOON_ID, Vec3(0, 0, 0), MOON_RADIUS, MOON_MASS);
   camera = render::create_camera(Vec3(0, 0, 1000), Vec3(0, 0, 0), CAMERA_UP);
-  render::set_perspective(59.0F);
+  render::apply_perspective(59.0F, (double)ss.width/(double)ss.height);
   glutDisplayFunc(start_display);
   glutIdleFunc(start_update);
   glutKeyboardFunc(start_keyboard);

@@ -10,12 +10,13 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 
-#include <math.h>
 #include "../../assets/models/lem.h"
+#include <math.h>
 
 namespace render {
 void init(int *argc, char **argv);
-void set_perspective(float fov);
+void apply_perspective(float fov_degrees, float aspect);
+void apply_orthographic(float half_extent);
 void display_start_frame();
 void display_end_frame();
 void display(void display_hook(void));
