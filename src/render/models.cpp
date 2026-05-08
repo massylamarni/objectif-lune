@@ -19,7 +19,6 @@ void draw_planet(const world::Planet &planet, Vec3 *ship_position) {
   glPushMatrix();
 
   glTranslatef(planet.position.x, planet.position.y, planet.position.z);
-  glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
 
   if (planet.id == MOON_ID) {
     draw_moon_container(planet, ship_position);
@@ -31,7 +30,9 @@ void draw_planet(const world::Planet &planet, Vec3 *ship_position) {
   glPopMatrix();
 }
 
-void draw_skybox(float radius) {
+void draw_skybox(float radius, Vec3 *ship_position) {
+  glPushMatrix();
+  glTranslatef(ship_position->x, ship_position->y, ship_position->z);
   const uint *texture_id_buf = render::get_texture_id_buf();
   glBindTexture(GL_TEXTURE_2D, texture_id_buf[render::SKYBOX_TEXTURE]);
   GLUquadric *quad = gluNewQuadric();
@@ -39,6 +40,7 @@ void draw_skybox(float radius) {
   gluQuadricNormals(quad, GLU_SMOOTH);
   gluSphere(quad, radius, 8, 8);
   gluDeleteQuadric(quad);
+  glPopMatrix();
 }
 
 void idle_ship(float dt, float win_v, bool thrusting, float rotation_power_v) {
@@ -65,26 +67,18 @@ void draw_ship(const world::Ship &ship) {
   glPushMatrix();
 
   glTranslatef(ship.position.x, ship.position.y, ship.position.z);
-  
+
   const float RAD2DEG = 180.0f / M_PI;
+  glRotatef(-ship.rotation.y * RAD2DEG, 0.0f, 1.0f, 0.0f);
   glRotatef(ship.rotation.x * RAD2DEG, 1.0f, 0.0f, 0.0f);
-  glRotatef(ship.rotation.y * RAD2DEG, 0.0f, 1.0f, 0.0f);
-  glRotatef(ship.rotation.z * RAD2DEG, 0.0f, 0.0f, 1.0f);
+  //glRotatef(ship.rotation.z * RAD2DEG, 0.0f, 0.0f, 1.0f);
 
   // glutWireCube(1);
   glScalef(0.28F, 0.28F, 0.28F);
   glTranslatef(0.0F, -1.4F, 0.0F);
-  /* Transfer to IDLE
-  // à l'init -> reactor_init (true, animation); reactor_init (false,
-  animation); (Optionnel si le cpt commence bien entre [0.0, 10.0[ )
-  // à l'activation du réacteur ventral -> reactor_init (true, animation);
-  reactor_activity -> booléen à modifier quand le réacteur ventral s'active ou
-  se désactive if (reactor_activity) reactor_idle (true, animation);
-  reactor_idle (false, animation);
-  rotation_update (x, y, render::SCREEN_WIDTH, render::SCREEN_HEIGHT,
-  &rotation_direction, &rotation_power); //
-  */
-  lem(reactor_activity, rotation_direction, rotation_power, anim_win_offset,
+  
+  glRotatef(90.0F, 0.0f, 1.0f, 0.0f);
+  lem(reactor_activity, 180.0F - rotation_direction, rotation_power, anim_win_offset,
       win_value, animation_counter, 8);
   // (TO CONNECT reactor_activity, TO CONNECT rotation_direction, TO CONNECT
   // rotation_power, anim_win_offset, TO CONNECT anim_reactor_offset, TO CONNECT
@@ -98,14 +92,6 @@ void draw_mini_ship(const world::Ship &ship) {
 
   glScalef(0.8F, 0.8F, 0.8F);
   draw_ship(ship);
-
-  glPopMatrix();
-}
-
-void draw_lem() {
-  glPushMatrix();
-
-  glTranslatef(-2.0F, -1.0F, 0.0F);
 
   glPopMatrix();
 }

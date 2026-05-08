@@ -15,11 +15,10 @@
 
 namespace render {
 void draw_planet(const world::Planet &planet, Vec3 *ship_position = nullptr);
-void draw_skybox(float radius);
+void draw_skybox(float radius, Vec3 *ship_position);
 void idle_ship (float dt, float win_v, bool thrusting, float rotation_power_v);
 void draw_ship(const world::Ship &ship);
 void draw_mini_ship(const world::Ship &ship);
-void draw_lem();
 void draw_explosion(const world::Ship &ship);
 } // namespace render
 

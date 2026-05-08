@@ -12,7 +12,7 @@ void update_fov() {
 
   float distance = world::distance_to_surface(gst.moon, gst.ship.position);
   float t = distance / (distance + FOV_CONST);
-
+  t = t > 0.1f ? t : 0.1f;
   float fov = MIN_FOV + t * (MAX_FOV - MIN_FOV);
   static float smooth_fov = 60.0f;
   smooth_fov += (fov - smooth_fov) * 0.1f;
@@ -174,7 +174,7 @@ void game_display_hook() {
     render::draw_planet(gst.sun);
   }
   
-  render::draw_skybox(10000.0F);
+  render::draw_skybox(10000.0F, &(gst.ship.position));
 
   if (gst.ship.state != world::SHIP_DESTORYED) {
     render::draw_ship(gst.ship);

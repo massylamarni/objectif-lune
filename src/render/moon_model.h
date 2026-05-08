@@ -8,7 +8,7 @@
 #include <GL/glu.h>
 
 #define ENTER_SURFACE_DISTANCE 250.0f // TODO make it relative to planet size
-#define EXIT_SURFACE_DISTANCE 350.0f
+#define EXIT_SURFACE_DISTANCE 1000.0f
 #define TERRAIN_TRANSITION_SPEED 1.8f
 #define PATCH_SIZE 8000.0f
 #define GRID_STEPS 128

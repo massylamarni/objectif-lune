@@ -39,6 +39,7 @@ void init(int *argc, char **argv) {
   // glutMainLoop();
   init_lighting();
   load_textures();
+  reactor_init(false, 0.0F);
 }
 
 void set_perspective(float fov) {
