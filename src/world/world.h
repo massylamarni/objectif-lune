@@ -18,9 +18,10 @@
 #define MOON_RADIUS 300.0f
 #define MOON_MASS 100000.0f
 
-#define SUN_POSITION Vec3(-4000.0f, 0, 7500.0f)
+#define SUN_POSITION Vec3(-4000.0f, 1000, 7500.0f)
 #define SUN_RADIUS 100.0f
 #define SUN_MASS 1.0f
+#define ALT_SUN_POSITION Vec3(-4000.0f, 3000, 7500.0f)
 
 #define SHIP_POSITION Vec3(0, 0, 1500.0f)
 #define SHIP_CAMERA_OFFSET Vec3(0.0f, 3.0f, 8.0f)

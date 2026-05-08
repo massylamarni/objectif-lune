@@ -156,24 +156,15 @@ void game_display_callback() { if(!gst.editor) render::display(game_display_hook
 
 void game_display_hook() {
   render::camera_apply(gst.camera);
-  
-  // Sun
-  Vec3 sun_dir = gst.sun.position;
-  float len = length(sun_dir);
-  if (len > 0)
-    sun_dir = sun_dir / len;
-  float light_pos[4] = {sun_dir.x, sun_dir.y, sun_dir.z, 0.0f};
-  glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-  render::draw_planet(gst.moon, &gst.ship.position);
-  const uint *texture_id_buf = render::get_texture_id_buf();
+
   if (get_moon_scene() == MOON_SCENE_ORBIT) {
-    
-    glBindTexture(GL_TEXTURE_2D, texture_id_buf[render::EARTH_TEXTURE]);
     render::draw_planet(gst.earth);
-    glBindTexture(GL_TEXTURE_2D, texture_id_buf[render::SUN_TEXTURE]);
-    render::draw_planet(gst.sun);
+    gst.sun.position = SUN_POSITION;
+  } else {
+    gst.sun.position = ALT_SUN_POSITION;
   }
-  
+  render::draw_planet(gst.sun);
+  render::draw_planet(gst.moon, &gst.ship.position);
   render::draw_skybox(10000.0F, &(gst.ship.position));
 
   if (gst.ship.state != world::SHIP_DESTORYED) {

@@ -118,7 +118,7 @@ void draw_moon_container(const world::Planet &planet, Vec3 *ship_position) {
   material_white();
   if (current_scene == MOON_SCENE_ORBIT) {
     glBindTexture(GL_TEXTURE_2D, texture_id_buf[render::MOON_TEXTURE]);
-    glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
+    
     draw_planet_sphere(planet.radius);
   } else if (current_scene == MOON_SCENE_SURFACE) {
     glBindTexture(GL_TEXTURE_2D, texture_id_buf[render::MOON_SURFACE_TEXTURE]);

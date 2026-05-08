@@ -16,14 +16,25 @@ float rotation_power = 0.0F;
 float rotation_direction = 0.0F;
 
 void draw_planet(const world::Planet &planet, Vec3 *ship_position) {
-  glPushMatrix();
+  const uint *texture_id_buf = render::get_texture_id_buf();
 
+  glPushMatrix();
   glTranslatef(planet.position.x, planet.position.y, planet.position.z);
 
   if (planet.id == MOON_ID) {
     draw_moon_container(planet, ship_position);
-  } else {
+  } else if (planet.id == SUN_ID) {
+    Vec3 sun_dir = planet.position;
+    float len = length(sun_dir);
+    if (len > 0)
+      sun_dir = sun_dir / len;
+    float light_pos[4] = {sun_dir.x, sun_dir.y, sun_dir.z, 0.0f};
+    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
     material_sun();
+    glBindTexture(GL_TEXTURE_2D, texture_id_buf[render::SUN_TEXTURE]);
+    draw_planet_sphere(planet.radius);
+  } else {
+    glBindTexture(GL_TEXTURE_2D, texture_id_buf[render::EARTH_TEXTURE]);
     draw_planet_sphere(planet.radius);
   }
 
@@ -32,6 +43,7 @@ void draw_planet(const world::Planet &planet, Vec3 *ship_position) {
 
 void draw_skybox(float radius, Vec3 *ship_position) {
   glPushMatrix();
+  material_sun();
   glTranslatef(ship_position->x, ship_position->y, ship_position->z);
   const uint *texture_id_buf = render::get_texture_id_buf();
   glBindTexture(GL_TEXTURE_2D, texture_id_buf[render::SKYBOX_TEXTURE]);
@@ -47,10 +59,12 @@ void idle_ship(float dt, float win_v, bool thrusting, float rotation_power_v) {
   animation_counter += dt * 200;
   win_value = win_v;
   rotation_power = rotation_power_v;
-  input::InputState iState= input::get_input_state();
+  input::InputState iState = input::get_input_state();
   render::screen_settings ss = render::get_screen_settings();
   if (iState.rmb_down)
-    rotation_update (iState.mouse_abs.x+ss.width/2, iState.mouse_abs.y+ss.height/2, ss.width, ss.height, &rotation_direction, &rotation_power);
+    rotation_update(iState.mouse_abs.x + ss.width / 2,
+                    iState.mouse_abs.y + ss.height / 2, ss.width, ss.height,
+                    &rotation_direction, &rotation_power);
   if (thrusting && !reactor_activity) {
     reactor_init(true, animation_counter);
   }
@@ -71,15 +85,15 @@ void draw_ship(const world::Ship &ship) {
   const float RAD2DEG = 180.0f / M_PI;
   glRotatef(-ship.rotation.y * RAD2DEG, 0.0f, 1.0f, 0.0f);
   glRotatef(ship.rotation.x * RAD2DEG, 1.0f, 0.0f, 0.0f);
-  //glRotatef(ship.rotation.z * RAD2DEG, 0.0f, 0.0f, 1.0f);
+  // glRotatef(ship.rotation.z * RAD2DEG, 0.0f, 0.0f, 1.0f);
 
   // glutWireCube(1);
   glScalef(0.28F, 0.28F, 0.28F);
   glTranslatef(0.0F, -1.4F, 0.0F);
-  
+
   glRotatef(90.0F, 0.0f, 1.0f, 0.0f);
-  lem(reactor_activity, 180.0F - rotation_direction, rotation_power, anim_win_offset,
-      win_value, animation_counter, 8);
+  lem(reactor_activity, 180.0F - rotation_direction, rotation_power,
+      anim_win_offset, win_value, animation_counter, 8);
   // (TO CONNECT reactor_activity, TO CONNECT rotation_direction, TO CONNECT
   // rotation_power, anim_win_offset, TO CONNECT anim_reactor_offset, TO CONNECT
   // win_value, KO general_animation, OK)
