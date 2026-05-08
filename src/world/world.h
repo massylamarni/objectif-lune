@@ -22,7 +22,7 @@
 #define SUN_RADIUS 100.0f
 #define SUN_MASS 1.0f
 
-#define SHIP_POSITION Vec3(1000.0, 0, 500.0f)
+#define SHIP_POSITION Vec3(0, 0, 1500.0f)
 #define SHIP_CAMERA_OFFSET Vec3(0.0f, 3.0f, 8.0f)
 #define SHIP_THRUST_POWER 15.0f
 #define SHIP_MASS 1.0f

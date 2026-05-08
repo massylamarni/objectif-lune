@@ -35,7 +35,7 @@ void game_init() {
   game_display();
   game_update();
   input::input_init();
-  input::simulate_camera_swipe(-200.0f, Vec2(1.0f, 0));
+  input::simulate_camera_swipe(50.0f, Vec2(0, 1.0f));
 }
 
 void game_update() { glutIdleFunc(game_update_callback); }
