@@ -11,7 +11,7 @@
 #define EXIT_SURFACE_DISTANCE 1000.0f
 #define TERRAIN_TRANSITION_SPEED 1.8f
 #define PATCH_SIZE 8000.0f
-#define GRID_STEPS 128
+#define GRID_STEPS 64
 
 enum moon_scene { MOON_SCENE_ORBIT, MOON_SCENE_SURFACE };
 
@@ -27,8 +27,12 @@ void compute_normal(float x, float z, float step, float &nx, float &ny,
 float get_lunar_height(float wx, float wz);
 void draw_moon_container(const world::Planet &planet, Vec3 *ship_position);
 void draw_planet_sphere(float radius);
-void draw_moon_surface(Vec3 *ship_position);
+void draw_moon_surface(Vec3 *ship_position, bool debug_coords);
 void update_moon_transition(float moon_distance, Vec3 *ship_position);
 void draw_moon_transition_overlay();
+float get_interpolated_height(float wx, float wz, float origin_x,
+                              float origin_z);
+void draw_debug_collision_surface(Vec3 *ship_position);
 moon_scene &get_moon_scene();
+void get_cached_origin(float &ox, float &oz);
 void set_moon_scene(moon_scene ms);

@@ -138,4 +138,11 @@ void draw_important_text(const char *text) {
   glMatrixMode(GL_MODELVIEW);
 }
 
+void draw_text_3d(float x, float y, float z, const char *text) {
+  glRasterPos3f(x, y, z);
+  while (*text) {
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, *text++);
+  }
+}
+
 } // namespace render

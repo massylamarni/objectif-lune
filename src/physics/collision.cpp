@@ -12,9 +12,16 @@ Vec3 get_local_position(const Vec3 position) {
 bool check_surface_collision(const RigidBody &body) {
   if (get_moon_scene() != MOON_SCENE_SURFACE)
     return false;
+
   Vec3 local_pos = get_local_position(body.position);
-  float ground = get_lunar_height(local_pos.x, local_pos.z);
-  return body.position.y - body.radius <= ground;
+
+  float origin_x, origin_z;
+  get_cached_origin(origin_x, origin_z);
+
+  float ground =
+      get_interpolated_height(local_pos.x, local_pos.z, origin_x, origin_z);
+
+  return local_pos.y - body.radius <= ground;
 }
 
 void resolve_surface_collision(RigidBody &body) {

@@ -26,8 +26,6 @@ void ship_update(Ship &ship, float dt) {
   if (ship.thrusting)
     ship_apply_thrust(ship, dt);
 
-  ship.position += ship.velocity * dt;
-
   float speed = length(ship.velocity);
   if (speed > SHIP_MAX_SPEED) {
     ship.velocity = normalize(ship.velocity) * SHIP_MAX_SPEED;
