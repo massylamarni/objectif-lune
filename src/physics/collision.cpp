@@ -28,7 +28,12 @@ void resolve_surface_collision(RigidBody &body) {
   float step = PATCH_SIZE / GRID_STEPS;
 
   Vec3 local_pos = get_local_position(body.position);
-  float ground = get_lunar_height(local_pos.x, local_pos.z);
+
+  float origin_x, origin_z;
+  get_cached_origin(origin_x, origin_z);
+
+  float ground =
+      get_interpolated_height(local_pos.x, local_pos.z, origin_x, origin_z);
 
   body.position.y = ground + body.radius;
 
@@ -78,7 +83,12 @@ void update_ship_collision_state(world::Ship &ship) {
     ship.state = world::SHIP_LANDED;
 
     Vec3 ship_local = get_local_position(ship.position);
-    float ground = get_lunar_height(ship_local.x, ship_local.z);
+
+    float origin_x, origin_z;
+    get_cached_origin(origin_x, origin_z);
+
+    float ground =
+        get_interpolated_height(ship_local.x, ship_local.z, origin_x, origin_z);
     ship.position.y = ground + ship.radius;
 
     ship.velocity = Vec3(0.0f, 0.0f, 0.0f);
