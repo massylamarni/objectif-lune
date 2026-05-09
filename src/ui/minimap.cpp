@@ -44,6 +44,13 @@ void draw_minimap_ship_marker(const world::Ship &ship, float marker_radius) {
   glPopAttrib();
 }
 
+void draw_landing_world(const world::Ship &ship, const world::Planet &earth,
+                        const world::Planet &moon, const world::Planet &sun) {
+  render::draw_planet(moon, &const_cast<Vec3 &>(ship.position));
+  render::draw_mini_ship(ship);
+  render::draw_skybox(10000.0F, &(ship.position));
+}
+
 void update_orbit_trail(const world::Ship &ship) {
   const float speed = length(ship.velocity);
   const int target_points =
@@ -121,18 +128,27 @@ Vec3 safe_normalize(const Vec3 &v, const Vec3 &fallback) {
 
 render::Camera landing_assist_camera(const world::Ship &ship,
                                      const world::Planet &planet) {
-  const Vec3 radial_up =
-      safe_normalize(ship.position - planet.position, Vec3(0.0f, 1.0f, 0.0f));
+  const Vec3 up(0.0f, 1.0f, 0.0f);
 
-  Vec3 tangent = cross(radial_up, Vec3(0.0f, 1.0f, 0.0f));
-  if (length(tangent) < 1e-4f) {
-    tangent = cross(radial_up, Vec3(1.0f, 0.0f, 0.0f));
-  }
-  tangent = safe_normalize(tangent, Vec3(0.0f, 0.0f, 1.0f));
+  float origin_x, origin_z;
+  get_cached_origin(origin_x, origin_z);
 
-  const float camera_distance = std::max(planet.radius * 1.1f, 120.0f);
-  const Vec3 camera_position = ship.position + tangent * camera_distance;
-  return render::create_camera(camera_position, ship.position, radial_up);
+  const float terrain_height = get_interpolated_height(
+      ship.position.x, ship.position.z, origin_x, origin_z);
+
+  const float altitude = std::max(ship.position.y - terrain_height, 0.0f);
+
+  const Vec3 look_target(ship.position.x, terrain_height + altitude * 0.3f,
+                         ship.position.z);
+
+  const float MIN_DISTANCE = 300.0f;
+  const float camera_distance = std::max(MIN_DISTANCE, altitude * 6.0f);
+
+  const Vec3 camera_position(ship.position.x + camera_distance,
+                             ship.position.y + camera_distance * 0.35f,
+                             ship.position.z + camera_distance * 0.2f);
+
+  return render::create_camera(camera_position, look_target, up);
 }
 
 render::Camera
@@ -240,7 +256,7 @@ void draw_minimaps(const world::Ship &ship, const world::Planet &earth,
       const float aspect = (double)window_width / (double)window_height;
       render::apply_perspective(MINIMAP_1_FOV_DEG, aspect);
       render::camera_apply(landing_cam);
-      draw_world(ship, earth, moon, sun);
+      draw_landing_world(ship, earth, moon, sun);
       draw_minimap_ship_marker(ship, std::max(closest.radius * 0.02f, 2.5f));
 
       setup_viewport(landing_map);
@@ -248,14 +264,14 @@ void draw_minimaps(const world::Ship &ship, const world::Planet &earth,
           (double)landing_map.width / (double)landing_map.height;
       render::apply_perspective(NATURAL_PERSPECTIVE, preview_aspect);
       render::camera_apply(game_camera);
-      draw_world(ship, earth, moon, sun);
+      draw_landing_world(ship, earth, moon, sun);
     } else {
       setup_viewport(landing_map);
       const float aspect =
           (double)(landing_map.width) / (double)(landing_map.height);
       render::apply_perspective(MINIMAP_1_FOV_DEG, aspect);
       render::camera_apply(landing_cam);
-      draw_world(ship, earth, moon, sun);
+      draw_landing_world(ship, earth, moon, sun);
       draw_minimap_ship_marker(ship, std::max(closest.radius * 0.02f, 2.5f));
     }
   }

@@ -7,7 +7,7 @@
 #include <cmath>
 #include <cstdio>
 
-#define G 1.0f
+#define G 10.0f
 
 namespace physics {
 void apply_planet_gravity(RigidBody &body, const world::Planet &planet);

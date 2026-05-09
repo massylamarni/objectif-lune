@@ -3,6 +3,7 @@
 #include "../world/world.h"
 #include "renderer.h"
 #include "textures.h"
+#include <GL/freeglut_std.h>
 #include <cmath>
 
 namespace render {
@@ -133,7 +134,8 @@ void draw_mini_ship(const world::Ship &ship) {
   glPushMatrix();
 
   glScalef(0.8F, 0.8F, 0.8F);
-  draw_ship(ship);
+  // draw_ship(ship);
+  glutSolidCube(10);
 
   glPopMatrix();
 }

@@ -1,6 +1,7 @@
 #include "moon_model.h"
 #include "../math/noise.h"
 #include "utils.h"
+#include <cstdio>
 #include <limits.h>
 
 moon_scene current_scene = MOON_SCENE_ORBIT;
@@ -8,7 +9,7 @@ moon_transition_state transition = {false, false, 0.0f, 0};
 
 moon_scene &get_moon_scene() { return current_scene; };
 
-void set_moon_scene(moon_scene ms) { current_scene= ms; };
+void set_moon_scene(moon_scene ms) { current_scene = ms; };
 
 static float heightmap[GRID_STEPS + 1][GRID_STEPS + 1];
 static Vec3 normalmap[GRID_STEPS + 1][GRID_STEPS + 1];
@@ -18,6 +19,8 @@ static int last_grid_z = INT_MIN;
 
 static float cached_origin_x = 0.0f;
 static float cached_origin_z = 0.0f;
+
+static Vec3 saved_ship_position;
 
 void get_cached_origin(float &ox, float &oz) {
   ox = cached_origin_x;
@@ -118,7 +121,7 @@ void draw_moon_container(const world::Planet &planet, Vec3 *ship_position) {
   material_white();
   if (current_scene == MOON_SCENE_ORBIT) {
     glBindTexture(GL_TEXTURE_2D, texture_id_buf[render::MOON_TEXTURE]);
-    
+
     draw_planet_sphere(planet.radius);
   } else if (current_scene == MOON_SCENE_SURFACE) {
     glBindTexture(GL_TEXTURE_2D, texture_id_buf[render::MOON_SURFACE_TEXTURE]);
@@ -227,8 +230,16 @@ void teleport_player_to_surface(Vec3 *ship_position) {
   float z = 0.0f;
   float y = get_lunar_height(x, z) + 100.0f;
 
+  saved_ship_position = *ship_position;
   *ship_position = Vec3{x, y, z};
 }
+
+void teleport_player_back(Vec3 *ship_position) {
+  const float PUSH_BACK_AMOUNT = 50;
+
+  *ship_position = saved_ship_position + Vec3{PUSH_BACK_AMOUNT, PUSH_BACK_AMOUNT, PUSH_BACK_AMOUNT};
+}
+
 
 void update_moon_transition(float moon_distance, Vec3 *ship_position) {
   const int now = glutGet(GLUT_ELAPSED_TIME);
@@ -268,7 +279,7 @@ void update_moon_transition(float moon_distance, Vec3 *ship_position) {
         teleport_player_to_surface(ship_position);
       } else {
         current_scene = MOON_SCENE_ORBIT;
-        // TODO Teleport player back
+        teleport_player_back(ship_position);
       }
 
       transition.fading_out = false;

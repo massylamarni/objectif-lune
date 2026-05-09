@@ -60,7 +60,7 @@ void game_update_hook() {
   body.radius = gst.ship.radius;
 
   physics::apply_planet_gravity(body, gst.earth);
-  physics::apply_planet_gravity(body, gst.moon);
+  if (get_moon_scene() == MOON_SCENE_ORBIT) physics::apply_planet_gravity(body, gst.moon);
   physics::apply_planet_gravity(body, gst.sun);
 
   physics::rb_integrate(body, dt);
