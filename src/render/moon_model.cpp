@@ -225,7 +225,7 @@ void draw_moon_surface(Vec3 *ship_position, bool debug_coords) {
 void teleport_player_to_surface(Vec3 *ship_position) {
   float x = 0.0f;
   float z = 0.0f;
-  float y = get_lunar_height(x, z) + 500.0f;
+  float y = get_lunar_height(x, z) + 100.0f;
 
   *ship_position = Vec3{x, y, z};
 }
