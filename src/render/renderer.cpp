@@ -6,7 +6,7 @@
 #include <GL/glu.h>
 
 namespace render {
-static screen_settings ss = get_screen_settings();
+static screen_settings &ss = get_screen_settings();
 
 void init_lighting() {
   glEnable(GL_LIGHTING);

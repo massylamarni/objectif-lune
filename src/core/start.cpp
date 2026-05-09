@@ -4,7 +4,7 @@
 static world::Planet moon;
 
 static render::Camera camera;
-static render::screen_settings ss = render::get_screen_settings();
+static render::screen_settings &ss = render::get_screen_settings();
 static float beta;
 static float transparence;
 static int phaseTransparence;

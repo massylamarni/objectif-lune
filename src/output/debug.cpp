@@ -1,7 +1,7 @@
 #include "debug.h"
 
 namespace output {
-static render::screen_settings ss = render::get_screen_settings();
+static render::screen_settings &ss = render::get_screen_settings();
 
 void debug_camera(float x, float y, float z) {
   char buf[128];

@@ -1,7 +1,7 @@
 #include "utils.h"
 
 namespace render {
-static render::screen_settings ss = render::get_screen_settings();
+static render::screen_settings &ss = render::get_screen_settings();
 
 void draw_text(const char *text, int x, int y) {
   glMatrixMode(GL_PROJECTION);

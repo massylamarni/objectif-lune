@@ -89,7 +89,7 @@ void idle_ship(float dt, float win_v, bool thrusting, float rotation_power_v) {
   win_value = win_v;
   rotation_power = rotation_power_v;
   input::InputState iState = input::get_input_state();
-  render::screen_settings ss = render::get_screen_settings();
+  render::screen_settings &ss = render::get_screen_settings();
   if (iState.rmb_down)
     rotation_update(iState.mouse_abs.x + (double)ss.width / 2,
                     iState.mouse_abs.y + (double)ss.height / 2, ss.width, ss.height,

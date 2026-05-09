@@ -3,7 +3,7 @@
 
 static GameState gst;
 static GameFps gfps = {0};
-static render::screen_settings ss = render::get_screen_settings();
+static render::screen_settings &ss = render::get_screen_settings();
 
 void update_fov() {
   const float FOV_CONST = 500.0f;
