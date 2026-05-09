@@ -71,6 +71,10 @@ void update_orbit_trail(const world::Ship &ship) {
   }
 }
 
+void reset_orbit_trail() {
+  g_orbit_trail_positions.clear();
+}
+
 void draw_orbit_trail() {
   if (g_orbit_trail_positions.size() < 2) {
     return;

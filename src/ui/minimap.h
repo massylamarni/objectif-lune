@@ -28,6 +28,7 @@ bool is_orbit_main_view_enabled();
 void draw_minimaps(const world::Ship &ship, const world::Planet &earth,
                    const world::Planet &moon, const world::Planet &sun,
                    const render::Camera &game_camera);
+void reset_orbit_trail();
 } // namespace ui
 
 #endif

@@ -1,6 +1,7 @@
 #include "moon_model.h"
 #include "../math/noise.h"
 #include "utils.h"
+#include "../ui/minimap.h"
 #include <cstdio>
 #include <limits.h>
 
@@ -256,6 +257,7 @@ void update_moon_transition(float moon_distance, Vec3 *ship_position) {
 
     transition.active = true;
     transition.fading_out = true;
+    ui::reset_orbit_trail();
   }
 
   if (!transition.active && current_scene == MOON_SCENE_SURFACE &&
@@ -263,6 +265,7 @@ void update_moon_transition(float moon_distance, Vec3 *ship_position) {
 
     transition.active = true;
     transition.fading_out = true;
+    ui::reset_orbit_trail();
   }
 
   if (!transition.active)
