@@ -201,6 +201,10 @@ void game_display_hook() {
     output::debug_camera(gst.camera.position.x, gst.camera.position.y,
                            gst.camera.position.z);
     output::debug_fps(gfps.fps);
+    output::debug_ship_state(gst.ship);
+    output::debug_controls();
+  } else {
+    output::hint_debug();
   }
   draw_moon_transition_overlay();
 }
