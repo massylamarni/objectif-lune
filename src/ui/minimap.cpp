@@ -186,7 +186,8 @@ void draw_minimaps(const world::Ship &ship, const world::Planet &earth,
   const int window_width = glutGet(GLUT_WINDOW_WIDTH);
   const int window_height = glutGet(GLUT_WINDOW_HEIGHT);
 
-  const world::Planet &closest = closest_planet(ship, earth, moon, sun);
+  // const world::Planet &closest = closest_planet(ship, earth, moon, sun);
+  const world::Planet &closest = moon;
   const float closest_distance =
       world::distance_to_surface(closest, ship.position);
 
