@@ -133,20 +133,31 @@ render::Camera landing_assist_camera(const world::Ship &ship,
   float origin_x, origin_z;
   get_cached_origin(origin_x, origin_z);
 
-  const float terrain_height = get_interpolated_height(
+  const float ship_terrain_height = get_interpolated_height(
       ship.position.x, ship.position.z, origin_x, origin_z);
 
-  const float altitude = std::max(ship.position.y - terrain_height, 0.0f);
+  const float altitude = std::max(ship.position.y - ship_terrain_height, 0.0f);
 
-  const Vec3 look_target(ship.position.x, terrain_height + altitude * 0.3f,
-                         ship.position.z);
+  const float MIN_DISTANCE = 150.0f;
+  const float MAX_DISTANCE = 500.0f;
 
-  const float MIN_DISTANCE = 300.0f;
-  const float camera_distance = std::max(MIN_DISTANCE, altitude * 6.0f);
+  const float camera_distance =
+      std::clamp(altitude, MIN_DISTANCE, MAX_DISTANCE);
 
-  const Vec3 camera_position(ship.position.x + camera_distance,
-                             ship.position.y + camera_distance * 0.35f,
-                             ship.position.z + camera_distance * 0.2f);
+  const float midpoint_y = ship_terrain_height + altitude * 0.65f;
+
+  Vec3 camera_position(ship.position.x + camera_distance, midpoint_y,
+                       ship.position.z);
+
+  const float camera_terrain_height = get_interpolated_height(
+      camera_position.x, camera_position.z, origin_x, origin_z);
+
+  const float TERRAIN_CLEARANCE = 20.0f;
+
+  camera_position.y =
+      std::max(camera_position.y, camera_terrain_height + TERRAIN_CLEARANCE);
+
+  const Vec3 look_target(ship.position.x, midpoint_y, ship.position.z);
 
   return render::create_camera(camera_position, look_target, up);
 }

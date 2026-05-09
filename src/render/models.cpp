@@ -135,7 +135,8 @@ void draw_mini_ship(const world::Ship &ship) {
 
   glScalef(0.8F, 0.8F, 0.8F);
   // draw_ship(ship);
-  glutSolidCube(10);
+  lem(reactor_activity, 180.0F - rotation_direction, rotation_power,
+      anim_win_offset, win_value, animation_counter, 8);
 
   glPopMatrix();
 }
