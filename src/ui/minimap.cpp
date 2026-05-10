@@ -21,6 +21,50 @@ void setup_viewport(const MinimapViewport &viewport) {
   glDisable(GL_SCISSOR_TEST);
 }
 
+void draw_viewport_border(const MinimapViewport &viewport, float r, float g,
+                          float b, float a, float thickness) {
+  glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_VIEWPORT_BIT |
+               GL_TRANSFORM_BIT);
+
+  const int win_w = glutGet(GLUT_WINDOW_WIDTH);
+  const int win_h = glutGet(GLUT_WINDOW_HEIGHT);
+  glViewport(0, 0, win_w, win_h);
+
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+  glLoadIdentity();
+  gluOrtho2D(0, win_w, 0, win_h);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  glDisable(GL_DEPTH_TEST);
+  glDisable(GL_TEXTURE_2D);
+  glDisable(GL_LIGHTING);
+  glLineWidth(thickness);
+  glColor4f(r, g, b, a);
+
+  const float x0 = static_cast<float>(viewport.x);
+  const float y0 = static_cast<float>(viewport.y);
+  const float x1 = x0 + static_cast<float>(viewport.width);
+  const float y1 = y0 + static_cast<float>(viewport.height);
+
+  glBegin(GL_LINE_LOOP);
+  glVertex2f(x0, y0);
+  glVertex2f(x1, y0);
+  glVertex2f(x1, y1);
+  glVertex2f(x0, y1);
+  glEnd();
+
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  glMatrixMode(GL_MODELVIEW);
+  glPopMatrix();
+
+  glPopAttrib();
+}
+
 void draw_world(const world::Ship &ship, const world::Planet &earth,
                 const world::Planet &moon, const world::Planet &sun) {
   render::draw_mini_planet(earth, nullptr);
@@ -71,9 +115,7 @@ void update_orbit_trail(const world::Ship &ship) {
   }
 }
 
-void reset_orbit_trail() {
-  g_orbit_trail_positions.clear();
-}
+void reset_orbit_trail() { g_orbit_trail_positions.clear(); }
 
 void draw_orbit_trail() {
   if (g_orbit_trail_positions.size() < 2) {
@@ -238,6 +280,8 @@ void draw_minimaps(const world::Ship &ship, const world::Planet &earth,
   const MinimapViewport landing_map = {MINIMAP_MARGINS, MINIMAP_MARGINS, 100,
                                        200};
 
+  const Vec3 BORDER_COLOR = Vec3(1.0f, 0.8f, 0.2f);
+
   if (!view_switch_threshold) {
     if (g_orbit_main_view_enabled) {
       const MinimapViewport full_screen = {0, 0, window_width, window_height};
@@ -248,6 +292,7 @@ void draw_minimaps(const world::Ship &ship, const world::Planet &earth,
       draw_world(ship, earth, moon, sun);
       draw_orbit_trail();
       draw_minimap_ship_marker(ship, orbit_half_extent * 0.03f);
+      draw_viewport_border(orbit_map, BORDER_COLOR.x, BORDER_COLOR.y, BORDER_COLOR.z, 0.8f, 2.0f);
 
       setup_viewport(orbit_map);
       const float preview_aspect =
@@ -255,6 +300,7 @@ void draw_minimaps(const world::Ship &ship, const world::Planet &earth,
       render::apply_perspective(NATURAL_PERSPECTIVE, preview_aspect);
       render::camera_apply(game_camera);
       draw_world(ship, earth, moon, sun);
+      draw_viewport_border(orbit_map, BORDER_COLOR.x, BORDER_COLOR.y, BORDER_COLOR.z, 0.8f, 2.0f);
     } else {
       setup_viewport(orbit_map);
       render::apply_orthographic(orbit_half_extent);
@@ -262,6 +308,7 @@ void draw_minimaps(const world::Ship &ship, const world::Planet &earth,
       draw_world(ship, earth, moon, sun);
       draw_orbit_trail();
       draw_minimap_ship_marker(ship, orbit_half_extent * 0.03f);
+      draw_viewport_border(orbit_map, BORDER_COLOR.x, BORDER_COLOR.y, BORDER_COLOR.z, 0.8f, 2.0f);
     }
   } else {
     const render::Camera landing_cam = landing_assist_camera(ship, closest);
@@ -273,6 +320,7 @@ void draw_minimaps(const world::Ship &ship, const world::Planet &earth,
       render::camera_apply(landing_cam);
       draw_landing_world(ship, earth, moon, sun);
       draw_minimap_ship_marker(ship, std::max(closest.radius * 0.02f, 2.5f));
+      draw_viewport_border(landing_map, BORDER_COLOR.x, BORDER_COLOR.y, BORDER_COLOR.z, 0.8f, 2.0f);
 
       setup_viewport(landing_map);
       const float preview_aspect =
@@ -280,6 +328,7 @@ void draw_minimaps(const world::Ship &ship, const world::Planet &earth,
       render::apply_perspective(NATURAL_PERSPECTIVE, preview_aspect);
       render::camera_apply(game_camera);
       draw_landing_world(ship, earth, moon, sun);
+      draw_viewport_border(landing_map, BORDER_COLOR.x, BORDER_COLOR.y, BORDER_COLOR.z, 0.8f, 2.0f);
     } else {
       setup_viewport(landing_map);
       const float aspect =
@@ -288,6 +337,7 @@ void draw_minimaps(const world::Ship &ship, const world::Planet &earth,
       render::camera_apply(landing_cam);
       draw_landing_world(ship, earth, moon, sun);
       draw_minimap_ship_marker(ship, std::max(closest.radius * 0.02f, 2.5f));
+      draw_viewport_border(landing_map, BORDER_COLOR.x, BORDER_COLOR.y, BORDER_COLOR.z, 0.8f, 2.0f);
     }
   }
 
