@@ -148,7 +148,7 @@ void draw_moon_surface(Vec3 *ship_position, bool debug_coords) {
 
   const float step = PATCH_SIZE / GRID_STEPS;
   const float half = PATCH_SIZE / 2.0f;
-  const float TEXTURE_SCALE = 0.01f;
+  const float TEXTURE_SCALE = 0.001f;
 
   int grid_x = (int)std::floor(ship_position->x / step);
   int grid_z = (int)std::floor(ship_position->z / step);

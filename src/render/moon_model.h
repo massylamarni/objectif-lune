@@ -7,10 +7,10 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#define ENTER_SURFACE_DISTANCE 250.0f // TODO make it relative to planet size
-#define EXIT_SURFACE_DISTANCE 300.0f
+#define ENTER_SURFACE_DISTANCE 200.0f // TODO make it relative to planet size
+#define EXIT_SURFACE_DISTANCE 250.0f
 #define TERRAIN_TRANSITION_SPEED 1.8f
-#define PATCH_SIZE 8000.0f
+#define PATCH_SIZE 32000.0f
 #define GRID_STEPS 64
 
 enum moon_scene { MOON_SCENE_ORBIT, MOON_SCENE_SURFACE };
