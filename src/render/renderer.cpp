@@ -58,6 +58,14 @@ void apply_orthographic(float half_extent) {
   glLoadIdentity();
 }
 
+void apply_orthographic(float half_w, float half_h) {
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(-half_w, half_w, -half_h, half_h, 0.1, 20000.0);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+}
+
 void display_start_frame() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

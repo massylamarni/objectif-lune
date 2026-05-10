@@ -17,6 +17,7 @@ namespace render {
 void init(int *argc, char **argv);
 void apply_perspective(float fov_degrees, float aspect);
 void apply_orthographic(float half_extent);
+void apply_orthographic(float half_w, float half_h);
 void display_start_frame();
 void display_end_frame();
 void display(void display_hook(void));
