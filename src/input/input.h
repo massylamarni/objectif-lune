@@ -26,11 +26,13 @@ struct InputState {
   bool d_down;
   bool u_down;
   bool r_down;
+  bool y_down;
+  bool Y_down;
   bool f_down;
-  bool debug;
   bool p_down;
-  bool pause;
   bool v_down;
+  bool debug;
+  bool pause;
   bool editor;
   float scroll;
 };
@@ -47,6 +49,7 @@ void stop_mouse_input(bool stop);
 void simulate_camera_swipe(float pixels, Vec2 axis);
 void save_mouse_rotation_delta();
 void load_mouse_rotation_delta();
+void toggle_key(bool key_down, bool *prev_key_down, bool *key_toggle);
 } // namespace input
 
 #endif

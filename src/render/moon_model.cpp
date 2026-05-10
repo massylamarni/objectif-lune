@@ -1,7 +1,8 @@
 #include "moon_model.h"
+#include "../input/input.h"
 #include "../math/noise.h"
-#include "utils.h"
 #include "../ui/minimap.h"
+#include "utils.h"
 #include <cstdio>
 #include <limits.h>
 
@@ -111,6 +112,11 @@ void compute_normal(float x, float z, float step, float &nx, float &ny,
 
 void draw_moon_container(const world::Planet &planet, Vec3 *ship_position) {
   const uint *texture_id_buf = render::get_texture_id_buf();
+  const input::InputState state = input::get_input_state();
+  static bool y_toggle = false, Y_toggle = false;
+  static bool prev_y_down = false, prev_Y_down = false;
+  input::toggle_key(state.y_down, &prev_y_down, &y_toggle);
+  input::toggle_key(state.Y_down, &prev_Y_down, &Y_toggle);
   if (ship_position != nullptr) {
     const float moon_distance =
         current_scene == MOON_SCENE_ORBIT
@@ -126,11 +132,9 @@ void draw_moon_container(const world::Planet &planet, Vec3 *ship_position) {
     draw_planet_sphere(planet.radius);
   } else if (current_scene == MOON_SCENE_SURFACE) {
     glBindTexture(GL_TEXTURE_2D, texture_id_buf[render::MOON_SURFACE_TEXTURE]);
-    draw_moon_surface(ship_position,
-                      false); // TODO: have a key that toggles debug
-    if (false)
-      draw_debug_collision_surface(
-          ship_position); // TODO: have a key that toggles debug
+    draw_moon_surface(ship_position, Y_toggle);
+    if (y_toggle)
+      draw_debug_collision_surface(ship_position);
   }
 }
 
@@ -238,9 +242,9 @@ void teleport_player_to_surface(Vec3 *ship_position) {
 void teleport_player_back(Vec3 *ship_position) {
   const float PUSH_BACK_AMOUNT = 50;
 
-  *ship_position = saved_ship_position + Vec3{PUSH_BACK_AMOUNT, PUSH_BACK_AMOUNT, PUSH_BACK_AMOUNT};
+  *ship_position = saved_ship_position +
+                   Vec3{PUSH_BACK_AMOUNT, PUSH_BACK_AMOUNT, PUSH_BACK_AMOUNT};
 }
-
 
 void update_moon_transition(float moon_distance, Vec3 *ship_position) {
   const int now = glutGet(GLUT_ELAPSED_TIME);

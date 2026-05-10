@@ -36,6 +36,12 @@ void set_key_state(unsigned char key, int x, int y, int isDown) {
   case 'r':
     state.r_down = isDown;
     break;
+  case 'y':
+    state.y_down = isDown;
+    break;
+  case 'Y':
+    state.Y_down = isDown;
+    break;
   case 'f':
     if (!state.f_down && isDown)
       state.debug = true;
@@ -139,8 +145,9 @@ void input_update(world::Ship &ship, float dt, bool editor) {
   if (state.s_down)
     ship.velocity += rotate_yaw(Vec3(0, 0, INPUT_VEC3_UPDATE_VALUE),
                                 state.mouse_rotation_delta.x);
-                                
-  if (!editor) ui::toggle_orbit_main_view(state.u_down);
+
+  if (!editor)
+    ui::toggle_orbit_main_view(state.u_down);
 
   // ship.thrusting = (state.rmb_down && !state.lmb_down);
   ship.thrusting = state.space_down;
@@ -195,8 +202,10 @@ void stop_mouse_input(bool stop) {
 void simulate_camera_swipe(float pixels, Vec2 axis) {
   InputState &state = get_input_state();
   state.lmb_down = true;
-  if (axis.x) state.mouse_rotation_delta.x += pixels * MOUSE_SENSITIVITY;
-  if (axis.y) state.mouse_rotation_delta.y += pixels * MOUSE_SENSITIVITY;
+  if (axis.x)
+    state.mouse_rotation_delta.x += pixels * MOUSE_SENSITIVITY;
+  if (axis.y)
+    state.mouse_rotation_delta.y += pixels * MOUSE_SENSITIVITY;
   state.lmb_down = false;
 }
 
@@ -210,5 +219,11 @@ void load_mouse_rotation_delta() {
   state.mouse_rotation_delta.y = state.prev_mouse_rotation_delta.y;
 }
 
+void toggle_key(bool key_down, bool *prev_key_down, bool *key_toggle) {
+  if (key_down && !*prev_key_down)
+    *key_toggle = !*key_toggle;
+
+  *prev_key_down = key_down;
+}
 
 } // namespace input

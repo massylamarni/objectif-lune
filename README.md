@@ -47,6 +47,8 @@ make
 | `f` | Toggle debug display |
 | `u` | Toggle minimap |
 | `v` | Toggle model editor |
+| `y` | Toggle collision terrain |
+| `Y` | Toggle terrain coordinates |
 
 ### Simulation
 

@@ -40,7 +40,7 @@ void debug_ship_state(const world::Ship ship) {
 void debug_controls(/* hardcoded */) {
   const int SECTION_MAX_WIDTH = 350;
   const int CURRENT_LINE_COUNT = 0;
-  const char labels[16][64] = {"qzsd - Left/Forward/Backward/Right",
+  const char labels[18][64] = {"qzsd - Left/Forward/Backward/Right",
                                "ae - Down/Up",
                                "p - Pause",
                                "r - Restart",
@@ -49,6 +49,8 @@ void debug_controls(/* hardcoded */) {
                                "RMB(click) - Ship pitch/yaw",
                                "u - Toggle minimap view",
                                "v - Toggle model view",
+                               "y - Toggle collision terrain",
+                               "Y - Toggle terrain coordinates",
                                "h - Toggle GL_DEPTH_TEST",
                                "H - Toggle GL_CULL_FACE",
                                "l - Toggle GL_LIGHTING",
@@ -57,7 +59,7 @@ void debug_controls(/* hardcoded */) {
                                "O - Switch GL_DEPTH_BUFFER_BIT,",
                                "       GL_COLOR_BUFFER_BIT"};
 
-  const int labels_len = 16;
+  const int labels_len = 18;
   for (int i = 0; i < labels_len; i++) {
     char buf[128];
     snprintf(buf, sizeof(buf), "%s", labels[i]);
