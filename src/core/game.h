@@ -11,6 +11,7 @@
 #include "../render/renderer.h"
 #include "../render/utils.h"
 #include "../ui/minimap.h"
+#include "../ui/credits.h"
 #include "../world/planet.h"
 #include "../world/ship.h"
 #include "time.h"
@@ -23,6 +24,7 @@ struct GameState {
   world::Ship editorShip;
   render::Camera camera;
   render::Camera editorCamera;
+  bool show_credits;
   bool player_won;
   bool pause;
   bool debug;

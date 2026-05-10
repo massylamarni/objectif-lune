@@ -6,6 +6,8 @@
 #include <stdlib.h>
 
 namespace render {
+int measure_title(const char *text);
+int measure_text(const char *text);
 void draw_text(const char *text, int x, int y);
 void draw_text_transparence(const char *text, int x, int y, float transparence);
 void draw_title(const char *text, int x, int y);

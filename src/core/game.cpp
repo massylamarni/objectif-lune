@@ -5,6 +5,18 @@ static GameState gst;
 static GameFps gfps = {0};
 static render::screen_settings &ss = render::get_screen_settings();
 
+static void restart_game() {
+  set_moon_scene(MOON_SCENE_ORBIT);
+  gst.ship = world::create_ship(SHIP_POSITION);
+  gst.player_won = false;
+  gst.show_credits = false;
+  gst.pause = false;
+  update_moon_transition(1000.0f, &gst.ship.position);
+  glDisable(GL_LIGHT7);
+  reset_explosion();
+  input::stop_mouse_input(false);
+}
+
 void update_fov() {
   const float FOV_CONST = 500.0f;
   const float MIN_FOV = 30.0f;
@@ -31,6 +43,7 @@ void game_init() {
   gst.pause = false;
   gst.debug = false;
   gst.editor = false;
+  gst.show_credits = false;
 
   game_display();
   game_update();
@@ -76,15 +89,9 @@ void game_update_hook() {
   }
   input::InputState iState= input::get_input_state();
   if (iState.r_down){
-    set_moon_scene(MOON_SCENE_ORBIT);
-    gst.ship = world::create_ship(SHIP_POSITION);
-    gst.camera = render::create_camera(CAMERA_POSITION, CAMERA_TARGET, CAMERA_UP);
-    gst.player_won = false;
-    update_moon_transition(1000.0f, &gst.ship.position);
-    glDisable(GL_LIGHT7);
-    reset_explosion();
+    restart_game();
   }
-  if (iState.pause){
+  if (iState.pause && !gst.player_won){
     input::stop_pause();
     gst.pause = !gst.pause;
     input::stop_mouse_input(gst.pause);
@@ -108,9 +115,13 @@ void game_update_hook() {
     start_explosion_animation();
   }
 
-  gst.player_won = (gst.ship.state == world::SHIP_LANDED);
-  
-
+  bool now_won = (gst.ship.state == world::SHIP_LANDED);
+  if (now_won && !gst.player_won) {
+    gst.player_won = true;
+    start_credits(&gst.show_credits, &gst.pause, ss.height);
+  } else {
+    gst.player_won = now_won;
+  }
   render::camera_follow_ship(gst.camera, gst.ship);
   explosion_idle(dt);
   render::idle_ship (dt, gst.player_won, gst.ship.thrusting, length (gst.ship.rotation));
@@ -120,17 +131,25 @@ void game_update_hook() {
 
 void game_update_pause() {
   core::time_update();
+  float dt = core::time_delta();
   update_fov();
   input::InputState iState= input::get_input_state();
-  if (iState.pause){
+  if (iState.pause && !gst.show_credits && !gst.player_won){
     input::stop_pause();
     gst.pause = !gst.pause;
     input::stop_mouse_input(gst.pause);
+  }
+  if (iState.r_down) {
+    restart_game();
   }
   if (iState.debug){
     input::stop_debug();
     gst.debug = !gst.debug;
   }
+  if (gst.show_credits) {
+    advance_credits(dt, &gst.show_credits, ss.height);
+  }
+
   render::camera_follow_ship(gst.camera, gst.ship);
   
 }
@@ -157,6 +176,11 @@ void game_display() { glutDisplayFunc(game_display_callback); }
 void game_display_callback() { if(!gst.editor) render::display(game_display_hook); else render::display(game_display_editor); }
 
 void game_display_hook() {
+  if (gst.show_credits) {
+    display_credits(ss.width, ss.height);
+    return;
+  }
+
   render::camera_apply(gst.camera);
 
   if (get_moon_scene() == MOON_SCENE_ORBIT) {
@@ -195,7 +219,7 @@ void game_display_hook() {
                       ss.height - 90);
     render::draw_important_text("YOU LOSE !");
   }
-  if (gst.pause) {
+  if (gst.pause && !gst.player_won) {
     render::draw_important_text("PAUSE");
   }
   ui::draw_minimaps(gst.ship, gst.earth, gst.moon, gst.sun, gst.camera);
