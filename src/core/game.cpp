@@ -52,31 +52,33 @@ void game_update_hook() {
   update_fov();
 
   physics::RigidBody body;
+  if (!gst.player_won) {
+    body.id = RIGID_BODY_ID;
+    body.position = gst.ship.position;
+    body.velocity = gst.ship.velocity;
+    body.mass = gst.ship.mass;
+    body.radius = gst.ship.radius;
 
-  body.id = RIGID_BODY_ID;
-  body.position = gst.ship.position;
-  body.velocity = gst.ship.velocity;
-  body.mass = gst.ship.mass;
-  body.radius = gst.ship.radius;
+    physics::apply_planet_gravity(body, gst.earth);
+    if (get_moon_scene() == MOON_SCENE_ORBIT) physics::apply_planet_gravity(body, gst.moon);
+    physics::apply_planet_gravity(body, gst.sun);
 
-  physics::apply_planet_gravity(body, gst.earth);
-  if (get_moon_scene() == MOON_SCENE_ORBIT) physics::apply_planet_gravity(body, gst.moon);
-  physics::apply_planet_gravity(body, gst.sun);
+    physics::rb_integrate(body, dt);
 
-  physics::rb_integrate(body, dt);
+    if (physics::check_surface_collision(body)) {
+      physics::resolve_surface_collision(body);
+    }
 
-  if (physics::check_surface_collision(body)) {
-    physics::resolve_surface_collision(body);
+    gst.ship.position = body.position;
+    gst.ship.velocity = body.velocity;
+    world::ship_update(gst.ship, dt);
+    input::input_update(gst.ship, dt, false);
   }
-
-  gst.ship.position = body.position;
-  gst.ship.velocity = body.velocity;
-  world::ship_update(gst.ship, dt);
-  input::input_update(gst.ship, dt, false);
   input::InputState iState= input::get_input_state();
   if (iState.r_down){
     set_moon_scene(MOON_SCENE_ORBIT);
     gst.ship = world::create_ship(SHIP_POSITION);
+    gst.camera = render::create_camera(CAMERA_POSITION, CAMERA_TARGET, CAMERA_UP);
     gst.player_won = false;
     update_moon_transition(1000.0f, &gst.ship.position);
     glDisable(GL_LIGHT7);
