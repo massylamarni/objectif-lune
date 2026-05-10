@@ -4,6 +4,7 @@ namespace output {
 static render::screen_settings &ss = render::get_screen_settings();
 
 void debug_camera(float x, float y, float z) {
+  glBindTexture(GL_TEXTURE_2D, NULL);
   const int SECTION_MAX_WIDTH = 250;
   char buf[128];
   snprintf(buf, sizeof(buf), "cam (%.1f, %.1f, %.1f)", x, y, z);
@@ -68,6 +69,7 @@ void debug_controls(/* hardcoded */) {
 }
 
 void hint_debug() {
+  glBindTexture(GL_TEXTURE_2D, NULL);
   const int SECTION_MAX_WIDTH = 200;
 
   char buf[128];
