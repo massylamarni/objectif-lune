@@ -296,7 +296,7 @@ void draw_minimaps(const world::Ship &ship, const world::Planet &earth,
 
       setup_viewport(orbit_map);
       const float preview_aspect =
-          (double)(orbit_map.width) / (double)(orbit_map.height);
+          (float)(orbit_map.width) / (float)(orbit_map.height);
       render::apply_perspective(NATURAL_PERSPECTIVE, preview_aspect);
       render::camera_apply(game_camera);
       draw_world(ship, earth, moon, sun);
@@ -315,7 +315,7 @@ void draw_minimaps(const world::Ship &ship, const world::Planet &earth,
     if (g_landing_main_view_enabled) {
       const MinimapViewport full_screen = {0, 0, window_width, window_height};
       setup_viewport(full_screen);
-      const float aspect = (double)window_width / (double)window_height;
+      const float aspect = (float)window_width / (float)window_height;
       render::apply_perspective(MINIMAP_1_FOV_DEG, aspect);
       render::camera_apply(landing_cam);
       draw_landing_world(ship, earth, moon, sun);
@@ -324,7 +324,7 @@ void draw_minimaps(const world::Ship &ship, const world::Planet &earth,
 
       setup_viewport(landing_map);
       const float preview_aspect =
-          (double)landing_map.width / (double)landing_map.height;
+          (float)landing_map.width / (float)landing_map.height;
       render::apply_perspective(NATURAL_PERSPECTIVE, preview_aspect);
       render::camera_apply(game_camera);
       draw_landing_world(ship, earth, moon, sun);
@@ -332,7 +332,7 @@ void draw_minimaps(const world::Ship &ship, const world::Planet &earth,
     } else {
       setup_viewport(landing_map);
       const float aspect =
-          (double)(landing_map.width) / (double)(landing_map.height);
+          (float)(landing_map.width) / (float)(landing_map.height);
       render::apply_perspective(MINIMAP_1_FOV_DEG, aspect);
       render::camera_apply(landing_cam);
       draw_landing_world(ship, earth, moon, sun);

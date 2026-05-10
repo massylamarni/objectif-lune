@@ -96,6 +96,6 @@ void reshape(int wx, int wy) {
   ss.width = wx;
   ss.height = wy;
   glViewport(0, 0, wx, wy);
-  apply_perspective(NATURAL_PERSPECTIVE, (double)ss.width / (double)ss.height);
+  apply_perspective(NATURAL_PERSPECTIVE, (float)ss.width / (float)ss.height);
 }
 } // namespace render
